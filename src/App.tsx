@@ -1,57 +1,48 @@
-
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from './contexts/AuthContext';
-import { Toaster } from "@/components/ui/toaster";
-import './App.css';
-import Index from './pages/Index';
-import NotFound from './pages/NotFound';
+import HomePage from './pages/HomePage';
+import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import PostJob from './pages/PostJob';
-import About from './pages/About';
-import HowItWorks from './pages/HowItWorks';
-import FindPros from './pages/FindPros';
-import TradeProfessionalMarketplace from './pages/TradeProfessionalMarketplace';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import ProjectMarketplace from './pages/ProjectMarketplace';
-import ProjectDetails from './pages/ProjectDetails';
-import JoinNetwork from './pages/JoinNetwork';
+import MarketplacePage from './pages/MarketplacePage';
+import ProjectDetailsPage from './pages/ProjectDetailsPage';
+import CalendarPage from './pages/CalendarPage';
 import MessagingPage from './pages/MessagingPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import CompliancePage from './pages/CompliancePage';
-import CalendarPage from './pages/CalendarPage';
+import CreateProject from '@/pages/CreateProject';
+import ProjectDispatch from '@/pages/ProjectDispatch';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/find-pros" element={<FindPros />} />
-            <Route path="/trade-professionals" element={<TradeProfessionalMarketplace />} />
-            <Route path="/join-network" element={<JoinNetwork />} />
-            <Route path="/post-job" element={<PostJob />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/marketplace" element={<ProjectMarketplace />} />
-            <Route path="/projects/:projectId" element={<ProjectDetails />} />
-            <Route path="/messages" element={<MessagingPage />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/compliance" element={<CompliancePage />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-        </Router>
-      </AuthProvider>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <div className="App">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/messages" element={<MessagingPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/compliance" element={<CompliancePage />} />
+              <Route path="/client/create-project" element={<CreateProject />} />
+              <Route path="/client/dispatch/:projectId" element={<ProjectDispatch />} />
+            </Routes>
+            <Toaster />
+          </div>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
