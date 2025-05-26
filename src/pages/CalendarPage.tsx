@@ -10,7 +10,7 @@ const CalendarPage: React.FC = () => {
         <div className="container-custom">
           <h1 className="text-3xl font-bold mb-2">Project Calendar</h1>
           <p className="text-gray-600 mb-8">
-            Schedule and track your projects, tasks, and appointments
+            Schedule and track your projects, tasks, and appointments with ProLinkTT
           </p>
           
           <ProjectCalendar />

@@ -10,7 +10,7 @@ const MessagingPage: React.FC = () => {
         <div className="container-custom">
           <h1 className="text-3xl font-bold mb-2">Messages</h1>
           <p className="text-gray-600 mb-8">
-            Communicate with professionals and clients
+            Communicate with professionals and clients on ProLinkTT
           </p>
           
           <ChatInterface />

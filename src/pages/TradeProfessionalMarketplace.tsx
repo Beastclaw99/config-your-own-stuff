@@ -22,7 +22,7 @@ const TradeProfessionalMarketplace: React.FC = () => {
       <div className="bg-ttc-blue-800 py-8 text-white">
         <div className="container-custom">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Find Trade Professionals</h1>
-          <p className="text-lg">Connect with skilled tradespeople in Trinidad & Tobago</p>
+          <p className="text-lg">Connect with skilled tradespeople in Trinidad & Tobago through ProLinkTT</p>
         </div>
       </div>
       

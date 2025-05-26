@@ -10,7 +10,7 @@ const AnalyticsPage: React.FC = () => {
         <div className="container-custom">
           <h1 className="text-3xl font-bold mb-2">Analytics & Reports</h1>
           <p className="text-gray-600 mb-8">
-            Track performance, project completion rates, and business insights
+            Track performance, project completion rates, and business insights on ProLinkTT
           </p>
           
           <AnalyticsDashboard />
