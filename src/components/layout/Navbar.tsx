@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/find-pros" className="text-ttc-neutral-700 hover:text-ttc-blue-700 transition-colors">Our Professionals</Link>
+          <Link to="/trade-professionals" className="text-ttc-neutral-700 hover:text-ttc-blue-700 transition-colors">Find Professionals</Link>
           <Link to="/marketplace" className="text-ttc-neutral-700 hover:text-ttc-blue-700 transition-colors">
             Project Marketplace
           </Link>
@@ -103,8 +103,8 @@ const Navbar: React.FC = () => {
       {isMenuOpen && <div className="md:hidden bg-white border-b">
           <div className="container-custom py-4 space-y-4">
             <nav className="flex flex-col space-y-3">
-              <Link to="/find-pros" className="px-2 py-2 text-ttc-neutral-700 hover:bg-ttc-blue-50 hover:text-ttc-blue-700 rounded-md" onClick={toggleMenu}>
-                Find Tradesmen
+              <Link to="/trade-professionals" className="px-2 py-2 text-ttc-neutral-700 hover:bg-ttc-blue-50 hover:text-ttc-blue-700 rounded-md" onClick={toggleMenu}>
+                Find Professionals
               </Link>
               <Link to="/marketplace" className="px-2 py-2 text-ttc-neutral-700 hover:bg-ttc-blue-50 hover:text-ttc-blue-700 rounded-md" onClick={toggleMenu}>
                 Project Marketplace

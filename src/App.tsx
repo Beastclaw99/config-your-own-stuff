@@ -12,6 +12,7 @@ import PostJob from './pages/PostJob';
 import About from './pages/About';
 import HowItWorks from './pages/HowItWorks';
 import FindPros from './pages/FindPros';
+import TradeProfessionalMarketplace from './pages/TradeProfessionalMarketplace';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import ProjectMarketplace from './pages/ProjectMarketplace';
@@ -30,6 +31,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/find-pros" element={<FindPros />} />
+            <Route path="/trade-professionals" element={<TradeProfessionalMarketplace />} />
             <Route path="/join-network" element={<JoinNetwork />} />
             <Route path="/post-job" element={<PostJob />} />
             <Route path="/dashboard" element={<Dashboard />} />
