@@ -124,7 +124,7 @@ export type Database = {
           last_name: string | null
           rating: number | null
           skills: string[] | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           account_type: Database["public"]["Enums"]["account_type_enum"]
@@ -134,7 +134,7 @@ export type Database = {
           last_name?: string | null
           rating?: number | null
           skills?: string[] | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           account_type?: Database["public"]["Enums"]["account_type_enum"]
@@ -144,9 +144,60 @@ export type Database = {
           last_name?: string | null
           rating?: number | null
           skills?: string[] | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: []
+      }
+      project_updates: {
+        Row: {
+          created_at: string | null
+          file_url: string | null
+          id: string
+          message: string | null
+          metadata: Json | null
+          project_id: string | null
+          status_update: string | null
+          update_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          project_id?: string | null
+          status_update?: string | null
+          update_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          project_id?: string | null
+          status_update?: string | null
+          update_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_updates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_updates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -252,60 +303,6 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      project_updates: {
-        Row: {
-          id: string
-          project_id: string
-          update_type: string
-          message: string | null
-          status_update: string | null
-          file_url: string | null
-          file_name: string | null
-          created_at: string
-          created_by: string | null
-          metadata: Json | null
-        }
-        Insert: {
-          id?: string
-          project_id: string
-          update_type: string
-          message?: string | null
-          status_update?: string | null
-          file_url?: string | null
-          file_name?: string | null
-          created_at?: string
-          created_by?: string | null
-          metadata?: Json | null
-        }
-        Update: {
-          id?: string
-          project_id?: string
-          update_type?: string
-          message?: string | null
-          status_update?: string | null
-          file_url?: string | null
-          file_name?: string | null
-          created_at?: string
-          created_by?: string | null
-          metadata?: Json | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_updates_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_updates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
         ]
       }
     }
