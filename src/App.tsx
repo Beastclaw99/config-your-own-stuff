@@ -18,6 +18,10 @@ import Profile from './pages/Profile';
 import ProjectMarketplace from './pages/ProjectMarketplace';
 import ProjectDetails from './pages/ProjectDetails';
 import JoinNetwork from './pages/JoinNetwork';
+import MessagingPage from './pages/MessagingPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import CompliancePage from './pages/CompliancePage';
+import CalendarPage from './pages/CalendarPage';
 
 function App() {
   return (
@@ -38,6 +42,10 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/marketplace" element={<ProjectMarketplace />} />
             <Route path="/projects/:projectId" element={<ProjectDetails />} />
+            <Route path="/messages" element={<MessagingPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/compliance" element={<CompliancePage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
