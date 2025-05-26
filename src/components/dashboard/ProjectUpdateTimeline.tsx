@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,7 +77,7 @@ export default function ProjectUpdateTimeline({ projectId }: ProjectUpdateTimeli
           .order('created_at', { ascending: true });
 
         if (error) throw error;
-        setUpdates(data || []);
+        setUpdates((data || []) as ProjectUpdate[]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch updates');
       } finally {

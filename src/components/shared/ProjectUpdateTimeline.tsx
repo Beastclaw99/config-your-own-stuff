@@ -94,7 +94,7 @@ export default function ProjectUpdateTimeline({
       const { data, error: fetchError } = await query;
 
       if (fetchError) throw fetchError;
-      setUpdates(data || []);
+      setUpdates((data || []) as ProjectUpdate[]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch updates');
     } finally {

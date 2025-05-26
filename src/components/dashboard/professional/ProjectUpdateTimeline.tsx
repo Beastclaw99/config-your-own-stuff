@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,7 +77,7 @@ export default function ProjectUpdateTimeline({ project_id }: ProjectUpdateTimel
           .order('created_at', { ascending: true });
 
         if (error) throw error;
-        setUpdates(data || []);
+        setUpdates((data || []) as ProjectUpdate[]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch updates');
       } finally {
@@ -206,7 +207,7 @@ export default function ProjectUpdateTimeline({ project_id }: ProjectUpdateTimel
                 className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800"
               >
                 <PaperClipIcon className="h-4 w-4" />
-                <span>{update.file_name || 'Download file'}</span>
+                <span>Download file</span>
               </a>
             )}
             
