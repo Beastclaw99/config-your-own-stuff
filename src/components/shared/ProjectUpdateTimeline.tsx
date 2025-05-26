@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -82,7 +83,7 @@ export default function ProjectUpdateTimeline({
       setLoading(true);
       let query = supabase
         .from('project_updates')
-        .select('*, profiles(full_name)')
+        .select('*, profiles(first_name, last_name)')
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 
@@ -214,9 +215,9 @@ export default function ProjectUpdateTimeline({
               <span className="text-sm text-gray-500">
                 {format(new Date(update.created_at), 'MMM d, yyyy h:mm a')}
               </span>
-              {isProfessionalView && update.profiles?.full_name && (
+              {isProfessionalView && update.profiles && (
                 <span className="text-sm text-gray-600">
-                  By: {update.profiles.full_name}
+                  By: {update.profiles.first_name} {update.profiles.last_name}
                 </span>
               )}
             </div>
@@ -241,7 +242,7 @@ export default function ProjectUpdateTimeline({
                   className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
                 >
                   <PaperClipIcon className="h-4 w-4 mr-1" />
-                  {update.file_name || 'Download File'}
+                  Download File
                 </a>
               </div>
             )}
@@ -284,4 +285,4 @@ export default function ProjectUpdateTimeline({
       </div>
     </div>
   );
-} 
+}

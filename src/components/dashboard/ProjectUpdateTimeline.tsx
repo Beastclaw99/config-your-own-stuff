@@ -206,7 +206,7 @@ export default function ProjectUpdateTimeline({ projectId }: ProjectUpdateTimeli
                 className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800"
               >
                 <PaperClipIcon className="h-4 w-4" />
-                <span>{update.file_name || 'Download file'}</span>
+                <span>Download file</span>
               </a>
             )}
             
@@ -279,4 +279,4 @@ export default function ProjectUpdateTimeline({ projectId }: ProjectUpdateTimeli
       </ul>
     </div>
   );
-} 
+}

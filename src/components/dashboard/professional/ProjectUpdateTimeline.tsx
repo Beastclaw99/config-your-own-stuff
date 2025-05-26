@@ -279,4 +279,4 @@ export default function ProjectUpdateTimeline({ project_id }: ProjectUpdateTimel
       </ul>
     </div>
   );
-} 
+}

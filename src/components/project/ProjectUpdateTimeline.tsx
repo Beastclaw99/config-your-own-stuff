@@ -293,4 +293,4 @@ export default function ProjectUpdateTimeline({ projectId, showAddUpdate = true 
       </div>
     </div>
   );
-} 
+}
