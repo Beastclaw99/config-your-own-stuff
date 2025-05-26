@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,16 +64,20 @@ const ProjectCreationWizard: React.FC = () => {
     alert('Project created successfully! (Placeholder)');
   };
 
-  const CurrentStepComponent = steps[currentStep - 1].component;
   const progress = (currentStep / steps.length) * 100;
 
   const renderCurrentStep = () => {
-    if (currentStep === 4) {
-      // ReviewStep only needs data, not onUpdate
-      return <ReviewStep data={projectData} />;
-    } else {
-      // Other steps need both data and onUpdate
-      return <CurrentStepComponent data={projectData} onUpdate={handleDataUpdate} />;
+    switch (currentStep) {
+      case 1:
+        return <BasicDetailsStep data={projectData} onUpdate={handleDataUpdate} />;
+      case 2:
+        return <RequirementsStep data={projectData} onUpdate={handleDataUpdate} />;
+      case 3:
+        return <BudgetTimelineStep data={projectData} onUpdate={handleDataUpdate} />;
+      case 4:
+        return <ReviewStep data={projectData} />;
+      default:
+        return <BasicDetailsStep data={projectData} onUpdate={handleDataUpdate} />;
     }
   };
 
