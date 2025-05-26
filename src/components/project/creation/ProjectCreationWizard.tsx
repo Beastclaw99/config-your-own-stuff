@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,6 +66,16 @@ const ProjectCreationWizard: React.FC = () => {
   const CurrentStepComponent = steps[currentStep - 1].component;
   const progress = (currentStep / steps.length) * 100;
 
+  const renderCurrentStep = () => {
+    if (currentStep === 4) {
+      // ReviewStep only needs data, not onUpdate
+      return <ReviewStep data={projectData} />;
+    } else {
+      // Other steps need both data and onUpdate
+      return <CurrentStepComponent data={projectData} onUpdate={handleDataUpdate} />;
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Card>
@@ -95,10 +104,7 @@ const ProjectCreationWizard: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <CurrentStepComponent 
-            data={projectData} 
-            onUpdate={handleDataUpdate}
-          />
+          {renderCurrentStep()}
           
           <div className="flex justify-between mt-8">
             <Button 
