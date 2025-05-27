@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       applications: {
         Row: {
+          availability: string | null
           bid_amount: number | null
           cover_letter: string | null
           created_at: string | null
@@ -22,6 +23,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          availability?: string | null
           bid_amount?: number | null
           cover_letter?: string | null
           created_at?: string | null
@@ -33,6 +35,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          availability?: string | null
           bid_amount?: number | null
           cover_letter?: string | null
           created_at?: string | null
@@ -53,6 +56,100 @@ export type Database = {
           },
           {
             foreignKeyName: "applications_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      direct_messages: {
+        Row: {
+          content: string
+          id: string
+          recipient_id: string | null
+          sender_id: string | null
+          sent_at: string | null
+        }
+        Insert: {
+          content: string
+          id?: string
+          recipient_id?: string | null
+          sender_id?: string | null
+          sent_at?: string | null
+        }
+        Update: {
+          content?: string
+          id?: string
+          recipient_id?: string | null
+          sender_id?: string | null
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "direct_messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount: number
+          client_id: string | null
+          id: string
+          issued_at: string | null
+          paid_at: string | null
+          professional_id: string | null
+          project_id: string | null
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          client_id?: string | null
+          id?: string
+          issued_at?: string | null
+          paid_at?: string | null
+          professional_id?: string | null
+          project_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          id?: string
+          issued_at?: string | null
+          paid_at?: string | null
+          professional_id?: string | null
+          project_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -148,6 +245,55 @@ export type Database = {
         }
         Relationships: []
       }
+      project_messages: {
+        Row: {
+          content: string
+          id: string
+          project_id: string | null
+          recipient_id: string | null
+          sender_id: string | null
+          sent_at: string | null
+        }
+        Insert: {
+          content: string
+          id?: string
+          project_id?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+          sent_at?: string | null
+        }
+        Update: {
+          content?: string
+          id?: string
+          project_id?: string | null
+          recipient_id?: string | null
+          sender_id?: string | null
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_updates: {
         Row: {
           created_at: string | null
@@ -155,10 +301,10 @@ export type Database = {
           id: string
           message: string | null
           metadata: Json | null
+          professional_id: string | null
           project_id: string | null
           status_update: string | null
           update_type: string | null
-          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -166,10 +312,10 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
+          professional_id?: string | null
           project_id?: string | null
           status_update?: string | null
           update_type?: string | null
-          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -177,10 +323,10 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
+          professional_id?: string | null
           project_id?: string | null
           status_update?: string | null
           update_type?: string | null
-          user_id?: string | null
         }
         Relationships: [
           {
@@ -192,7 +338,7 @@ export type Database = {
           },
           {
             foreignKeyName: "project_updates_user_id_fkey"
-            columns: ["user_id"]
+            columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -203,35 +349,62 @@ export type Database = {
         Row: {
           assigned_to: string | null
           budget: number | null
+          category: string | null
           client_id: string | null
           created_at: string | null
+          deadline: string | null
           description: string | null
+          expected_timeline: string | null
           id: string
+          location: string | null
+          professional_id: string | null
+          project_start_time: string | null
+          required_skills: string | null
+          requirements: string[] | null
           status: string | null
           title: string
           "updated at": string | null
+          urgency: string | null
         }
         Insert: {
           assigned_to?: string | null
           budget?: number | null
+          category?: string | null
           client_id?: string | null
           created_at?: string | null
+          deadline?: string | null
           description?: string | null
+          expected_timeline?: string | null
           id?: string
+          location?: string | null
+          professional_id?: string | null
+          project_start_time?: string | null
+          required_skills?: string | null
+          requirements?: string[] | null
           status?: string | null
           title: string
           "updated at"?: string | null
+          urgency?: string | null
         }
         Update: {
           assigned_to?: string | null
           budget?: number | null
+          category?: string | null
           client_id?: string | null
           created_at?: string | null
+          deadline?: string | null
           description?: string | null
+          expected_timeline?: string | null
           id?: string
+          location?: string | null
+          professional_id?: string | null
+          project_start_time?: string | null
+          required_skills?: string | null
+          requirements?: string[] | null
           status?: string | null
           title?: string
           "updated at"?: string | null
+          urgency?: string | null
         }
         Relationships: [
           {
@@ -244,6 +417,13 @@ export type Database = {
           {
             foreignKeyName: "projects_client_id_fkey"
             columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_professional_id_fkey"
+            columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

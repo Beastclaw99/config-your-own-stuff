@@ -14,7 +14,14 @@ const CreateProject: React.FC = () => {
   const { toast } = useToast();
 
   const handleSubmit = async (formData: any) => {
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to create a project.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     try {
       // Convert budget range to numeric value for storage
@@ -39,35 +46,56 @@ const CreateProject: React.FC = () => {
           budgetValue = 0;
       }
 
+      console.log('Creating project with data:', {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        budget: budgetValue,
+        expected_timeline: formData.expected_timeline,
+        location: formData.location,
+        urgency: formData.urgency,
+        requirements: formData.requirements,
+        required_skills: formData.required_skills,
+        client_id: user.id,
+        status: 'open'
+      });
+
       const { data, error } = await supabase
         .from('projects')
         .insert([
           {
             title: formData.title,
             description: formData.description,
+            category: formData.category,
             budget: budgetValue,
+            expected_timeline: formData.expected_timeline,
+            location: formData.location,
+            urgency: formData.urgency,
+            requirements: formData.requirements,
+            required_skills: formData.required_skills,
             client_id: user.id,
             status: 'open'
-            // TODO: Backend - Add additional fields:
-            // category, timeline, location, urgency, requirements
-            // Consider creating separate tables for project_requirements, project_categories
           }
         ])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
+      console.log('Project created successfully:', data);
 
       toast({
         title: "Project Created",
-        description: "Your project has been created successfully!"
+        description: "Your project has been created successfully and is now visible to professionals!"
       });
 
-      // Redirect to project list with confirmation
-      navigate('/dashboard', { 
+      // Redirect to project marketplace to see the new project
+      navigate('/project-marketplace', { 
         state: { 
-          activeTab: 'projects',
-          message: 'Project created successfully!' 
+          message: 'Project created successfully! Your project is now visible to professionals.' 
         } 
       });
 
@@ -75,7 +103,7 @@ const CreateProject: React.FC = () => {
       console.error('Error creating project:', error);
       toast({
         title: "Error",
-        description: "Failed to create project. Please try again.",
+        description: error.message || "Failed to create project. Please try again.",
         variant: "destructive"
       });
     }
@@ -93,10 +121,13 @@ const CreateProject: React.FC = () => {
             ← Back to Dashboard
           </Button>
           <h1 className="text-3xl font-bold text-gray-900">Create New Project</h1>
-          <p className="text-gray-600 mt-2">Post your project and connect with qualified professionals on ProLinkTT</p>
+          <p className="text-gray-600 mt-2">
+            Post your project and connect with qualified professionals on ProLinkTT. 
+            Fill out all the details to help professionals understand your requirements.
+          </p>
         </div>
 
-        <div className="max-w-4xl">
+        <div className="max-w-4xl mx-auto">
           <ProjectForm 
             onSubmit={handleSubmit}
             onCancel={() => navigate('/dashboard')}

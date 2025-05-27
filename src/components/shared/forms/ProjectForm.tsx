@@ -13,10 +13,11 @@ interface ProjectFormData {
   description: string;
   category: string;
   budget: string;
-  timeline: string;
+  expected_timeline: string;
   location: string;
   urgency: string;
   requirements: string[];
+  required_skills: string;
 }
 
 interface ProjectFormProps {
@@ -62,10 +63,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     description: '',
     category: '',
     budget: '',
-    timeline: '',
+    expected_timeline: '',
     location: '',
     urgency: '',
     requirements: [],
+    required_skills: '',
     ...initialData
   });
 
@@ -94,7 +96,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     if (!formData.description.trim()) newErrors.description = 'Project description is required';
     if (!formData.category) newErrors.category = 'Project category is required';
     if (!formData.budget) newErrors.budget = 'Budget range is required';
-    if (!formData.timeline) newErrors.timeline = 'Timeline is required';
+    if (!formData.expected_timeline) newErrors.expected_timeline = 'Timeline is required';
     if (!formData.location.trim()) newErrors.location = 'Location is required';
 
     setErrors(newErrors);
@@ -109,7 +111,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
   };
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-4xl">
       <CardHeader>
         <CardTitle>
           {isEditing ? 'Edit Project' : 'Create New Project'}
@@ -184,9 +186,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           {/* Timeline and Location */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="timeline">Timeline *</Label>
-              <Select value={formData.timeline} onValueChange={(value) => handleInputChange('timeline', value)}>
-                <SelectTrigger className={errors.timeline ? 'border-red-500' : ''}>
+              <Label htmlFor="expected_timeline">Expected Timeline *</Label>
+              <Select value={formData.expected_timeline} onValueChange={(value) => handleInputChange('expected_timeline', value)}>
+                <SelectTrigger className={errors.expected_timeline ? 'border-red-500' : ''}>
                   <SelectValue placeholder="Select timeline" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,7 +200,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   <SelectItem value="flexible">Flexible</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.timeline && <p className="text-red-500 text-sm mt-1">{errors.timeline}</p>}
+              {errors.expected_timeline && <p className="text-red-500 text-sm mt-1">{errors.expected_timeline}</p>}
             </div>
 
             <div>
@@ -214,20 +216,32 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
           </div>
 
-          {/* Urgency */}
-          <div>
-            <Label htmlFor="urgency">Project Urgency</Label>
-            <Select value={formData.urgency} onValueChange={(value) => handleInputChange('urgency', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select urgency level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low - Can wait</SelectItem>
-                <SelectItem value="medium">Medium - Preferred timeline</SelectItem>
-                <SelectItem value="high">High - Urgent</SelectItem>
-                <SelectItem value="emergency">Emergency - Immediate</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Urgency and Required Skills */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="urgency">Project Urgency</Label>
+              <Select value={formData.urgency} onValueChange={(value) => handleInputChange('urgency', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select urgency level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low - Can wait</SelectItem>
+                  <SelectItem value="medium">Medium - Preferred timeline</SelectItem>
+                  <SelectItem value="high">High - Urgent</SelectItem>
+                  <SelectItem value="emergency">Emergency - Immediate</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="required_skills">Required Skills</Label>
+              <Input
+                id="required_skills"
+                value={formData.required_skills}
+                onChange={(e) => handleInputChange('required_skills', e.target.value)}
+                placeholder="e.g., Certified electrician, 5+ years experience"
+              />
+            </div>
           </div>
 
           {/* Requirements */}
