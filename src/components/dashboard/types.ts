@@ -70,3 +70,21 @@ export interface Review {
   created_at: string;
   updated_at?: string;
 }
+
+export interface Payment {
+  id: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  paid_at?: string;
+  client_id?: string;
+  professional_id?: string;
+  project_id?: string;
+  project?: {
+    title?: string;
+  };
+  professional?: {
+    first_name?: string;
+    last_name?: string;
+  };
+}
