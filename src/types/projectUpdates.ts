@@ -43,7 +43,7 @@ export interface ProjectUpdate {
   status_update?: string;
   file_url?: string;
   created_at: string;
-  user_id: string;
+  professional_id: string;
   metadata?: ProjectUpdateMetadata;
   profiles?: {
     first_name: string;
