@@ -1,11 +1,10 @@
-
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Star, Phone, MessageSquare, Heart } from 'lucide-react';
+import { Star, Phone, MessageSquare, Heart, Users } from 'lucide-react';
 
 const Network: React.FC = () => {
   // Mock data for preferred professionals
