@@ -16,6 +16,12 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import CompliancePage from './pages/CompliancePage';
 import CreateProject from '@/pages/CreateProject';
 import ProjectDispatch from '@/pages/ProjectDispatch';
+import ProjectMarketplace from '@/pages/ProjectMarketplace';
+import Resources from './pages/Resources';
+import Insights from './pages/Insights';
+import Notifications from './pages/Notifications';
+import Support from './pages/Support';
+import Help from './pages/Help';
 
 const queryClient = new QueryClient();
 
@@ -31,6 +37,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/marketplace" element={<TradeProfessionalMarketplace />} />
+              <Route path="/project-marketplace" element={<ProjectMarketplace />} />
               <Route path="/projects/:projectId" element={<ProjectDetails />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/messages" element={<MessagingPage />} />
@@ -38,6 +45,11 @@ function App() {
               <Route path="/compliance" element={<CompliancePage />} />
               <Route path="/client/create-project" element={<CreateProject />} />
               <Route path="/client/dispatch/:projectId" element={<ProjectDispatch />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/help" element={<Help />} />
             </Routes>
             <Toaster />
           </div>

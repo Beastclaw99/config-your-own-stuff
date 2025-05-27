@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   NavigationMenu,
@@ -45,71 +46,30 @@ const Navbar: React.FC = () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Services</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                  <li className="row-span-3">
-                    <NavigationMenuLink asChild>
-                      <a
-                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                        href="/find-pros"
-                      >
-                        <div className="mb-2 mt-4 text-lg font-medium">
-                          Find Professionals
-                        </div>
-                        <p className="text-sm leading-tight text-muted-foreground">
-                          Connect with skilled trade professionals for your next project
-                        </p>
-                      </a>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <a
-                        href="/client/create-project"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">Post a Project</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Create and dispatch projects to qualified professionals
-                        </p>
-                      </a>
-                    </NavigationMenuLink>
-                  </li>
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <a
-                        href="/find-jobs"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                      >
-                        <div className="text-sm font-medium leading-none">Find Jobs</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Browse available projects and connect with clients
-                        </p>
-                      </a>
-                    </NavigationMenuLink>
-                  </li>
-                </ul>
-              </NavigationMenuContent>
+              <NavigationMenuLink>
+                <Link to="/marketplace" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
+                  Find Professionals
+                </Link>
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink>
-                <Link to="/marketplace" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
-                  Marketplace
+                <Link to="/project-marketplace" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
+                  Project Marketplace
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink>
                 <Link to="/about" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
-                  About
+                  About Us
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink>
-                <Link to="/contact" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
-                  Contact
+                <Link to="/resources" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
+                  Resources
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
