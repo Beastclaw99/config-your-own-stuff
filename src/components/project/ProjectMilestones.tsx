@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,7 +68,7 @@ const ProjectMilestones: React.FC<ProjectMilestonesProps> = ({
     dueDate: '',
     status: 'not_started' as const,
     progress: 0,
-    tasks: [] as { title: string; completed: boolean }[]
+    tasks: [] as { id: string; title: string; completed: boolean }[]
   });
   const [newTask, setNewTask] = useState('');
 
@@ -148,7 +149,11 @@ const ProjectMilestones: React.FC<ProjectMilestonesProps> = ({
 
     setNewMilestone(prev => ({
       ...prev,
-      tasks: [...prev.tasks, { title: newTask.trim(), completed: false }]
+      tasks: [...prev.tasks, { 
+        id: `temp-${Date.now()}`, 
+        title: newTask.trim(), 
+        completed: false 
+      }]
     }));
     setNewTask('');
   };

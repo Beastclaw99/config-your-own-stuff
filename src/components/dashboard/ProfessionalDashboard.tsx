@@ -23,6 +23,7 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
   const [coverLetter, setCoverLetter] = useState('');
   const [bidAmount, setBidAmount] = useState<number | null>(null);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [availability, setAvailability] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -71,6 +72,7 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
         setSelectedProject(null);
         setCoverLetter('');
         setBidAmount(null);
+        setAvailability('');
         return;
       }
       
@@ -82,7 +84,8 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
             professional_id: userId,
             cover_letter: coverLetter,
             bid_amount: bidAmount,
-            proposal_message: coverLetter, // Using the same field for both for backward compatibility
+            proposal_message: coverLetter,
+            availability: availability,
             status: 'pending'
           }
         ])
@@ -99,6 +102,7 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
       setCoverLetter('');
       setSelectedProject(null);
       setBidAmount(null);
+      setAvailability('');
       
       // Refresh data
       fetchDashboardData();
@@ -180,6 +184,7 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
     setSelectedProject(null);
     setCoverLetter('');
     setBidAmount(null);
+    setAvailability('');
   };
 
   // Pass shared state and handlers to the tab components
@@ -234,9 +239,12 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
             setCoverLetter={setCoverLetter}
             bidAmount={bidAmount}
             setBidAmount={setBidAmount}
+            availability={availability}
+            setAvailability={setAvailability}
             isApplying={isApplying}
             handleApplyToProject={handleApplyToProject}
             onCancel={cancelApplication}
+            userSkills={skills}
           />
         )}
       </TabsContent>

@@ -18,7 +18,10 @@ import {
   Calendar,
   Tag,
   Edit2,
-  Trash2
+  Trash2,
+  Clock,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -449,4 +452,4 @@ const ProjectBudget: React.FC<ProjectBudgetProps> = ({
   );
 };
 
-export default ProjectBudget; 
+export default ProjectBudget;
