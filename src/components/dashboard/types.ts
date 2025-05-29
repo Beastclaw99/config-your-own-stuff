@@ -1,4 +1,3 @@
-
 export interface Project {
   id: string;
   title: string;
@@ -14,7 +13,12 @@ export interface Project {
   created_at: string;
   client_id?: string;
   assigned_to?: string;
+  professional_id?: string;
   client?: {
+    first_name?: string;
+    last_name?: string;
+  };
+  professional?: {
     first_name?: string;
     last_name?: string;
   };

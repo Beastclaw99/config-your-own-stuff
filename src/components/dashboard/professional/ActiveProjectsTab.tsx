@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,10 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({
                     {expandedProjects[project.id] && (
                       <div className="mt-6 border-t pt-4">
                         <h3 className="text-lg font-semibold mb-4">Project Updates</h3>
-                        <ProjectUpdateTimeline projectId={project.id} />
+                        <ProjectUpdateTimeline 
+                          projectId={project.id} 
+                          projectStatus={project.status}
+                        />
                       </div>
                     )}
                   </div>
