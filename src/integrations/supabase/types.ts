@@ -245,6 +245,48 @@ export type Database = {
         }
         Relationships: []
       }
+      project_deliverables: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          file_url: string
+          id: string
+          project_id: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          file_url: string
+          id?: string
+          project_id?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          file_url?: string
+          id?: string
+          project_id?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_deliverables_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_deliverables_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_messages: {
         Row: {
           content: string
@@ -290,6 +332,58 @@ export type Database = {
             columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_milestones: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          due_date: string | null
+          id: string
+          is_complete: boolean | null
+          project_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          is_complete?: boolean | null
+          project_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          is_complete?: boolean | null
+          project_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_milestones_created_by_fkey1"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_milestones_created_by_fkey2"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_milestones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -361,6 +455,7 @@ export type Database = {
           project_start_time: string | null
           required_skills: string | null
           requirements: string[] | null
+          scope: string | null
           status: string | null
           title: string
           "updated at": string | null
@@ -381,6 +476,7 @@ export type Database = {
           project_start_time?: string | null
           required_skills?: string | null
           requirements?: string[] | null
+          scope?: string | null
           status?: string | null
           title: string
           "updated at"?: string | null
@@ -401,6 +497,7 @@ export type Database = {
           project_start_time?: string | null
           required_skills?: string | null
           requirements?: string[] | null
+          scope?: string | null
           status?: string | null
           title?: string
           "updated at"?: string | null

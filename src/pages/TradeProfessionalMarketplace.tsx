@@ -1,80 +1,37 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Layout from '@/components/layout/Layout';
-import ProfessionalSearchFilters from '@/components/marketplace/ProfessionalSearchFilters';
-import ProfessionalListings from '@/components/marketplace/ProfessionalListings';
-import MapView from '@/components/shared/MapView';
-import { Button } from '@/components/ui/button';
-import { Grid3X3, List, Map } from 'lucide-react';
 
 const TradeProfessionalMarketplace: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
-  const [searchFilters, setSearchFilters] = useState({
-    location: '',
-    skills: [],
-    rating: '',
-    availability: '',
-    experience: ''
-  });
-
   return (
     <Layout>
-      <div className="bg-ttc-blue-800 py-8 text-white">
+      <div className="bg-gray-50 py-8">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Find Trade Professionals</h1>
-          <p className="text-lg">Connect with skilled tradespeople in Trinidad & Tobago through ProLinkTT</p>
-        </div>
-      </div>
-      
-      <div className="container-custom py-8">
-        <div className="grid lg:grid-cols-4 gap-6">
-          {/* Search Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <ProfessionalSearchFilters 
-              filters={searchFilters}
-              onFiltersChange={setSearchFilters}
-            />
-          </div>
+          <h1 className="text-3xl font-bold mb-2">Find Trade Professionals</h1>
+          <p className="text-gray-600 mb-8">
+            Connect with skilled trade professionals across Trinidad & Tobago
+          </p>
           
-          {/* Main Content Area */}
-          <div className="lg:col-span-3">
-            {/* View Mode Toggle */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Available Professionals</h2>
-              <div className="flex gap-2">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'map' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('map')}
-                >
-                  <Map className="h-4 w-4" />
-                </Button>
+          <div className="bg-white p-8 rounded-lg shadow-md text-center">
+            <h2 className="text-xl font-semibold mb-4">Professional Marketplace</h2>
+            <p className="text-gray-600 mb-4">
+              Browse through our network of verified professionals including plumbers, 
+              electricians, carpenters, and more.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <div className="bg-ttc-blue-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-ttc-blue-700 mb-2">Verified Professionals</h3>
+                <p className="text-sm text-gray-600">All professionals are background checked and certified</p>
+              </div>
+              <div className="bg-ttc-blue-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-ttc-blue-700 mb-2">Real Reviews</h3>
+                <p className="text-sm text-gray-600">Read authentic reviews from previous clients</p>
+              </div>
+              <div className="bg-ttc-blue-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-ttc-blue-700 mb-2">Instant Booking</h3>
+                <p className="text-sm text-gray-600">Book appointments directly through the platform</p>
               </div>
             </div>
-            
-            {/* Content Display */}
-            {viewMode === 'map' ? (
-              <MapView />
-            ) : (
-              <ProfessionalListings 
-                viewMode={viewMode}
-                filters={searchFilters}
-              />
-            )}
           </div>
         </div>
       </div>

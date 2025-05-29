@@ -17,6 +17,7 @@ import CompliancePage from './pages/CompliancePage';
 import CreateProject from '@/pages/CreateProject';
 import ProjectDispatch from '@/pages/ProjectDispatch';
 import ProjectMarketplace from '@/pages/ProjectMarketplace';
+import ProjectApplications from '@/pages/ProjectApplications';
 import Resources from './pages/Resources';
 import Insights from './pages/Insights';
 import Notifications from './pages/Notifications';
@@ -43,6 +44,7 @@ function App() {
               <Route path="/marketplace" element={<TradeProfessionalMarketplace />} />
               <Route path="/project-marketplace" element={<ProjectMarketplace />} />
               <Route path="/projects/:projectId" element={<ProjectDetails />} />
+              <Route path="/client/projects/:projectId/applications" element={<ProjectApplications />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/messages" element={<MessagingPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />

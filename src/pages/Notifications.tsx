@@ -1,151 +1,143 @@
 
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Bell, MessageSquare, Briefcase, DollarSign, Star } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Bell, CheckCircle, Clock, MessageSquare, DollarSign, User } from 'lucide-react';
 
 const Notifications: React.FC = () => {
   const [notifications] = useState([
     {
-      id: 1,
-      type: 'message',
-      title: 'New message from Sarah Johnson',
-      description: 'Regarding the bathroom renovation project',
-      time: '5 minutes ago',
-      unread: true,
-      icon: <MessageSquare className="h-5 w-5" />
+      id: '1',
+      type: 'application',
+      title: 'New Application Received',
+      message: 'John Smith applied to your Kitchen Renovation project',
+      timestamp: '2 hours ago',
+      read: false,
+      icon: User
     },
     {
-      id: 2,
-      type: 'project',
-      title: 'New project match',
-      description: 'Kitchen electrical work in San Fernando - $3,500',
-      time: '1 hour ago',
-      unread: true,
-      icon: <Briefcase className="h-5 w-5" />
-    },
-    {
-      id: 3,
+      id: '2',
       type: 'payment',
-      title: 'Payment received',
-      description: '$2,400 from residential plumbing project',
-      time: '3 hours ago',
-      unread: false,
-      icon: <DollarSign className="h-5 w-5" />
+      title: 'Payment Processed',
+      message: 'Payment of TTD 2,500 has been processed for Bathroom Plumbing project',
+      timestamp: '5 hours ago',
+      read: false,
+      icon: DollarSign
     },
     {
-      id: 4,
-      type: 'review',
-      title: 'New 5-star review',
-      description: 'Client left positive feedback for your work',
-      time: '1 day ago',
-      unread: false,
-      icon: <Star className="h-5 w-5" />
+      id: '3',
+      type: 'message',
+      title: 'New Message',
+      message: 'You have a new message from Maria Rodriguez',
+      timestamp: '1 day ago',
+      read: true,
+      icon: MessageSquare
     },
     {
-      id: 5,
+      id: '4',
       type: 'project',
-      title: 'Project deadline reminder',
-      description: 'Office renovation due in 3 days',
-      time: '2 days ago',
-      unread: false,
-      icon: <Briefcase className="h-5 w-5" />
+      title: 'Project Completed',
+      message: 'Your Electrical Installation project has been marked as completed',
+      timestamp: '2 days ago',
+      read: true,
+      icon: CheckCircle
+    },
+    {
+      id: '5',
+      type: 'reminder',
+      title: 'Project Deadline Approaching',
+      message: 'Home Painting project deadline is in 3 days',
+      timestamp: '3 days ago',
+      read: true,
+      icon: Clock
     }
   ]);
 
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'message': return 'text-blue-600';
-      case 'project': return 'text-green-600';
-      case 'payment': return 'text-purple-600';
-      case 'review': return 'text-yellow-600';
-      default: return 'text-gray-600';
-    }
-  };
+  const unreadCount = notifications.filter(n => !n.read).length;
 
-  const getNotificationBg = (type: string) => {
+  const getTypeColor = (type: string) => {
     switch (type) {
-      case 'message': return 'bg-blue-100';
-      case 'project': return 'bg-green-100';
-      case 'payment': return 'bg-purple-100';
-      case 'review': return 'bg-yellow-100';
-      default: return 'bg-gray-100';
+      case 'application': return 'bg-blue-100 text-blue-800';
+      case 'payment': return 'bg-green-100 text-green-800';
+      case 'message': return 'bg-purple-100 text-purple-800';
+      case 'project': return 'bg-orange-100 text-orange-800';
+      case 'reminder': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
     <Layout>
-      <div className="container-custom py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Notifications</h1>
-            <p className="text-gray-600">Stay updated with your latest activities and opportunities</p>
+      <div className="bg-gray-50 py-8">
+        <div className="container-custom">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Notifications</h1>
+              <p className="text-gray-600">
+                Stay updated with your project activities and platform updates
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Bell className="h-3 w-3" />
+                {unreadCount} unread
+              </Badge>
+              <Button variant="outline" size="sm">
+                Mark all as read
+              </Button>
+            </div>
           </div>
-          <Button variant="outline">
-            <Bell className="h-4 w-4 mr-2" />
-            Mark All Read
-          </Button>
-        </div>
-
-        <div className="space-y-4">
-          {notifications.map((notification) => (
-            <Card key={notification.id} className={`transition-all duration-200 hover:shadow-md ${
-              notification.unread ? 'border-l-4 border-l-ttc-blue-500 bg-blue-50/30' : ''
-            }`}>
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className={`p-2 rounded-lg ${getNotificationBg(notification.type)} ${getNotificationColor(notification.type)}`}>
-                    {notification.icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold">{notification.title}</h3>
-                      {notification.unread && <Badge variant="secondary" className="bg-ttc-blue-100 text-ttc-blue-700">New</Badge>}
+          
+          <div className="space-y-4">
+            {notifications.map((notification) => {
+              const IconComponent = notification.icon;
+              return (
+                <Card key={notification.id} className={`${!notification.read ? 'border-l-4 border-l-ttc-blue-600 bg-ttc-blue-50' : ''}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-2 rounded-full bg-white">
+                        <IconComponent className="h-5 w-5 text-ttc-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold">{notification.title}</h3>
+                              <Badge variant="outline" className={getTypeColor(notification.type)}>
+                                {notification.type}
+                              </Badge>
+                              {!notification.read && (
+                                <div className="w-2 h-2 bg-ttc-blue-600 rounded-full"></div>
+                              )}
+                            </div>
+                            <p className="text-gray-600 text-sm mb-2">{notification.message}</p>
+                            <span className="text-xs text-gray-500">{notification.timestamp}</span>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            View
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-gray-600 mb-2">{notification.description}</p>
-                    <p className="text-sm text-gray-400">{notification.time}</p>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    View
-                  </Button>
-                </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {notifications.length === 0 && (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No notifications yet</h3>
+                <p className="text-gray-600">
+                  When you start using ProLinkTT, your notifications will appear here.
+                </p>
               </CardContent>
             </Card>
-          ))}
-        </div>
-
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Settings</CardTitle>
-              <CardDescription>Manage how you receive notifications</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">New Project Matches</h4>
-                  <p className="text-sm text-gray-600">Get notified when projects match your skills</p>
-                </div>
-                <Button variant="outline" size="sm">Configure</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">Messages</h4>
-                  <p className="text-sm text-gray-600">Client messages and communication updates</p>
-                </div>
-                <Button variant="outline" size="sm">Configure</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">Payment Updates</h4>
-                  <p className="text-sm text-gray-600">Payment confirmations and invoice updates</p>
-                </div>
-                <Button variant="outline" size="sm">Configure</Button>
-              </div>
-            </CardContent>
-          </Card>
+          )}
         </div>
       </div>
     </Layout>
