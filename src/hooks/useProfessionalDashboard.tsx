@@ -81,7 +81,26 @@ export const useProfessionalDashboard = (userId: string) => {
         });
       }
       
-      setProjects(filteredProjects);
+      // Fetch assigned projects (status = "assigned", "in_progress", "completed" and assigned_to = userId)
+      const { data: assignedProjectsData, error: assignedProjectsError } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          client:profiles!projects_client_id_fkey(first_name, last_name)
+        `)
+        .eq('assigned_to', userId)
+        .in('status', ['assigned', 'in_progress', 'completed']);
+        
+      if (assignedProjectsError) {
+        console.error('Assigned projects fetch error:', assignedProjectsError);
+        throw assignedProjectsError;
+      }
+      
+      console.log('Assigned projects data:', assignedProjectsData);
+      
+      // Combine open projects with assigned projects
+      const allProjects = [...filteredProjects, ...(assignedProjectsData || [])];
+      setProjects(allProjects);
       
       // Fetch applications made by the professional with better error handling and logging
       try {
@@ -147,28 +166,6 @@ export const useProfessionalDashboard = (userId: string) => {
         });
       }
       
-      // Fetch assigned projects (status = "assigned" and assigned_to = userId)
-      const { data: assignedProjectsData, error: assignedProjectsError } = await supabase
-        .from('projects')
-        .select(`
-          *,
-          client:profiles!projects_client_id_fkey(first_name, last_name)
-        `)
-        .eq('assigned_to', userId)
-        .eq('status', 'assigned');
-        
-      if (assignedProjectsError) {
-        console.error('Assigned projects fetch error:', assignedProjectsError);
-        throw assignedProjectsError;
-      }
-      
-      console.log('Assigned projects data:', assignedProjectsData);
-      
-      // Add assigned projects to the professional's view
-      if (assignedProjectsData && assignedProjectsData.length > 0) {
-        setProjects(prev => [...prev, ...assignedProjectsData]);
-      }
-      
       // Fetch payments for the professional
       const { data: paymentsData, error: paymentsError } = await supabase
         .from('payments')
@@ -220,6 +217,33 @@ export const useProfessionalDashboard = (userId: string) => {
     }
   };
 
+  // Mark project as complete function
+  const markProjectComplete = async (projectId: string) => {
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update({ status: 'completed' })
+        .eq('id', projectId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Project marked as completed successfully!"
+      });
+
+      // Refresh the data
+      fetchDashboardData();
+    } catch (error: any) {
+      console.error('Error marking project complete:', error);
+      toast({
+        title: "Error",
+        description: "Failed to mark project as completed",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Initial data fetch
   useEffect(() => {
     fetchDashboardData();
@@ -254,6 +278,7 @@ export const useProfessionalDashboard = (userId: string) => {
     isLoading,
     error,
     fetchDashboardData,
+    markProjectComplete,
     calculateAverageRating,
     calculatePaymentTotals,
   };

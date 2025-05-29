@@ -247,30 +247,46 @@ export type Database = {
       }
       project_deliverables: {
         Row: {
+          content: string | null
           created_at: string | null
+          deliverable_type: string | null
           description: string | null
           file_url: string
           id: string
+          milestone_id: string | null
           project_id: string | null
           uploaded_by: string | null
         }
         Insert: {
+          content?: string | null
           created_at?: string | null
+          deliverable_type?: string | null
           description?: string | null
           file_url: string
           id?: string
+          milestone_id?: string | null
           project_id?: string | null
           uploaded_by?: string | null
         }
         Update: {
+          content?: string | null
           created_at?: string | null
+          deliverable_type?: string | null
           description?: string | null
           file_url?: string
           id?: string
+          milestone_id?: string | null
           project_id?: string | null
           uploaded_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "project_deliverables_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "project_milestones"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "project_deliverables_project_id_fkey"
             columns: ["project_id"]
@@ -340,29 +356,41 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string | null
+          description: string | null
           due_date: string | null
           id: string
           is_complete: boolean | null
           project_id: string | null
+          requires_deliverable: boolean | null
+          status: string | null
           title: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           created_by?: string | null
+          description?: string | null
           due_date?: string | null
           id?: string
           is_complete?: boolean | null
           project_id?: string | null
+          requires_deliverable?: boolean | null
+          status?: string | null
           title: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           created_by?: string | null
+          description?: string | null
           due_date?: string | null
           id?: string
           is_complete?: boolean | null
           project_id?: string | null
+          requires_deliverable?: boolean | null
+          status?: string | null
           title?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
