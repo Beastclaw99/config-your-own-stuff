@@ -18,6 +18,7 @@ const Profile: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ProfileData>({
     id: '',
     account_type: 'professional',
@@ -41,19 +42,28 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (user) {
       fetchProfile();
+    } else {
+      setIsLoading(false);
+      setError('No user found. Please log in.');
     }
   }, [user]);
 
   const fetchProfile = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      setError(null);
+
+      if (!user?.id) {
+        throw new Error('No user ID found');
+      }
+
+      const { data, error: supabaseError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user?.id)
+        .eq('id', user.id)
         .single();
 
-      if (error) throw error;
+      if (supabaseError) throw supabaseError;
 
       if (data) {
         setFormData({
@@ -78,6 +88,7 @@ const Profile: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load profile data');
       toast({
         title: "Error",
         description: "Failed to load profile data.",
@@ -97,10 +108,14 @@ const Profile: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const { error } = await supabase
+      if (!user?.id) {
+        throw new Error('No user ID found');
+      }
+
+      const { error: supabaseError } = await supabase
         .from('profiles')
         .upsert({
-          id: user?.id,
+          id: user.id,
           account_type: formData.account_type,
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -118,7 +133,7 @@ const Profile: React.FC = () => {
           updated_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (supabaseError) throw supabaseError;
 
       toast({
         title: "Success",
@@ -140,6 +155,31 @@ const Profile: React.FC = () => {
         <div className="container-custom py-8">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container-custom py-8">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <p className="text-red-500">{error}</p>
+            <Button onClick={fetchProfile}>Retry</Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Layout>
+        <div className="container-custom py-8">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <p>Please log in to view your profile.</p>
           </div>
         </div>
       </Layout>
@@ -179,7 +219,7 @@ const Profile: React.FC = () => {
                   </CardHeader>
                   <CardContent>
                     <PortfolioUpload
-                      userId={user?.id || ''}
+                      userId={user.id}
                       currentUrls={formData.portfolio_urls || []}
                       onUrlsUpdate={(urls) => handleFormDataChange('portfolio_urls', urls)}
                     />
