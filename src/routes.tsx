@@ -19,6 +19,7 @@ import Notifications from './pages/Notifications';
 import Support from './pages/Support';
 import Help from './pages/Help';
 import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
 import Network from './pages/Network';
 import Invoices from './pages/Invoices';
 import Settings from './pages/Settings';
@@ -48,6 +49,7 @@ const AppRoutes = () => {
         <Route path="/help" element={<Help />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/network" element={<Network />} />
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/settings" element={<Settings />} />
