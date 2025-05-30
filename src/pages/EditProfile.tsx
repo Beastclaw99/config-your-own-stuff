@@ -14,6 +14,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Camera, Loader2 } from 'lucide-react';
 import { ProfileData } from '@/components/profile/types';
 import type { Database } from '@/integrations/supabase/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -36,8 +37,12 @@ const EditProfile: React.FC = () => {
     phone: '',
     email: '',
     hourly_rate: '',
-    availability: '',
+    availability: '' as 'available' | 'busy' | 'unavailable' | '',
     skills: [] as string[],
+    profile_visibility: true,
+    show_email: true,
+    show_phone: true,
+    allow_messages: true,
   });
 
   useEffect(() => {
@@ -86,6 +91,10 @@ const EditProfile: React.FC = () => {
           hourly_rate: data.hourly_rate?.toString() || '',
           availability: data.availability || '',
           skills: data.skills || [],
+          profile_visibility: data.profile_visibility ?? true,
+          show_email: data.show_email ?? true,
+          show_phone: data.show_phone ?? true,
+          allow_messages: data.allow_messages ?? true,
         });
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -125,6 +134,17 @@ const EditProfile: React.FC = () => {
     try {
       setIsSaving(true);
       
+      // Validate hourly rate
+      const hourlyRate = formData.hourly_rate ? parseFloat(formData.hourly_rate) : null;
+      if (formData.hourly_rate && isNaN(hourlyRate!)) {
+        throw new Error('Invalid hourly rate');
+      }
+
+      // Validate availability
+      if (formData.availability && !['available', 'busy', 'unavailable'].includes(formData.availability)) {
+        throw new Error('Invalid availability status');
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -134,14 +154,21 @@ const EditProfile: React.FC = () => {
           location: formData.location,
           phone: formData.phone,
           email: formData.email,
-          hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : null,
-          availability: formData.availability as 'available' | 'busy' | 'unavailable' | null,
+          hourly_rate: hourlyRate,
+          availability: formData.availability || null,
           skills: formData.skills,
+          profile_visibility: formData.profile_visibility,
+          show_email: formData.show_email,
+          show_phone: formData.show_phone,
+          allow_messages: formData.allow_messages,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       toast({
         title: "Success",
@@ -153,7 +180,7 @@ const EditProfile: React.FC = () => {
       console.error('Error updating profile:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update profile. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -368,12 +395,19 @@ const EditProfile: React.FC = () => {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="availability">Availability</Label>
-                          <Input
-                            id="availability"
-                            name="availability"
+                          <Select
                             value={formData.availability}
-                            onChange={handleInputChange}
-                          />
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, availability: value as 'available' | 'busy' | 'unavailable' }))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select availability" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="available">Available</SelectItem>
+                              <SelectItem value="busy">Busy</SelectItem>
+                              <SelectItem value="unavailable">Unavailable</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="skills">Skills (comma-separated)</Label>
