@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock } from 'lucide-react';
+import { StarRating } from '@/components/ui/star-rating';
 
 interface Professional {
   id: string;
@@ -54,7 +54,11 @@ const ProfessionalListItem: React.FC<ProfessionalListItemProps> = ({ professiona
               </div>
               
               <div className="flex items-center space-x-1 mt-2">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <StarRating
+                  value={professional.rating}
+                  onChange={() => {}}
+                  className="h-4 w-4"
+                />
                 <span className="font-medium">{professional.rating}</span>
                 <span className="text-gray-500">({professional.reviewCount} reviews)</span>
               </div>

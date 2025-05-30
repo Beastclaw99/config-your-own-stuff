@@ -8,19 +8,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle, RefreshCw, FileText, Paperclip } from 'lucide-react';
 
-interface ClientReviewFormProps {
+interface WorkReviewFormProps {
   projectId: string;
   projectStatus: string;
   isClient: boolean;
   onReviewSubmitted: () => void;
 }
 
-export default function ClientReviewForm({
+/**
+ * WorkReviewForm - Component for clients to review work submitted by professionals
+ * This is part of the work submission review process, not the end-of-project mutual reviews
+ */
+const WorkReviewForm: React.FC<WorkReviewFormProps> = ({
   projectId,
   projectStatus,
   isClient,
   onReviewSubmitted
-}: ClientReviewFormProps) {
+}: WorkReviewFormProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [message, setMessage] = useState('');
@@ -244,4 +248,6 @@ export default function ClientReviewForm({
       </CardContent>
     </Card>
   );
-} 
+};
+
+export default WorkReviewForm; 
