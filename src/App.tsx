@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -8,7 +7,7 @@ import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import TradeProfessionalMarketplace from './pages/TradeProfessionalMarketplace';
+import ProfessionalMarketplace from './pages/ProfessionalMarketplace';
 import ProjectDetails from './pages/ProjectDetails';
 import CalendarPage from './pages/CalendarPage';
 import MessagingPage from './pages/MessagingPage';
@@ -41,7 +40,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/marketplace" element={<TradeProfessionalMarketplace />} />
+              <Route path="/marketplace" element={<ProfessionalMarketplace />} />
               <Route path="/project-marketplace" element={<ProjectMarketplace />} />
               <Route path="/projects/:projectId" element={<ProjectDetails />} />
               <Route path="/client/projects/:projectId/applications" element={<ProjectApplications />} />
