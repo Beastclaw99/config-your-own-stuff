@@ -20,29 +20,22 @@ const Profile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState<ProfileData>({
     id: '',
-    user_id: '',
+    account_type: 'professional',
     first_name: '',
     last_name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zip_code: '',
-    country: '',
-    profile_image_url: '',
-    bio: '',
-    business_name: '',
-    business_description: '',
-    years_of_experience: 0,
-    specialties: [],
-    certifications: [],
-    insurance_info: '',
-    license_number: '',
-    service_areas: [],
-    portfolio_images: [],
+    rating: null,
+    skills: [],
     created_at: '',
-    updated_at: ''
+    updated_at: null,
+    location: '',
+    phone: '',
+    portfolio_urls: [],
+    is_available: true,
+    verification_status: 'pending',
+    hourly_rate: null,
+    years_experience: null,
+    bio: '',
+    certifications: []
   });
 
   useEffect(() => {
@@ -57,40 +50,31 @@ const Profile: React.FC = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('id', user?.id)
         .single();
 
       if (error) throw error;
 
       if (data) {
-        // Ensure all required fields are present
-        const profileData: ProfileData = {
+        setFormData({
           id: data.id || '',
-          user_id: data.user_id || user?.id || '',
+          account_type: data.account_type || 'professional',
           first_name: data.first_name || '',
           last_name: data.last_name || '',
-          email: data.email || user?.email || '',
-          phone: data.phone || '',
-          address: data.address || '',
-          city: data.city || '',
-          state: data.state || '',
-          zip_code: data.zip_code || '',
-          country: data.country || '',
-          profile_image_url: data.profile_image_url || '',
-          bio: data.bio || '',
-          business_name: data.business_name || '',
-          business_description: data.business_description || '',
-          years_of_experience: data.years_of_experience || 0,
-          specialties: data.specialties || [],
-          certifications: data.certifications || [],
-          insurance_info: data.insurance_info || '',
-          license_number: data.license_number || '',
-          service_areas: data.service_areas || [],
-          portfolio_images: data.portfolio_images || [],
+          rating: data.rating || null,
+          skills: data.skills || [],
           created_at: data.created_at || new Date().toISOString(),
-          updated_at: data.updated_at || new Date().toISOString()
-        };
-        setFormData(profileData);
+          updated_at: data.updated_at || null,
+          location: data.location || '',
+          phone: data.phone || '',
+          portfolio_urls: data.portfolio_urls || [],
+          is_available: data.is_available ?? true,
+          verification_status: data.verification_status || 'pending',
+          hourly_rate: data.hourly_rate || null,
+          years_experience: data.years_experience || null,
+          bio: data.bio || '',
+          certifications: data.certifications || []
+        });
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -116,28 +100,21 @@ const Profile: React.FC = () => {
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          id: formData.id || undefined,
-          user_id: user?.id,
+          id: user?.id,
+          account_type: formData.account_type,
           first_name: formData.first_name,
           last_name: formData.last_name,
-          email: formData.email,
+          rating: formData.rating,
+          skills: formData.skills,
+          location: formData.location,
           phone: formData.phone,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip_code: formData.zip_code,
-          country: formData.country,
-          profile_image_url: formData.profile_image_url,
+          portfolio_urls: formData.portfolio_urls,
+          is_available: formData.is_available,
+          verification_status: formData.verification_status,
+          hourly_rate: formData.hourly_rate,
+          years_experience: formData.years_experience,
           bio: formData.bio,
-          business_name: formData.business_name,
-          business_description: formData.business_description,
-          years_of_experience: formData.years_of_experience,
-          specialties: formData.specialties,
           certifications: formData.certifications,
-          insurance_info: formData.insurance_info,
-          license_number: formData.license_number,
-          service_areas: formData.service_areas,
-          portfolio_images: formData.portfolio_images,
           updated_at: new Date().toISOString()
         });
 
@@ -203,8 +180,8 @@ const Profile: React.FC = () => {
                   <CardContent>
                     <PortfolioUpload
                       userId={user?.id || ''}
-                      currentUrls={formData.portfolio_images}
-                      onUrlsUpdate={(urls) => handleFormDataChange('portfolio_images', urls)}
+                      currentUrls={formData.portfolio_urls || []}
+                      onUrlsUpdate={(urls) => handleFormDataChange('portfolio_urls', urls)}
                     />
                   </CardContent>
                 </Card>
@@ -224,7 +201,7 @@ const Profile: React.FC = () => {
                 <div className="flex flex-col items-center text-center">
                   <div className="relative">
                     <Avatar className="h-32 w-32">
-                      <AvatarImage src={formData.profile_image_url || `https://api.dicebear.com/6/initials/svg?seed=${formData.first_name} ${formData.last_name}`} />
+                      <AvatarImage src={`https://api.dicebear.com/6/initials/svg?seed=${formData.first_name} ${formData.last_name}`} />
                       <AvatarFallback className="text-2xl">
                         {formData.first_name.charAt(0)}{formData.last_name.charAt(0)}
                       </AvatarFallback>
@@ -233,38 +210,34 @@ const Profile: React.FC = () => {
 
                   <div className="mt-4">
                     <h1 className="text-2xl font-bold">{formData.first_name} {formData.last_name}</h1>
-                    <p className="text-gray-600">{formData.business_name}</p>
+                    <p className="text-gray-600 capitalize">{formData.account_type}</p>
                   </div>
 
                   <div className="mt-4 space-y-2 w-full">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-500" />
                       <span className="text-sm text-gray-600">
-                        {formData.city}, {formData.state}
+                        {formData.location}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-gray-500" />
                       <span className="text-sm text-gray-600">{formData.phone}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">{formData.email}</span>
-                    </div>
                   </div>
 
                   <div className="mt-6 space-y-4 w-full">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Experience</span>
-                      <span className="font-semibold">{formData.years_of_experience} years</span>
+                      <span className="font-semibold">{formData.years_experience || 0} years</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Specialties</span>
-                      <span className="font-semibold">{formData.specialties.length}</span>
+                      <span className="text-gray-600">Skills</span>
+                      <span className="font-semibold">{formData.skills?.length || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Certifications</span>
-                      <span className="font-semibold">{formData.certifications.length}</span>
+                      <span className="font-semibold">{formData.certifications?.length || 0}</span>
                     </div>
                   </div>
                 </div>

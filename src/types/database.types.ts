@@ -12,81 +12,60 @@ export interface Database {
       profiles: {
         Row: {
           id: string
-          user_id: string
-          first_name: string
-          last_name: string
-          email: string
-          phone: string
-          address: string
-          city: string
-          state: string
-          zip_code: string
-          country: string
-          profile_image_url: string
-          bio: string
-          business_name: string
-          business_description: string
-          years_of_experience: number
-          specialties: string[]
-          certifications: string[]
-          insurance_info: string
-          license_number: string
-          service_areas: string[]
-          portfolio_images: string[]
+          account_type: 'client' | 'professional'
+          first_name: string | null
+          last_name: string | null
+          rating: number | null
+          skills: string[] | null
           created_at: string
-          updated_at: string
+          updated_at: string | null
+          location: string | null
+          phone: string | null
+          portfolio_urls: string[] | null
+          is_available: boolean
+          verification_status: 'pending' | 'verified' | 'rejected'
+          hourly_rate: number | null
+          years_experience: number | null
+          bio: string | null
+          certifications: string[] | null
         }
         Insert: {
-          id?: string
-          user_id: string
-          first_name?: string
-          last_name?: string
-          email?: string
-          phone?: string
-          address?: string
-          city?: string
-          state?: string
-          zip_code?: string
-          country?: string
-          profile_image_url?: string
-          bio?: string
-          business_name?: string
-          business_description?: string
-          years_of_experience?: number
-          specialties?: string[]
-          certifications?: string[]
-          insurance_info?: string
-          license_number?: string
-          service_areas?: string[]
-          portfolio_images?: string[]
+          id: string
+          account_type: 'client' | 'professional'
+          first_name?: string | null
+          last_name?: string | null
+          rating?: number | null
+          skills?: string[] | null
           created_at?: string
-          updated_at?: string
+          updated_at?: string | null
+          location?: string | null
+          phone?: string | null
+          portfolio_urls?: string[] | null
+          is_available?: boolean
+          verification_status?: 'pending' | 'verified' | 'rejected'
+          hourly_rate?: number | null
+          years_experience?: number | null
+          bio?: string | null
+          certifications?: string[] | null
         }
         Update: {
           id?: string
-          user_id?: string
-          first_name?: string
-          last_name?: string
-          email?: string
-          phone?: string
-          address?: string
-          city?: string
-          state?: string
-          zip_code?: string
-          country?: string
-          profile_image_url?: string
-          bio?: string
-          business_name?: string
-          business_description?: string
-          years_of_experience?: number
-          specialties?: string[]
-          certifications?: string[]
-          insurance_info?: string
-          license_number?: string
-          service_areas?: string[]
-          portfolio_images?: string[]
+          account_type?: 'client' | 'professional'
+          first_name?: string | null
+          last_name?: string | null
+          rating?: number | null
+          skills?: string[] | null
           created_at?: string
-          updated_at?: string
+          updated_at?: string | null
+          location?: string | null
+          phone?: string | null
+          portfolio_urls?: string[] | null
+          is_available?: boolean
+          verification_status?: 'pending' | 'verified' | 'rejected'
+          hourly_rate?: number | null
+          years_experience?: number | null
+          bio?: string | null
+          certifications?: string[] | null
         }
       }
       notifications: {
@@ -98,7 +77,6 @@ export interface Database {
           type: 'info' | 'success' | 'warning' | 'error'
           read: boolean
           created_at: string
-          updated_at: string
         }
         Insert: {
           id?: string
@@ -108,7 +86,6 @@ export interface Database {
           type: 'info' | 'success' | 'warning' | 'error'
           read?: boolean
           created_at?: string
-          updated_at?: string
         }
         Update: {
           id?: string
@@ -118,7 +95,6 @@ export interface Database {
           type?: 'info' | 'success' | 'warning' | 'error'
           read?: boolean
           created_at?: string
-          updated_at?: string
         }
       }
     }

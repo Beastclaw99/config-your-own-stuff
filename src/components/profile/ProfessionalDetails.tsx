@@ -7,18 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { ProfileData } from '@/types/profile';
 
 interface ProfessionalDetailsProps {
-  formData: {
-    business_name: string;
-    business_description: string;
-    years_of_experience: number;
-    specialties: string[];
-    certifications: string[];
-    insurance_info: string;
-    license_number: string;
-    service_areas: string[];
-  };
+  formData: ProfileData;
   onFormDataChange: (field: string, value: any) => void;
 }
 
@@ -26,14 +18,14 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
   formData,
   onFormDataChange
 }) => {
-  const handleSpecialtyAdd = (value: string) => {
-    if (value && !formData.specialties.includes(value)) {
-      onFormDataChange('specialties', [...formData.specialties, value]);
+  const handleSkillAdd = (value: string) => {
+    if (value && !formData.skills.includes(value)) {
+      onFormDataChange('skills', [...formData.skills, value]);
     }
   };
 
-  const handleSpecialtyRemove = (specialty: string) => {
-    onFormDataChange('specialties', formData.specialties.filter(s => s !== specialty));
+  const handleSkillRemove = (skill: string) => {
+    onFormDataChange('skills', formData.skills.filter(s => s !== skill));
   };
 
   const handleCertificationAdd = (value: string) => {
@@ -46,16 +38,6 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
     onFormDataChange('certifications', formData.certifications.filter(c => c !== certification));
   };
 
-  const handleServiceAreaAdd = (value: string) => {
-    if (value && !formData.service_areas.includes(value)) {
-      onFormDataChange('service_areas', [...formData.service_areas, value]);
-    }
-  };
-
-  const handleServiceAreaRemove = (area: string) => {
-    onFormDataChange('service_areas', formData.service_areas.filter(a => a !== area));
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -63,48 +45,49 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="business_name">Business Name</Label>
-          <Input
-            id="business_name"
-            value={formData.business_name}
-            onChange={(e) => onFormDataChange('business_name', e.target.value)}
-            placeholder="Enter your business name"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="business_description">Business Description</Label>
+          <Label htmlFor="bio">Bio</Label>
           <Textarea
-            id="business_description"
-            value={formData.business_description}
-            onChange={(e) => onFormDataChange('business_description', e.target.value)}
-            placeholder="Describe your business and services"
+            id="bio"
+            value={formData.bio}
+            onChange={(e) => onFormDataChange('bio', e.target.value)}
+            placeholder="Tell us about yourself and your experience"
             rows={4}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="years_of_experience">Years of Experience</Label>
+          <Label htmlFor="years_experience">Years of Experience</Label>
           <Input
-            id="years_of_experience"
+            id="years_experience"
             type="number"
             min="0"
-            value={formData.years_of_experience}
-            onChange={(e) => onFormDataChange('years_of_experience', parseInt(e.target.value))}
+            value={formData.years_experience || ''}
+            onChange={(e) => onFormDataChange('years_experience', e.target.value ? parseInt(e.target.value) : null)}
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Specialties</Label>
+          <Label htmlFor="hourly_rate">Hourly Rate (TTD)</Label>
+          <Input
+            id="hourly_rate"
+            type="number"
+            min="0"
+            value={formData.hourly_rate || ''}
+            onChange={(e) => onFormDataChange('hourly_rate', e.target.value ? parseInt(e.target.value) : null)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Skills</Label>
           <div className="flex flex-wrap gap-2 mb-2">
-            {formData.specialties.map((specialty, index) => (
+            {formData.skills.map((skill, index) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                {specialty}
+                {skill}
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-4 w-4 p-0"
-                  onClick={() => handleSpecialtyRemove(specialty)}
+                  onClick={() => handleSkillRemove(skill)}
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -113,11 +96,11 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
           </div>
           <div className="flex gap-2">
             <Input
-              placeholder="Add a specialty"
+              placeholder="Add a skill"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleSpecialtyAdd((e.target as HTMLInputElement).value);
+                  handleSkillAdd((e.target as HTMLInputElement).value);
                   (e.target as HTMLInputElement).value = '';
                 }
               }}
@@ -157,55 +140,46 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="insurance_info">Insurance Information</Label>
-          <Textarea
-            id="insurance_info"
-            value={formData.insurance_info}
-            onChange={(e) => onFormDataChange('insurance_info', e.target.value)}
-            placeholder="Enter your insurance details"
-            rows={2}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="license_number">License Number</Label>
+          <Label htmlFor="location">Location</Label>
           <Input
-            id="license_number"
-            value={formData.license_number}
-            onChange={(e) => onFormDataChange('license_number', e.target.value)}
-            placeholder="Enter your professional license number"
+            id="location"
+            value={formData.location}
+            onChange={(e) => onFormDataChange('location', e.target.value)}
+            placeholder="Enter your location"
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Service Areas</Label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.service_areas.map((area, index) => (
-              <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                {area}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 p-0"
-                  onClick={() => handleServiceAreaRemove(area)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Add a service area"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleServiceAreaAdd((e.target as HTMLInputElement).value);
-                  (e.target as HTMLInputElement).value = '';
-                }
-              }}
-            />
-          </div>
+          <Label htmlFor="verification_status">Verification Status</Label>
+          <Select
+            value={formData.verification_status}
+            onValueChange={(value) => onFormDataChange('verification_status', value)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select verification status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="verified">Verified</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="is_available">Availability</Label>
+          <Select
+            value={formData.is_available ? 'true' : 'false'}
+            onValueChange={(value) => onFormDataChange('is_available', value === 'true')}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select availability" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="true">Available</SelectItem>
+              <SelectItem value="false">Not Available</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
     </Card>
