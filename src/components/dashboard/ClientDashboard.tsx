@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,7 +5,6 @@ import ProjectsTab from './client/ProjectsTab';
 import ApplicationsTab from './client/ApplicationsTab';
 import CreateProjectTab from './client/CreateProjectTab';
 import PaymentsTab from './client/PaymentsTab';
-import ProfileTab from './client/ProfileTab';
 import { useClientDashboard } from '@/hooks/useClientDashboard';
 import { useProjectOperations } from '@/hooks/useProjectOperations';
 import { useReviewOperations } from '@/hooks/useReviewOperations';
@@ -66,7 +64,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ userId, initialTab = 
   
   // Set the active tab based on initialTab prop
   useEffect(() => {
-    if (initialTab && ['projects', 'applications', 'create', 'payments', 'profile'].includes(initialTab)) {
+    if (initialTab && ['projects', 'applications', 'create', 'payments'].includes(initialTab)) {
       setActiveTab(initialTab);
     }
   }, [initialTab]);
@@ -110,12 +108,6 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ userId, initialTab = 
     setReviewData
   };
   
-  const profileTabProps = {
-    profileData,
-    projects,
-    navigate
-  };
-  
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="mb-6">
@@ -123,7 +115,6 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ userId, initialTab = 
         <TabsTrigger value="applications" data-value="applications">Applications</TabsTrigger>
         <TabsTrigger value="create" data-value="create">Post New Project</TabsTrigger>
         <TabsTrigger value="payments" data-value="payments">Payments</TabsTrigger>
-        <TabsTrigger value="profile" data-value="profile">Profile</TabsTrigger>
       </TabsList>
       
       <TabsContent value="projects">
@@ -140,10 +131,6 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ userId, initialTab = 
       
       <TabsContent value="payments">
         <PaymentsTab {...paymentsTabProps} />
-      </TabsContent>
-      
-      <TabsContent value="profile">
-        <ProfileTab {...profileTabProps} />
       </TabsContent>
     </Tabs>
   );

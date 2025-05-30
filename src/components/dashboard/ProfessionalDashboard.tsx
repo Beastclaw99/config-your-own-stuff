@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProfessionalDashboard } from "@/hooks/useProfessionalDashboard";
@@ -7,7 +6,6 @@ import ApplicationsTab from './professional/ApplicationsTab';
 import ActiveProjectsTab from './professional/ActiveProjectsTab';
 import PaymentsTab from './professional/PaymentsTab';
 import ReviewsTab from './professional/ReviewsTab';
-import ProfileTab from './professional/ProfileTab';
 import ProjectApplicationForm from './professional/ProjectApplicationForm';
 import DashboardError from './professional/DashboardError';
 import { useToast } from "@/components/ui/use-toast";
@@ -226,7 +224,6 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
         <TabsTrigger value="active" data-value="active">Active Projects</TabsTrigger>
         <TabsTrigger value="payments" data-value="payments">Payments</TabsTrigger>
         <TabsTrigger value="reviews" data-value="reviews">Reviews</TabsTrigger>
-        <TabsTrigger value="profile" data-value="profile">Profile</TabsTrigger>
       </TabsList>
       
       <TabsContent value="featured">
@@ -267,10 +264,6 @@ const ProfessionalDashboard: React.FC<ProfessionalDashboardProps> = ({ userId })
       
       <TabsContent value="reviews">
         <ReviewsTab {...sharedProps} />
-      </TabsContent>
-      
-      <TabsContent value="profile">
-        <ProfileTab {...sharedProps} />
       </TabsContent>
     </Tabs>
   );

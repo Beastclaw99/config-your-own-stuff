@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/layout/Layout';
@@ -21,6 +21,7 @@ import {
   Loader2,
   Briefcase
 } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 interface ProfileData {
   id: string;
@@ -46,6 +47,7 @@ interface ProfileData {
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isOwnProfile, setIsOwnProfile] = useState(!id); // If no ID, it's own profile
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,6 +97,30 @@ const Profile: React.FC = () => {
     );
   }
 
+  const handleEditProfile = () => {
+    navigate('/profile/edit');
+  };
+
+  const handleUpdateContactInfo = () => {
+    navigate('/profile/edit?tab=contact');
+  };
+
+  const handleMessage = () => {
+    navigate(`/messages?recipient=${profile?.id}`);
+  };
+
+  const handleHire = () => {
+    navigate('/projects/create');
+  };
+
+  const handleRequestQuote = () => {
+    navigate(`/projects/create?professional=${profile?.id}`);
+  };
+
+  const handleReportProfile = () => {
+    navigate(`/report?type=profile&id=${profile?.id}`);
+  };
+
   return (
     <Layout>
       <div className="bg-gray-50 py-8">
@@ -105,11 +131,15 @@ const Profile: React.FC = () => {
               <div className="flex flex-col md:flex-row items-start gap-6">
                 <div className="relative">
                   <Avatar className="h-32 w-32">
-                    <AvatarImage src={profile.profile_image || `https://api.dicebear.com/6/initials/svg?seed=${profile.first_name} ${profile.last_name}`} />
-                    <AvatarFallback className="text-2xl">{profile.first_name?.[0]}{profile.last_name?.[0]}</AvatarFallback>
+                    <AvatarImage src={profile?.profile_image || `https://api.dicebear.com/6/initials/svg?seed=${profile?.first_name} ${profile?.last_name}`} />
+                    <AvatarFallback className="text-2xl">{profile?.first_name?.[0]}{profile?.last_name?.[0]}</AvatarFallback>
                   </Avatar>
                   {isOwnProfile && (
-                    <Button size="sm" className="absolute -bottom-2 -right-2 rounded-full p-2">
+                    <Button 
+                      size="sm" 
+                      className="absolute -bottom-2 -right-2 rounded-full p-2"
+                      onClick={() => navigate('/profile/edit?tab=photo')}
+                    >
                       <Camera className="h-4 w-4" />
                     </Button>
                   )}
@@ -118,16 +148,16 @@ const Profile: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">{profile.first_name} {profile.last_name}</h1>
-                      <p className="text-xl text-ttc-blue-600 font-medium mb-2">{profile.account_type === 'professional' ? 'Professional' : 'Client'}</p>
+                      <h1 className="text-3xl font-bold mb-2">{profile?.first_name} {profile?.last_name}</h1>
+                      <p className="text-xl text-ttc-blue-600 font-medium mb-2">{profile?.account_type === 'professional' ? 'Professional' : 'Client'}</p>
                       <div className="flex items-center gap-4 text-gray-600">
-                        {profile.location && (
+                        {profile?.location && (
                           <div className="flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
                             {profile.location}
                           </div>
                         )}
-                        {profile.rating && (
+                        {profile?.rating && (
                           <div className="flex items-center gap-1">
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                             {profile.rating} ({profile.completed_projects || 0} projects)
@@ -135,23 +165,33 @@ const Profile: React.FC = () => {
                         )}
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          Joined {new Date(profile.created_at).toLocaleDateString()}
+                          Joined {new Date(profile?.created_at || '').toLocaleDateString()}
                         </div>
                       </div>
                     </div>
                     
                     {isOwnProfile ? (
-                      <Button className="flex items-center gap-2">
+                      <Button 
+                        className="flex items-center gap-2"
+                        onClick={handleEditProfile}
+                      >
                         <Edit className="h-4 w-4" />
                         Edit Profile
                       </Button>
                     ) : (
                       <>
-                        <Button variant="outline" className="flex items-center gap-2">
+                        <Button 
+                          variant="outline" 
+                          className="flex items-center gap-2"
+                          onClick={handleMessage}
+                        >
                           <MessageCircle className="h-4 w-4" />
                           Message
                         </Button>
-                        <Button className="flex items-center gap-2">
+                        <Button 
+                          className="flex items-center gap-2"
+                          onClick={handleHire}
+                        >
                           <Briefcase className="h-4 w-4" />
                           Hire Now
                         </Button>
@@ -159,7 +199,7 @@ const Profile: React.FC = () => {
                     )}
                   </div>
                   
-                  {profile.account_type === 'professional' && (
+                  {profile?.account_type === 'professional' && (
                     <div className="flex items-center gap-6 mb-4">
                       <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
                         {profile.availability || 'Available'}
@@ -170,7 +210,7 @@ const Profile: React.FC = () => {
                     </div>
                   )}
                   
-                  {profile.bio && (
+                  {profile?.bio && (
                     <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
                   )}
                 </div>
@@ -189,7 +229,7 @@ const Profile: React.FC = () => {
 
                 <TabsContent value="overview">
                   <div className="space-y-6">
-                    {profile.skills && profile.skills.length > 0 && (
+                    {profile?.skills && profile.skills.length > 0 && (
                       <Card>
                         <CardHeader>
                           <CardTitle>Skills & Expertise</CardTitle>
@@ -206,11 +246,11 @@ const Profile: React.FC = () => {
                       </Card>
                     )}
 
-                    {profile.account_type === 'professional' && isOwnProfile && (
+                    {profile?.account_type === 'professional' && isOwnProfile && (
                       <PortfolioUpload userId={profile.id} />
                     )}
 
-                    {profile.portfolio_images && profile.portfolio_images.length > 0 && (
+                    {profile?.portfolio_images && profile.portfolio_images.length > 0 && (
                       <Card>
                         <CardHeader>
                           <CardTitle>Portfolio Gallery</CardTitle>
@@ -265,13 +305,13 @@ const Profile: React.FC = () => {
                 <CardContent className="space-y-4">
                   {!isOwnProfile && (
                     <>
-                      {profile.phone && (
+                      {profile?.phone && (
                         <div className="flex items-center gap-3">
                           <Phone className="h-5 w-5 text-gray-500" />
                           <span>{profile.phone}</span>
                         </div>
                       )}
-                      {profile.email && (
+                      {profile?.email && (
                         <div className="flex items-center gap-3">
                           <Mail className="h-5 w-5 text-gray-500" />
                           <span>{profile.email}</span>
@@ -283,7 +323,11 @@ const Profile: React.FC = () => {
                   {isOwnProfile && (
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">Contact details are only visible to clients you're working with.</p>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={handleUpdateContactInfo}
+                      >
                         Update Contact Info
                       </Button>
                     </div>
@@ -291,7 +335,7 @@ const Profile: React.FC = () => {
                 </CardContent>
               </Card>
 
-              {profile.account_type === 'professional' && (
+              {profile?.account_type === 'professional' && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Statistics</CardTitle>
@@ -323,9 +367,26 @@ const Profile: React.FC = () => {
                     <CardTitle>Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button className="w-full">Request Quote</Button>
-                    <Button variant="outline" className="w-full">Add to Network</Button>
-                    <Button variant="outline" className="w-full">Report Profile</Button>
+                    <Button 
+                      className="w-full"
+                      onClick={handleRequestQuote}
+                    >
+                      Request Quote
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleMessage}
+                    >
+                      Send Message
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleReportProfile}
+                    >
+                      Report Profile
+                    </Button>
                   </CardContent>
                 </Card>
               )}
