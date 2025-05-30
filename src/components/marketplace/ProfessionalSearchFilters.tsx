@@ -1,145 +1,112 @@
-
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
+import { StarRating } from '@/components/ui/star-rating';
 
 interface ProfessionalSearchFiltersProps {
   filters: {
-    location: string;
-    skills: string[];
-    rating: string;
-    availability: string;
-    experience: string;
+    skills?: string[];
+    rating?: number;
   };
-  onFiltersChange: (filters: any) => void;
+  onFiltersChange: (filters: {
+    skills?: string[];
+    rating?: number;
+  }) => void;
 }
 
-const TRADE_SKILLS = [
+const SKILLS = [
   'Plumbing',
   'Electrical',
   'Carpentry',
-  'Masonry',
   'Painting',
+  'Masonry',
   'Roofing',
-  'Landscaping',
   'HVAC',
-  'Tile Work',
-  'Flooring'
+  'Landscaping',
+  'Flooring',
+  'Drywall',
+  'Tiling',
+  'Welding',
+  'Auto Repair',
+  'Appliance Repair',
+  'General Contractor'
 ];
 
 const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
   filters,
   onFiltersChange
 }) => {
-  const handleLocationChange = (location: string) => {
-    onFiltersChange({ ...filters, location });
+  const handleSkillToggle = (skill: string) => {
+    const currentSkills = filters.skills || [];
+    const newSkills = currentSkills.includes(skill)
+      ? currentSkills.filter(s => s !== skill)
+      : [...currentSkills, skill];
+    
+    onFiltersChange({ ...filters, skills: newSkills });
   };
 
-  const handleSkillToggle = (skill: string) => {
-    const updatedSkills = filters.skills.includes(skill)
-      ? filters.skills.filter(s => s !== skill)
-      : [...filters.skills, skill];
-    onFiltersChange({ ...filters, skills: updatedSkills });
+  const handleRatingChange = (rating: number) => {
+    onFiltersChange({ ...filters, rating });
   };
 
   const clearFilters = () => {
-    onFiltersChange({
-      location: '',
-      skills: [],
-      rating: '',
-      availability: '',
-      experience: ''
-    });
+    onFiltersChange({});
   };
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Search Filters</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Location */}
-        <div>
-          <Label htmlFor="location">Location</Label>
-          <Input
-            id="location"
-            placeholder="Enter city or area"
-            value={filters.location}
-            onChange={(e) => handleLocationChange(e.target.value)}
-          />
-        </div>
-
-        {/* Skills */}
-        <div>
-          <Label>Trade Skills</Label>
-          <div className="grid grid-cols-1 gap-2 mt-2">
-            {TRADE_SKILLS.map((skill) => (
-              <div key={skill} className="flex items-center space-x-2">
-                <Checkbox
-                  id={skill}
-                  checked={filters.skills.includes(skill)}
-                  onCheckedChange={() => handleSkillToggle(skill)}
-                />
-                <Label htmlFor={skill} className="text-sm">{skill}</Label>
-              </div>
-            ))}
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Skills</Label>
+            <div className="flex flex-wrap gap-2">
+              {SKILLS.map((skill) => (
+                <Badge
+                  key={skill}
+                  variant={filters.skills?.includes(skill) ? 'default' : 'outline'}
+                  className="cursor-pointer hover:bg-ttc-blue-50"
+                  onClick={() => handleSkillToggle(skill)}
+                >
+                  {skill}
+                </Badge>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Rating */}
-        <div>
-          <Label htmlFor="rating">Minimum Rating</Label>
-          <Select value={filters.rating} onValueChange={(value) => onFiltersChange({ ...filters, rating: value })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select rating" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5 Stars</SelectItem>
-              <SelectItem value="4">4+ Stars</SelectItem>
-              <SelectItem value="3">3+ Stars</SelectItem>
-              <SelectItem value="2">2+ Stars</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Minimum Rating</Label>
+            <div className="flex items-center space-x-2">
+              <StarRating
+                value={filters.rating || 0}
+                onChange={handleRatingChange}
+                size="large"
+              />
+              {filters.rating ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onFiltersChange({ ...filters, rating: undefined })}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              ) : null}
+            </div>
+          </div>
 
-        {/* Availability */}
-        <div>
-          <Label htmlFor="availability">Availability</Label>
-          <Select value={filters.availability} onValueChange={(value) => onFiltersChange({ ...filters, availability: value })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select availability" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="immediate">Available Now</SelectItem>
-              <SelectItem value="week">Within a Week</SelectItem>
-              <SelectItem value="month">Within a Month</SelectItem>
-            </SelectContent>
-          </Select>
+          {(filters.skills?.length || filters.rating) && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={clearFilters}
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
-
-        {/* Experience */}
-        <div>
-          <Label htmlFor="experience">Experience Level</Label>
-          <Select value={filters.experience} onValueChange={(value) => onFiltersChange({ ...filters, experience: value })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select experience" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="entry">Entry Level (1-2 years)</SelectItem>
-              <SelectItem value="mid">Mid Level (3-5 years)</SelectItem>
-              <SelectItem value="senior">Senior Level (5+ years)</SelectItem>
-              <SelectItem value="expert">Expert (10+ years)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button onClick={clearFilters} variant="outline" className="w-full">
-          Clear All Filters
-        </Button>
       </CardContent>
     </Card>
   );

@@ -1,74 +1,91 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import ProfessionalCard from './ProfessionalCard';
 import ProfessionalListItem from './ProfessionalListItem';
+import { Loader2 } from 'lucide-react';
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface ProfessionalListingsProps {
   viewMode: 'grid' | 'list';
-  filters: any;
+  filters: {
+    skills?: string[];
+    rating?: number;
+  };
 }
 
-// Mock data for demonstration
-const MOCK_PROFESSIONALS = [
-  {
-    id: '1',
-    name: 'John Smith',
-    trade: 'Plumbing',
-    rating: 4.8,
-    reviewCount: 127,
-    hourlyRate: 150,
-    location: 'Port of Spain',
-    availability: 'Available Now',
-    profileImage: '/placeholder.svg',
-    skills: ['Residential Plumbing', 'Emergency Repairs', 'Pipe Installation'],
-    yearsExperience: 8
-  },
-  {
-    id: '2',
-    name: 'Maria Rodriguez',
-    trade: 'Electrical',
-    rating: 4.9,
-    reviewCount: 89,
-    hourlyRate: 175,
-    location: 'San Fernando',
-    availability: 'Available Next Week',
-    profileImage: '/placeholder.svg',
-    skills: ['Wiring', 'Solar Installation', 'Panel Upgrades'],
-    yearsExperience: 12
-  },
-  {
-    id: '3',
-    name: 'David Williams',
-    trade: 'Carpentry',
-    rating: 4.7,
-    reviewCount: 156,
-    hourlyRate: 120,
-    location: 'Chaguanas',
-    availability: 'Available Now',
-    profileImage: '/placeholder.svg',
-    skills: ['Custom Furniture', 'Home Renovations', 'Cabinet Making'],
-    yearsExperience: 15
-  }
-];
+const ProfessionalListings: React.FC<ProfessionalListingsProps> = ({ viewMode, filters }) => {
+  const [professionals, setProfessionals] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const ProfessionalListings: React.FC<ProfessionalListingsProps> = ({
-  viewMode,
-  filters
-}) => {
-  if (viewMode === 'grid') {
+  useEffect(() => {
+    const fetchProfessionals = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        let query = supabase
+          .from('profiles')
+          .select('*')
+          .eq('account_type', 'professional');
+
+        // Apply filters
+        if (filters.skills?.length) {
+          query = query.contains('skills', filters.skills);
+        }
+        if (filters.rating) {
+          query = query.gte('rating', filters.rating);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+        setProfessionals(data || []);
+      } catch (err) {
+        console.error('Error fetching professionals:', err);
+        setError('Failed to load professionals. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfessionals();
+  }, [filters]);
+
+  if (loading) {
     return (
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {MOCK_PROFESSIONALS.map((professional) => (
-          <ProfessionalCard key={professional.id} professional={professional} />
-        ))}
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-ttc-blue-700" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600 py-8">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (professionals.length === 0) {
+    return (
+      <div className="text-center text-gray-600 py-8">
+        <p>No professionals found matching your criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {MOCK_PROFESSIONALS.map((professional) => (
-        <ProfessionalListItem key={professional.id} professional={professional} />
+    <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-6'}>
+      {professionals.map((professional) => (
+        viewMode === 'grid' ? (
+          <ProfessionalCard key={professional.id} professional={professional} />
+        ) : (
+          <ProfessionalListItem key={professional.id} professional={professional} />
+        )
       ))}
     </div>
   );
