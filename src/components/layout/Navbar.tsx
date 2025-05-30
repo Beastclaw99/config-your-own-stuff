@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   NavigationMenu,
@@ -48,7 +47,7 @@ const Navbar: React.FC = () => {
             <NavigationMenuItem>
               <NavigationMenuLink>
                 <Link to="/marketplace" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
-                  Find Professionals
+                  Professional Marketplace
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -62,7 +61,7 @@ const Navbar: React.FC = () => {
             <NavigationMenuItem>
               <NavigationMenuLink>
                 <Link to="/about" className="text-sm font-medium leading-none hover:text-accent focus:text-accent">
-                  About Us
+                  About
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
