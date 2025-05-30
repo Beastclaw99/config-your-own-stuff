@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from './contexts/AuthContext';
+import Layout from './components/layout/Layout';
 import Index from './pages/Index';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -35,32 +36,34 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <div className="App">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/marketplace" element={<ProfessionalMarketplace />} />
-              <Route path="/project-marketplace" element={<ProjectMarketplace />} />
-              <Route path="/projects/:projectId" element={<ProjectDetails />} />
-              <Route path="/client/projects/:projectId/applications" element={<ProjectApplications />} />
-              <Route path="/calendar" element={<CalendarPage />} />
-              <Route path="/messages" element={<MessagingPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="/compliance" element={<CompliancePage />} />
-              <Route path="/client/create-project" element={<CreateProject />} />
-              <Route path="/client/dispatch/:projectId" element={<ProjectDispatch />} />
-              <Route path="/resources" element={<Resources />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/help" element={<Help />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:id" element={<Profile />} />
-              <Route path="/network" element={<Network />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/marketplace" element={<ProfessionalMarketplace />} />
+                <Route path="/project-marketplace" element={<ProjectMarketplace />} />
+                <Route path="/projects/:projectId" element={<ProjectDetails />} />
+                <Route path="/client/projects/:projectId/applications" element={<ProjectApplications />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/messages" element={<MessagingPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/compliance" element={<CompliancePage />} />
+                <Route path="/client/create-project" element={<CreateProject />} />
+                <Route path="/client/dispatch/:projectId" element={<ProjectDispatch />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/insights" element={<Insights />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:id" element={<Profile />} />
+                <Route path="/network" element={<Network />} />
+                <Route path="/invoices" element={<Invoices />} />
+                <Route path="/settings" element={<Settings />} />
+              </Routes>
+            </Layout>
             <Toaster />
           </div>
         </AuthProvider>
