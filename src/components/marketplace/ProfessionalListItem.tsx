@@ -5,60 +5,78 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MapPin, Clock } from 'lucide-react';
 import { StarRating } from '@/components/ui/star-rating';
-import type { Database } from '@/integrations/supabase/types';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+interface Professional {
+  id: string;
+  name: string;
+  trade: string;
+  rating: number;
+  reviewCount: number;
+  hourlyRate: number;
+  location: string;
+  availability: string;
+  profileImage: string;
+  skills: string[];
+  yearsExperience: number;
+}
 
 interface ProfessionalListItemProps {
-  professional: Profile;
+  professional: Professional;
 }
 
 const ProfessionalListItem: React.FC<ProfessionalListItemProps> = ({ professional }) => {
-  const fullName = `${professional.first_name} ${professional.last_name}`;
-  const initials = `${professional.first_name?.[0] || ''}${professional.last_name?.[0] || ''}`;
-
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-4 flex-1">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={`https://api.dicebear.com/6/initials/svg?seed=${fullName}`} />
-              <AvatarFallback>{initials}</AvatarFallback>
+              <AvatarImage src={professional.profileImage} alt={professional.name} />
+              <AvatarFallback>{professional.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             </Avatar>
             
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold">{fullName}</h3>
-                  <p className="text-ttc-blue-700 font-medium text-lg">
-                    {professional.skills?.[0] || 'Professional'}
-                  </p>
+                  <h3 className="text-xl font-semibold">{professional.name}</h3>
+                  <p className="text-ttc-blue-700 font-medium text-lg">{professional.trade}</p>
                 </div>
                 
                 <div className="text-right">
                   <div className="text-2xl font-bold text-ttc-blue-700">
-                    ${professional.hourly_rate || 0}
+                    ${professional.hourlyRate}
                     <span className="text-sm font-normal text-gray-500">/hour</span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    {professional.years_experience || 0} years experience
+                    {professional.yearsExperience} years experience
                   </div>
                 </div>
               </div>
               
               <div className="flex items-center space-x-1 mt-2">
                 <StarRating
-                  value={professional.rating || 0}
+                  value={professional.rating}
                   onChange={() => {}}
                   className="h-4 w-4"
                 />
-                <span className="font-medium">{professional.rating?.toFixed(1) || '0.0'}</span>
+                <span className="font-medium">{professional.rating}</span>
+                <span className="text-gray-500">({professional.reviewCount} reviews)</span>
+              </div>
+              
+              <div className="flex items-center space-x-6 mt-2 text-gray-600">
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {professional.location}
+                </div>
+                <div className="flex items-center">
+                  <Clock className="h-4 w-4 mr-1" />
+                  {professional.availability}
+                </div>
               </div>
               
               <div className="mt-3">
                 <div className="flex flex-wrap gap-2">
-                  {professional.skills?.map((skill) => (
+                  {professional.skills.map((skill) => (
                     <Badge key={skill} variant="secondary">
                       {skill}
                     </Badge>

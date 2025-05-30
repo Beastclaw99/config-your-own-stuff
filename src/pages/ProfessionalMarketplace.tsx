@@ -3,53 +3,69 @@ import Layout from '@/components/layout/Layout';
 import ProfessionalListings from '@/components/marketplace/ProfessionalListings';
 import ProfessionalSearchFilters from '@/components/marketplace/ProfessionalSearchFilters';
 import { Button } from '@/components/ui/button';
-import { Grid, List } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 const ProfessionalMarketplace: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [filters, setFilters] = useState<{
-    skills?: string[];
-    rating?: number;
-  }>({});
+  const [filters, setFilters] = useState({
+    location: '',
+    skills: [],
+    rating: '',
+    availability: '',
+    experience: ''
+  });
+  const [searchTerm, setSearchTerm] = useState('');
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className="w-full md:w-64 flex-shrink-0">
-            <ProfessionalSearchFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-            />
+      <div className="bg-gray-50 py-8">
+        <div className="container-custom">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Find Trade Professionals</h1>
+              <p className="text-gray-600">
+                Connect with skilled trade professionals across Trinidad & Tobago
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Search professionals..."
+                  className="pl-10 w-[300px]"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
+                onClick={() => setViewMode('grid')}
+              >
+                Grid
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'outline'}
+                onClick={() => setViewMode('list')}
+              >
+                List
+              </Button>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Find Trade Professionals</h1>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'outline'}
-                  size="icon"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="icon"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-1">
+              <ProfessionalSearchFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+              />
             </div>
-
-            <ProfessionalListings
-              viewMode={viewMode}
-              filters={filters}
-            />
+            <div className="lg:col-span-3">
+              <ProfessionalListings
+                viewMode={viewMode}
+                filters={filters}
+              />
+            </div>
           </div>
         </div>
       </div>

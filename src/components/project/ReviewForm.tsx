@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { StarRating } from '@/components/ui/star-rating';
 import { Database } from '@/integrations/supabase/types';
 
-// Define the review types
+// Define the review type
 type Review = Database['public']['Tables']['reviews']['Row'];
 type ReviewInsert = Database['public']['Tables']['reviews']['Insert'];
 
