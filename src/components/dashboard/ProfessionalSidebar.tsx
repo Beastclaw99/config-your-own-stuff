@@ -26,7 +26,7 @@ const sidebarItems = [
   {
     title: "My Profile",
     icon: User,
-    href: "/dashboard?tab=profile",
+    href: "/profile",
     description: "Manage personal information, skills & rates"
   },
   {
