@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { ProfileData } from '@/types/profile';
+import { Database } from '@/types/database.types';
+
+type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 
 interface ProfessionalDetailsProps {
-  formData: ProfileData;
+  formData: ProfileRow;
   onFormDataChange: (field: string, value: any) => void;
 }
 
@@ -19,23 +21,23 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
   onFormDataChange
 }) => {
   const handleSkillAdd = (value: string) => {
-    if (value && !formData.skills.includes(value)) {
-      onFormDataChange('skills', [...formData.skills, value]);
+    if (value && !formData.skills?.includes(value)) {
+      onFormDataChange('skills', [...(formData.skills || []), value]);
     }
   };
 
   const handleSkillRemove = (skill: string) => {
-    onFormDataChange('skills', formData.skills.filter(s => s !== skill));
+    onFormDataChange('skills', formData.skills?.filter(s => s !== skill) || []);
   };
 
   const handleCertificationAdd = (value: string) => {
-    if (value && !formData.certifications.includes(value)) {
-      onFormDataChange('certifications', [...formData.certifications, value]);
+    if (value && !formData.certifications?.includes(value)) {
+      onFormDataChange('certifications', [...(formData.certifications || []), value]);
     }
   };
 
   const handleCertificationRemove = (certification: string) => {
-    onFormDataChange('certifications', formData.certifications.filter(c => c !== certification));
+    onFormDataChange('certifications', formData.certifications?.filter(c => c !== certification) || []);
   };
 
   return (
@@ -48,8 +50,8 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
           <Label htmlFor="bio">Bio</Label>
           <Textarea
             id="bio"
-            value={formData.bio}
-            onChange={(e) => onFormDataChange('bio', e.target.value)}
+            value={formData.bio || ''}
+            onChange={(e) => onFormDataChange('bio', e.target.value || null)}
             placeholder="Tell us about yourself and your experience"
             rows={4}
           />
@@ -80,7 +82,7 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
         <div className="space-y-2">
           <Label>Skills</Label>
           <div className="flex flex-wrap gap-2 mb-2">
-            {formData.skills.map((skill, index) => (
+            {formData.skills?.map((skill, index) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
                 {skill}
                 <Button
@@ -111,7 +113,7 @@ const ProfessionalDetails: React.FC<ProfessionalDetailsProps> = ({
         <div className="space-y-2">
           <Label>Certifications</Label>
           <div className="flex flex-wrap gap-2 mb-2">
-            {formData.certifications.map((certification, index) => (
+            {formData.certifications?.map((certification, index) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
                 {certification}
                 <Button

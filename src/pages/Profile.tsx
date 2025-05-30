@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ProfileData } from '@/types/profile';
+import { Database } from '@/types/database.types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PersonalDetails from '@/components/profile/PersonalDetails';
 import ProfessionalDetails from '@/components/profile/ProfessionalDetails';
@@ -14,39 +14,43 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, Calendar, Phone, Mail } from 'lucide-react';
 
+type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+
 const Profile: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<ProfileData>({
+  const [formData, setFormData] = useState<ProfileRow>({
     id: '',
     account_type: 'professional',
-    first_name: '',
-    last_name: '',
+    first_name: null,
+    last_name: null,
     rating: null,
-    skills: [],
-    created_at: '',
+    skills: null,
+    created_at: new Date().toISOString(),
     updated_at: null,
-    location: '',
-    phone: '',
-    portfolio_urls: [],
+    location: null,
+    phone: null,
+    portfolio_urls: null,
     is_available: true,
     verification_status: 'pending',
     hourly_rate: null,
     years_experience: null,
-    bio: '',
-    certifications: []
+    bio: null,
+    certifications: null
   });
 
   useEffect(() => {
+    if (authLoading) return;
+    
     if (user) {
       fetchProfile();
     } else {
       setIsLoading(false);
       setError('No user found. Please log in.');
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchProfile = async () => {
     try {
@@ -66,25 +70,7 @@ const Profile: React.FC = () => {
       if (supabaseError) throw supabaseError;
 
       if (data) {
-        setFormData({
-          id: data.id || '',
-          account_type: data.account_type || 'professional',
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
-          rating: data.rating || null,
-          skills: data.skills || [],
-          created_at: data.created_at || new Date().toISOString(),
-          updated_at: data.updated_at || null,
-          location: data.location || '',
-          phone: data.phone || '',
-          portfolio_urls: data.portfolio_urls || [],
-          is_available: data.is_available ?? true,
-          verification_status: data.verification_status || 'pending',
-          hourly_rate: data.hourly_rate || null,
-          years_experience: data.years_experience || null,
-          bio: data.bio || '',
-          certifications: data.certifications || []
-        });
+        setFormData(data);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -149,7 +135,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <Layout>
         <div className="container-custom py-8">
@@ -241,15 +227,17 @@ const Profile: React.FC = () => {
                 <div className="flex flex-col items-center text-center">
                   <div className="relative">
                     <Avatar className="h-32 w-32">
-                      <AvatarImage src={`https://api.dicebear.com/6/initials/svg?seed=${formData.first_name} ${formData.last_name}`} />
+                      <AvatarImage src={`https://api.dicebear.com/6/initials/svg?seed=${formData.first_name || ''} ${formData.last_name || ''}`} />
                       <AvatarFallback className="text-2xl">
-                        {formData.first_name.charAt(0)}{formData.last_name.charAt(0)}
+                        {formData.first_name?.charAt(0) || ''}{formData.last_name?.charAt(0) || ''}
                       </AvatarFallback>
                     </Avatar>
                   </div>
 
                   <div className="mt-4">
-                    <h1 className="text-2xl font-bold">{formData.first_name} {formData.last_name}</h1>
+                    <h1 className="text-2xl font-bold">
+                      {formData.first_name || ''} {formData.last_name || ''}
+                    </h1>
                     <p className="text-gray-600 capitalize">{formData.account_type}</p>
                   </div>
 
@@ -257,12 +245,14 @@ const Profile: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-500" />
                       <span className="text-sm text-gray-600">
-                        {formData.location}
+                        {formData.location || 'No location set'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">{formData.phone}</span>
+                      <span className="text-sm text-gray-600">
+                        {formData.phone || 'No phone number set'}
+                      </span>
                     </div>
                   </div>
 
