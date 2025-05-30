@@ -1,4 +1,3 @@
-
 export interface ProfileData {
   id: string;
   first_name: string | null;
@@ -8,6 +7,15 @@ export interface ProfileData {
   rating: number | null;
   created_at: string;
   updated_at: string;
+  location: string | null;
+  phone: string | null;
+  portfolio_urls: string[] | null;
+  is_available: boolean;
+  verification_status: 'pending' | 'verified' | 'rejected';
+  hourly_rate: number | null;
+  years_experience: number | null;
+  bio: string | null;
+  certifications: string[] | null;
 }
 
 export interface ProfessionalStats {
