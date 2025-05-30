@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from "@/integrations/supabase/client";
@@ -11,13 +12,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  session: null,
-  isLoading: true,
-  signOut: async () => {},
-  logout: async () => {}
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,13 +21,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    let mounted = true;
-
-    // Set up auth state listener
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
-        if (!mounted) return;
-        
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         setIsLoading(false);
@@ -51,21 +42,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // Check for existing session
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      if (!mounted) return;
-      
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
-      setIsLoading(false);
-    }).catch((error) => {
-      console.error('Error getting session:', error);
-      if (!mounted) return;
       setIsLoading(false);
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
   }, [toast]);
@@ -86,27 +70,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Error signing out:', error);
       setIsLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive"
-      });
     }
   };
 
   // Alias logout to signOut for compatibility
   const logout = signOut;
 
-  const value = {
-    user,
-    session,
-    isLoading,
-    signOut,
-    logout
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, session, isLoading, signOut, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -114,5 +85,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
   return context;
 };

@@ -222,6 +222,8 @@ export type Database = {
           rating: number | null
           skills: string[] | null
           updated_at: string | null
+          hourly_rate: number | null
+          years_experience: number | null
         }
         Insert: {
           account_type: Database["public"]["Enums"]["account_type_enum"]
@@ -232,6 +234,8 @@ export type Database = {
           rating?: number | null
           skills?: string[] | null
           updated_at?: string | null
+          hourly_rate?: number | null
+          years_experience?: number | null
         }
         Update: {
           account_type?: Database["public"]["Enums"]["account_type_enum"]
@@ -242,6 +246,8 @@ export type Database = {
           rating?: number | null
           skills?: string[] | null
           updated_at?: string | null
+          hourly_rate?: number | null
+          years_experience?: number | null
         }
         Relationships: []
       }
