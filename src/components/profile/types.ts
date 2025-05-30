@@ -6,7 +6,7 @@ export interface ProfileData {
   skills: string[] | null;
   rating: number | null;
   created_at: string;
-  updated_at: string;
+  updated_at: string | null;
   bio: string | null;
   location: string | null;
   phone: string | null;
@@ -24,6 +24,7 @@ export interface ProfileData {
   allow_messages: boolean;
   profile_image: string | null;
   verification_status: 'unverified' | 'pending' | 'verified' | null;
+  years_experience: number | null;
 }
 
 export interface ProfessionalStats {
