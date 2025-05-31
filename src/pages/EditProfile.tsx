@@ -11,10 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
-import { Camera, Loader2 } from 'lucide-react';
+import { Camera, Loader2, CheckCircle, AlertCircle, Clock, X } from 'lucide-react';
 import { ProfileData } from '@/components/profile/types';
 import type { Database } from '@/integrations/supabase/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import PortfolioUpload from '@/components/profile/PortfolioUpload';
+import { Badge } from '@/components/ui/badge';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -45,69 +47,69 @@ const EditProfile: React.FC = () => {
     allow_messages: true,
   });
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user?.id) return;
+  const fetchProfile = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
       
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+      // Cast the database profile to our ProfileData type
+      const profileData: ProfileData = {
+        ...data,
+        bio: data.bio || null,
+        location: data.location || null,
+        phone: data.phone || null,
+        email: data.email || null,
+        hourly_rate: data.hourly_rate || null,
+        availability: (data.availability as 'available' | 'busy' | 'unavailable') || null,
+        skills: data.skills || null,
+        certifications: data.certifications || null,
+        completed_projects: data.completed_projects || null,
+        response_rate: data.response_rate || null,
+        on_time_completion: data.on_time_completion || null,
+        profile_visibility: data.profile_visibility ?? true,
+        show_email: data.show_email ?? true,
+        show_phone: data.show_phone ?? true,
+        allow_messages: data.allow_messages ?? true,
+        profile_image: data.profile_image || null,
+        verification_status: (data.verification_status as 'unverified' | 'pending' | 'verified') || null,
+      };
+      
+      setProfile(profileData);
+      setFormData({
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
+        bio: data.bio || '',
+        location: data.location || '',
+        phone: data.phone || '',
+        email: data.email || '',
+        hourly_rate: data.hourly_rate?.toString() || '',
+        availability: data.availability || '',
+        skills: data.skills || [],
+        profile_visibility: data.profile_visibility ?? true,
+        show_email: data.show_email ?? true,
+        show_phone: data.show_phone ?? true,
+        allow_messages: data.allow_messages ?? true,
+      });
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        if (error) throw error;
-        
-        // Cast the database profile to our ProfileData type
-        const profileData: ProfileData = {
-          ...data,
-          bio: data.bio || null,
-          location: data.location || null,
-          phone: data.phone || null,
-          email: data.email || null,
-          hourly_rate: data.hourly_rate || null,
-          availability: (data.availability as 'available' | 'busy' | 'unavailable') || null,
-          skills: data.skills || null,
-          certifications: data.certifications || null,
-          completed_projects: data.completed_projects || null,
-          response_rate: data.response_rate || null,
-          on_time_completion: data.on_time_completion || null,
-          profile_visibility: data.profile_visibility ?? true,
-          show_email: data.show_email ?? true,
-          show_phone: data.show_phone ?? true,
-          allow_messages: data.allow_messages ?? true,
-          profile_image: data.profile_image || null,
-          verification_status: (data.verification_status as 'unverified' | 'pending' | 'verified') || null,
-        };
-        
-        setProfile(profileData);
-        setFormData({
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
-          bio: data.bio || '',
-          location: data.location || '',
-          phone: data.phone || '',
-          email: data.email || '',
-          hourly_rate: data.hourly_rate?.toString() || '',
-          availability: data.availability || '',
-          skills: data.skills || [],
-          profile_visibility: data.profile_visibility ?? true,
-          show_email: data.show_email ?? true,
-          show_phone: data.show_phone ?? true,
-          allow_messages: data.allow_messages ?? true,
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load profile data. Please try again.",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchProfile();
   }, [user]);
 
@@ -120,11 +122,15 @@ const EditProfile: React.FC = () => {
   };
 
   const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const skills = e.target.value.split(',').map(skill => skill.trim());
-    setFormData(prev => ({
-      ...prev,
-      skills
-    }));
+    const value = e.target.value;
+    // Only update if it's a comma-separated list (for backward compatibility)
+    if (value.includes(',')) {
+      const skills = value.split(',').map(skill => skill.trim()).filter(Boolean);
+      setFormData(prev => ({
+        ...prev,
+        skills
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -384,6 +390,33 @@ const EditProfile: React.FC = () => {
                     {profile?.account_type === 'professional' && (
                       <>
                         <div className="space-y-2">
+                          <Label>Verification Status</Label>
+                          <div className="flex items-center gap-2">
+                            {profile.verification_status === 'verified' ? (
+                              <Badge className="bg-green-100 text-green-800">
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Verified
+                              </Badge>
+                            ) : profile.verification_status === 'pending' ? (
+                              <Badge className="bg-yellow-100 text-yellow-800">
+                                <Clock className="h-4 w-4 mr-1" />
+                                Pending Review
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-gray-100 text-gray-800">
+                                <AlertCircle className="h-4 w-4 mr-1" />
+                                Unverified
+                              </Badge>
+                            )}
+                          </div>
+                          {profile.verification_status !== 'verified' && (
+                            <p className="text-sm text-gray-600 mt-1">
+                              Complete your profile and upload required documents to get verified.
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
                           <Label htmlFor="hourly_rate">Hourly Rate (TTD)</Label>
                           <Input
                             id="hourly_rate"
@@ -410,14 +443,58 @@ const EditProfile: React.FC = () => {
                           </Select>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="skills">Skills (comma-separated)</Label>
-                          <Input
-                            id="skills"
-                            name="skills"
-                            value={formData.skills.join(', ')}
-                            onChange={handleSkillsChange}
-                          />
+                          <Label htmlFor="skills">Skills</Label>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {formData.skills.map((skill, index) => (
+                              <Badge 
+                                key={index} 
+                                variant="secondary"
+                                className="flex items-center gap-1"
+                              >
+                                {skill}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      skills: prev.skills.filter((_, i) => i !== index)
+                                    }));
+                                  }}
+                                  className="ml-1 hover:text-red-500"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <Input
+                              id="skills"
+                              name="skills"
+                              placeholder="Add a skill"
+                              value={formData.skills.join(', ')}
+                              onChange={handleSkillsChange}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                const input = document.getElementById('skills') as HTMLInputElement;
+                                const newSkill = input.value.trim();
+                                if (newSkill && !formData.skills.includes(newSkill)) {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    skills: [...prev.skills, newSkill]
+                                  }));
+                                  input.value = '';
+                                }
+                              }}
+                            >
+                              Add
+                            </Button>
+                          </div>
                         </div>
+                        <PortfolioUpload userId={user?.id || ''} onUploadComplete={() => fetchProfile()} />
                       </>
                     )}
                   </CardContent>
