@@ -3,14 +3,37 @@ import Layout from '@/components/layout/Layout';
 import ProfessionalListings from '@/components/marketplace/ProfessionalListings';
 import ProfessionalSearchFilters from '@/components/marketplace/ProfessionalSearchFilters';
 import { Button } from '@/components/ui/button';
-import { Grid, List } from 'lucide-react';
+import { Grid, List, ArrowUpDown } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const ProfessionalMarketplace: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState<{
     skills?: string[];
     rating?: number;
+    location?: string;
+    hourlyRate?: {
+      min?: number;
+      max?: number;
+    };
+    availability?: 'available' | 'busy' | 'unavailable';
+    verificationStatus?: 'verified' | 'pending' | 'unverified';
   }>({});
+  const [sortBy, setSortBy] = useState<{
+    field: 'rating' | 'hourly_rate' | 'completed_projects' | 'response_rate' | 'on_time_completion';
+    order: 'asc' | 'desc';
+  }>({
+    field: 'rating',
+    order: 'desc'
+  });
+
+  const handleSortChange = (value: string) => {
+    const [field, order] = value.split('-');
+    setSortBy({
+      field: field as 'rating' | 'hourly_rate' | 'completed_projects' | 'response_rate' | 'on_time_completion',
+      order: order as 'asc' | 'desc'
+    });
+  };
 
   return (
     <Layout>
@@ -28,27 +51,50 @@ const ProfessionalMarketplace: React.FC = () => {
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold">Find Trade Professionals</h1>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'outline'}
-                  size="icon"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="icon"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <ArrowUpDown className="h-4 w-4 text-gray-500" />
+                  <Select
+                    value={`${sortBy.field}-${sortBy.order}`}
+                    onValueChange={handleSortChange}
+                  >
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rating-desc">Highest Rating</SelectItem>
+                      <SelectItem value="rating-asc">Lowest Rating</SelectItem>
+                      <SelectItem value="hourly_rate-asc">Lowest Rate</SelectItem>
+                      <SelectItem value="hourly_rate-desc">Highest Rate</SelectItem>
+                      <SelectItem value="completed_projects-desc">Most Projects</SelectItem>
+                      <SelectItem value="response_rate-desc">Best Response Rate</SelectItem>
+                      <SelectItem value="on_time_completion-desc">Best On-Time Rate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                    size="icon"
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'outline'}
+                    size="icon"
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
             <ProfessionalListings
               viewMode={viewMode}
               filters={filters}
+              sortBy={sortBy}
             />
           </div>
         </div>

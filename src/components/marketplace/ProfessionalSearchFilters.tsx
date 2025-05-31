@@ -4,17 +4,32 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { X, MapPin, DollarSign, Clock } from 'lucide-react';
 import { StarRating } from '@/components/ui/star-rating';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ProfessionalSearchFiltersProps {
   filters: {
     skills?: string[];
     rating?: number;
+    location?: string;
+    hourlyRate?: {
+      min?: number;
+      max?: number;
+    };
+    availability?: 'available' | 'busy' | 'unavailable';
+    verificationStatus?: 'verified' | 'pending' | 'unverified';
   };
   onFiltersChange: (filters: {
     skills?: string[];
     rating?: number;
+    location?: string;
+    hourlyRate?: {
+      min?: number;
+      max?: number;
+    };
+    availability?: 'available' | 'busy' | 'unavailable';
+    verificationStatus?: 'verified' | 'pending' | 'unverified';
   }) => void;
 }
 
@@ -36,6 +51,16 @@ const SKILLS = [
   'General Contractor'
 ];
 
+const LOCATIONS = [
+  'Port of Spain',
+  'San Fernando',
+  'Chaguanas',
+  'Arima',
+  'Point Fortin',
+  'Scarborough',
+  'Tobago'
+];
+
 const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
   filters,
   onFiltersChange
@@ -53,6 +78,29 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
     onFiltersChange({ ...filters, rating });
   };
 
+  const handleLocationChange = (location: string) => {
+    onFiltersChange({ ...filters, location });
+  };
+
+  const handleHourlyRateChange = (type: 'min' | 'max', value: string) => {
+    const numValue = value ? parseInt(value) : undefined;
+    onFiltersChange({
+      ...filters,
+      hourlyRate: {
+        ...filters.hourlyRate,
+        [type]: numValue
+      }
+    });
+  };
+
+  const handleAvailabilityChange = (availability: 'available' | 'busy' | 'unavailable') => {
+    onFiltersChange({ ...filters, availability });
+  };
+
+  const handleVerificationStatusChange = (status: 'verified' | 'pending' | 'unverified') => {
+    onFiltersChange({ ...filters, verificationStatus: status });
+  };
+
   const clearFilters = () => {
     onFiltersChange({});
   };
@@ -61,6 +109,26 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
     <Card>
       <CardContent className="p-6">
         <div className="space-y-6">
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Location</Label>
+            <Select
+              value={filters.location}
+              onValueChange={handleLocationChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Locations</SelectItem>
+                {LOCATIONS.map((location) => (
+                  <SelectItem key={location} value={location}>
+                    {location}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <Label className="text-lg font-semibold mb-4 block">Skills</Label>
             <div className="flex flex-wrap gap-2">
@@ -97,7 +165,67 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
             </div>
           </div>
 
-          {(filters.skills?.length || filters.rating) && (
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Hourly Rate (TTD)</Label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  placeholder="Min"
+                  value={filters.hourlyRate?.min || ''}
+                  onChange={(e) => handleHourlyRateChange('min', e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  placeholder="Max"
+                  value={filters.hourlyRate?.max || ''}
+                  onChange={(e) => handleHourlyRateChange('max', e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Availability</Label>
+            <Select
+              value={filters.availability}
+              onValueChange={handleAvailabilityChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select availability" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="busy">Busy</SelectItem>
+                <SelectItem value="unavailable">Unavailable</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label className="text-lg font-semibold mb-4 block">Verification Status</Label>
+            <Select
+              value={filters.verificationStatus}
+              onValueChange={handleVerificationStatusChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="verified">Verified</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="unverified">Unverified</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {(filters.skills?.length || filters.rating || filters.location || 
+            filters.hourlyRate?.min || filters.hourlyRate?.max || 
+            filters.availability || filters.verificationStatus) && (
             <Button
               variant="outline"
               className="w-full"
