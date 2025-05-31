@@ -20,17 +20,8 @@ interface ProfessionalSearchFiltersProps {
     availability?: 'available' | 'busy' | 'unavailable';
     verificationStatus?: 'verified' | 'pending' | 'unverified';
   };
-  onFiltersChange: (filters: {
-    skills?: string[];
-    rating?: number;
-    location?: string;
-    hourlyRate?: {
-      min?: number;
-      max?: number;
-    };
-    availability?: 'available' | 'busy' | 'unavailable';
-    verificationStatus?: 'verified' | 'pending' | 'unverified';
-  }) => void;
+  onFiltersChange: (filters: ProfessionalSearchFiltersProps['filters']) => void;
+  onClearFilters: () => void;
 }
 
 const SKILLS = [
@@ -63,7 +54,8 @@ const LOCATIONS = [
 
 const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
   filters,
-  onFiltersChange
+  onFiltersChange,
+  onClearFilters
 }) => {
   const handleSkillToggle = (skill: string) => {
     const currentSkills = filters.skills || [];

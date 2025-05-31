@@ -1,39 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Layout from '@/components/layout/Layout';
 import ProfessionalListings from '@/components/marketplace/ProfessionalListings';
 import ProfessionalSearchFilters from '@/components/marketplace/ProfessionalSearchFilters';
 import { Button } from '@/components/ui/button';
 import { Grid, List, ArrowUpDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from '@/components/ui/use-toast';
+
+type SortField = 'rating' | 'hourly_rate' | 'completed_projects' | 'response_rate' | 'on_time_completion';
+type SortOrder = 'asc' | 'desc';
+
+interface Filters {
+  skills?: string[];
+  rating?: number;
+  location?: string;
+  hourlyRate?: {
+    min?: number;
+    max?: number;
+  };
+  availability?: 'available' | 'busy' | 'unavailable';
+  verificationStatus?: 'verified' | 'pending' | 'unverified';
+}
+
+const DEFAULT_FILTERS: Filters = {
+  skills: [],
+  rating: undefined,
+  location: '',
+  hourlyRate: {
+    min: undefined,
+    max: undefined
+  },
+  availability: undefined,
+  verificationStatus: undefined
+};
 
 const ProfessionalMarketplace: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [filters, setFilters] = useState<{
-    skills?: string[];
-    rating?: number;
-    location?: string;
-    hourlyRate?: {
-      min?: number;
-      max?: number;
-    };
-    availability?: 'available' | 'busy' | 'unavailable';
-    verificationStatus?: 'verified' | 'pending' | 'unverified';
-  }>({});
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [sortBy, setSortBy] = useState<{
-    field: 'rating' | 'hourly_rate' | 'completed_projects' | 'response_rate' | 'on_time_completion';
-    order: 'asc' | 'desc';
+    field: SortField;
+    order: SortOrder;
   }>({
     field: 'rating',
     order: 'desc'
   });
 
-  const handleSortChange = (value: string) => {
-    const [field, order] = value.split('-');
-    setSortBy({
-      field: field as 'rating' | 'hourly_rate' | 'completed_projects' | 'response_rate' | 'on_time_completion',
-      order: order as 'asc' | 'desc'
-    });
-  };
+  const handleSortChange = useCallback((value: string) => {
+    try {
+      const [field, order] = value.split('-');
+      if (!field || !order) {
+        throw new Error('Invalid sort value');
+      }
+
+      const validFields: SortField[] = ['rating', 'hourly_rate', 'completed_projects', 'response_rate', 'on_time_completion'];
+      const validOrders: SortOrder[] = ['asc', 'desc'];
+
+      if (!validFields.includes(field as SortField) || !validOrders.includes(order as SortOrder)) {
+        throw new Error('Invalid sort field or order');
+      }
+
+      setSortBy({
+        field: field as SortField,
+        order: order as SortOrder
+      });
+    } catch (error) {
+      console.error('Error setting sort:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update sort order. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters: Filters) => {
+    setFilters(newFilters);
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
+  }, []);
 
   return (
     <Layout>
@@ -43,7 +89,8 @@ const ProfessionalMarketplace: React.FC = () => {
           <div className="w-full md:w-64 flex-shrink-0">
             <ProfessionalSearchFilters
               filters={filters}
-              onFiltersChange={setFilters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
             />
           </div>
 
