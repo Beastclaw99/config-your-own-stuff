@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 import PortfolioUpload from '@/components/profile/PortfolioUpload';
 import { ProfileData } from '@/components/profile/types';
 
@@ -22,6 +25,8 @@ const EditProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [newSkill, setNewSkill] = useState('');
+  const [newCertification, setNewCertification] = useState('');
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -33,6 +38,8 @@ const EditProfile: React.FC = () => {
     hourly_rate: '',
     availability: '' as 'available' | 'busy' | 'unavailable' | '',
     skills: [] as string[],
+    certifications: [] as string[],
+    years_experience: '',
     profile_visibility: true,
     show_email: true,
     show_phone: true,
@@ -71,6 +78,7 @@ const EditProfile: React.FC = () => {
         allow_messages: data.allow_messages ?? true,
         profile_image: data.profile_image || null,
         verification_status: (data.verification_status as 'unverified' | 'pending' | 'verified') || null,
+        years_experience: data.years_experience || null,
       };
       
       setProfile(profileData);
@@ -84,6 +92,8 @@ const EditProfile: React.FC = () => {
         hourly_rate: data.hourly_rate?.toString() || '',
         availability: (data.availability as 'available' | 'busy' | 'unavailable') || '',
         skills: data.skills || [],
+        certifications: data.certifications || [],
+        years_experience: data.years_experience?.toString() || '',
         profile_visibility: data.profile_visibility ?? true,
         show_email: data.show_email ?? true,
         show_phone: data.show_phone ?? true,
@@ -110,6 +120,40 @@ const EditProfile: React.FC = () => {
     navigate(`/profile/edit?tab=${value}`);
   };
 
+  const handleAddSkill = () => {
+    if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
+      setFormData({
+        ...formData,
+        skills: [...formData.skills, newSkill.trim()]
+      });
+      setNewSkill('');
+    }
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    setFormData({
+      ...formData,
+      skills: formData.skills.filter(s => s !== skill)
+    });
+  };
+
+  const handleAddCertification = () => {
+    if (newCertification.trim() && !formData.certifications.includes(newCertification.trim())) {
+      setFormData({
+        ...formData,
+        certifications: [...formData.certifications, newCertification.trim()]
+      });
+      setNewCertification('');
+    }
+  };
+
+  const handleRemoveCertification = (certification: string) => {
+    setFormData({
+      ...formData,
+      certifications: formData.certifications.filter(c => c !== certification)
+    });
+  };
+
   const handleSave = async () => {
     if (!user?.id) return;
     
@@ -127,6 +171,8 @@ const EditProfile: React.FC = () => {
           hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : null,
           availability: formData.availability || null,
           skills: formData.skills,
+          certifications: formData.certifications,
+          years_experience: formData.years_experience ? parseInt(formData.years_experience) : null,
           profile_visibility: formData.profile_visibility,
           show_email: formData.show_email,
           show_phone: formData.show_phone,
@@ -170,9 +216,10 @@ const EditProfile: React.FC = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="personal">Personal Info</TabsTrigger>
               <TabsTrigger value="professional">Professional</TabsTrigger>
+              <TabsTrigger value="skills">Skills & Certifications</TabsTrigger>
               <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             </TabsList>
 
@@ -213,6 +260,23 @@ const EditProfile: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
             </TabsContent>
 
@@ -228,6 +292,15 @@ const EditProfile: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="years_experience">Years of Experience</Label>
+                  <Input
+                    id="years_experience"
+                    type="number"
+                    value={formData.years_experience}
+                    onChange={(e) => setFormData({ ...formData, years_experience: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="availability">Availability</Label>
                   <select
                     id="availability"
@@ -240,6 +313,110 @@ const EditProfile: React.FC = () => {
                     <option value="busy">Busy</option>
                     <option value="unavailable">Unavailable</option>
                   </select>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="profile_visibility">Profile Visibility</Label>
+                    <Switch
+                      id="profile_visibility"
+                      checked={formData.profile_visibility}
+                      onCheckedChange={(checked) => setFormData({ ...formData, profile_visibility: checked })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="show_email">Show Email</Label>
+                    <Switch
+                      id="show_email"
+                      checked={formData.show_email}
+                      onCheckedChange={(checked) => setFormData({ ...formData, show_email: checked })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="show_phone">Show Phone</Label>
+                    <Switch
+                      id="show_phone"
+                      checked={formData.show_phone}
+                      onCheckedChange={(checked) => setFormData({ ...formData, show_phone: checked })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="allow_messages">Allow Messages</Label>
+                    <Switch
+                      id="allow_messages"
+                      checked={formData.allow_messages}
+                      onCheckedChange={(checked) => setFormData({ ...formData, allow_messages: checked })}
+                    />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="skills">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label>Skills</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        value={newSkill}
+                        onChange={(e) => setNewSkill(e.target.value)}
+                        placeholder="Add a skill"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddSkill();
+                          }
+                        }}
+                      />
+                      <Button onClick={handleAddSkill}>Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {formData.skills.map((skill, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {skill}
+                          <button
+                            onClick={() => handleRemoveSkill(skill)}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label>Certifications</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        value={newCertification}
+                        onChange={(e) => setNewCertification(e.target.value)}
+                        placeholder="Add a certification"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCertification();
+                          }
+                        }}
+                      />
+                      <Button onClick={handleAddCertification}>Add</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {formData.certifications.map((certification, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {certification}
+                          <button
+                            onClick={() => handleRemoveCertification(certification)}
+                            className="ml-1 hover:text-destructive"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </TabsContent>
