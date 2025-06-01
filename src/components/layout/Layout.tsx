@@ -16,6 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
   const [accountType, setAccountType] = useState<string | null>(null);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   
   // Fetch user account type
   useEffect(() => {
@@ -42,15 +43,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Show sidebar for all logged-in users
   const showSidebar = !!user;
 
+  // Handle sidebar expansion state
+  const handleSidebarExpand = (expanded: boolean) => {
+    setIsSidebarExpanded(expanded);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="flex-1 flex">
-        <main className={`flex-1 transition-all duration-300 ${showSidebar ? 'mr-16 md:mr-64' : ''}`}>
+        <main className={`flex-1 transition-all duration-300 ${showSidebar ? (isSidebarExpanded ? 'mr-64' : 'mr-16') : ''}`}>
           {children}
         </main>
-        {showSidebar && accountType === 'professional' && <ProfessionalSidebar />}
-        {showSidebar && accountType === 'client' && <ClientSidebar />}
+        {showSidebar && accountType === 'professional' && (
+          <ProfessionalSidebar onExpand={handleSidebarExpand} />
+        )}
+        {showSidebar && accountType === 'client' && (
+          <ClientSidebar onExpand={handleSidebarExpand} />
+        )}
       </div>
       <Footer />
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { 
@@ -79,9 +79,21 @@ const sidebarItems = [
   }
 ];
 
-const ProfessionalSidebar: React.FC = () => {
+interface ProfessionalSidebarProps {
+  onExpand: (expanded: boolean) => void;
+}
+
+const ProfessionalSidebar: React.FC<ProfessionalSidebarProps> = ({ onExpand }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    onExpand(isExpanded);
+  }, [isExpanded, onExpand]);
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   return (
     <aside className={cn(
@@ -94,7 +106,7 @@ const ProfessionalSidebar: React.FC = () => {
           variant="ghost"
           size="icon"
           className="absolute -left-4 top-6 h-8 w-8 rounded-full border border-gray-200 bg-white shadow-md hover:bg-gray-50"
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={handleToggle}
         >
           {isExpanded ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
