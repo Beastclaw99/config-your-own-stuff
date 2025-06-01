@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -40,31 +39,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     fetchAccountType();
   }, [user]);
   
-  // Show sidebar only for logged-in users on relevant pages
-  const showSidebar = user && (
-    location.pathname === '/dashboard' ||
-    location.pathname === '/insights' ||
-    location.pathname === '/analytics' ||
-    location.pathname === '/notifications' ||
-    location.pathname === '/messages' ||
-    location.pathname === '/calendar' ||
-    location.pathname === '/settings' ||
-    location.pathname === '/support' ||
-    location.pathname === '/help' ||
-    location.pathname === '/profile' ||
-    location.pathname === '/network' ||
-    location.pathname === '/invoices'
-  );
+  // Show sidebar for all logged-in users
+  const showSidebar = !!user;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1">
-        {children}
-      </main>
+      <div className="flex-1 flex">
+        <main className={`flex-1 transition-all duration-300 ${showSidebar ? 'mr-16 md:mr-64' : ''}`}>
+          {children}
+        </main>
+        {showSidebar && accountType === 'professional' && <ProfessionalSidebar />}
+        {showSidebar && accountType === 'client' && <ClientSidebar />}
+      </div>
       <Footer />
-      {showSidebar && accountType === 'professional' && <ProfessionalSidebar />}
-      {showSidebar && accountType === 'client' && <ClientSidebar />}
     </div>
   );
 };

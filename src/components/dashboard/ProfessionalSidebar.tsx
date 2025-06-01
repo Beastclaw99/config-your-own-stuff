@@ -84,12 +84,11 @@ const ProfessionalSidebar: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="fixed right-0 top-16 z-50 h-[calc(100vh-4rem)]">
-      {/* Sidebar content */}
-      <div className={cn(
-        "bg-white border-l border-gray-200 shadow-lg h-full transition-all duration-300 ease-in-out",
-        isExpanded ? "w-64" : "w-16"
-      )}>
+    <aside className={cn(
+      "fixed right-0 top-16 z-40 h-[calc(100vh-4rem)] transition-all duration-300 ease-in-out",
+      isExpanded ? "w-64" : "w-16"
+    )}>
+      <div className="bg-white border-l border-gray-200 shadow-lg h-full">
         {/* Toggle button */}
         <Button
           variant="ghost"
@@ -118,7 +117,7 @@ const ProfessionalSidebar: React.FC = () => {
         </div>
 
         {/* Navigation items */}
-        <div className="p-2 space-y-1">
+        <nav className="p-2 space-y-1">
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.href || 
                            (item.href.includes('?tab=') && location.search.includes(item.href.split('?tab=')[1]));
@@ -171,9 +170,9 @@ const ProfessionalSidebar: React.FC = () => {
 
             return menuItem;
           })}
-        </div>
+        </nav>
       </div>
-    </div>
+    </aside>
   );
 };
 
