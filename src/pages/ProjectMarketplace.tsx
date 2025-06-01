@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -105,8 +106,8 @@ const ProjectMarketplace: React.FC = () => {
                            (project.location && project.location.toLowerCase().includes(locationFilter.toLowerCase()));
     
     let matchesBudget = true;
-    const projectBudget = parseFloat(project.budget);
-    if (!isNaN(projectBudget)) {
+    const projectBudget = project.budget;
+    if (projectBudget && typeof projectBudget === 'number') {
       if (budgetFilter === "under5k") {
         matchesBudget = projectBudget < 5000;
       } else if (budgetFilter === "5k-10k") {

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -44,13 +45,12 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     });
   };
 
-  const formatCurrency = (amount: string) => {
-    const numAmount = parseFloat(amount);
-    if (isNaN(numAmount)) return amount;
+  const formatCurrency = (amount: number | undefined) => {
+    if (!amount || isNaN(amount)) return 'N/A';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(numAmount);
+    }).format(amount);
   };
 
   if (variant === 'list') {
