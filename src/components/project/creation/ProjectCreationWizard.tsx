@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Circle, AlertCircle, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import BasicDetailsStep from './steps/BasicDetailsStep';
 import RequirementsStep from './steps/RequirementsStep';
 import BudgetTimelineStep from './steps/BudgetTimelineStep';
@@ -36,16 +38,88 @@ const ProjectCreationWizard: React.FC = () => {
   });
 
   const steps = [
-    { number: 1, title: 'Basic Details', component: BasicDetailsStep },
-    { number: 2, title: 'Requirements', component: RequirementsStep },
-    { number: 3, title: 'Budget & Timeline', component: BudgetTimelineStep },
-    { number: 4, title: 'Milestones & Deliverables', component: MilestonesDeliverablesStep },
-    { number: 5, title: 'Service Contract', component: ServiceContractStep },
-    { number: 6, title: 'Review', component: ReviewStep }
+    { 
+      number: 1, 
+      title: 'Basic Details', 
+      component: BasicDetailsStep,
+      description: 'Project title, description, and category'
+    },
+    { 
+      number: 2, 
+      title: 'Requirements', 
+      component: RequirementsStep,
+      description: 'Detailed requirements and skills needed'
+    },
+    { 
+      number: 3, 
+      title: 'Budget & Timeline', 
+      component: BudgetTimelineStep,
+      description: 'Set your budget and expected timeline'
+    },
+    { 
+      number: 4, 
+      title: 'Milestones & Deliverables', 
+      component: MilestonesDeliverablesStep,
+      description: 'Define project milestones and deliverables'
+    },
+    { 
+      number: 5, 
+      title: 'Service Contract', 
+      component: ServiceContractStep,
+      description: 'Review and accept the service agreement'
+    },
+    { 
+      number: 6, 
+      title: 'Review & Publish', 
+      component: ReviewStep,
+      description: 'Final review before publishing your project'
+    }
   ];
 
+  const getCurrentStepRequirements = () => {
+    switch (currentStep) {
+      case 1:
+        return ['Project title', 'Description', 'Category', 'Location'];
+      case 2:
+        return ['At least one requirement (optional)', 'Skills needed (optional)'];
+      case 3:
+        return ['Budget amount', 'Timeline', 'Urgency level'];
+      case 4:
+        return ['Milestones (optional)', 'Deliverables (optional)'];
+      case 5:
+        return ['Service contract acceptance'];
+      case 6:
+        return ['Final review of all details'];
+      default:
+        return [];
+    }
+  };
+
+  const isStepComplete = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1:
+        return projectData.title && projectData.description && projectData.category && projectData.location;
+      case 2:
+        return true; // Requirements are optional
+      case 3:
+        return projectData.budget > 0 && projectData.timeline && projectData.urgency;
+      case 4:
+        return true; // Milestones are optional
+      case 5:
+        return !!projectData.service_contract;
+      case 6:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const canProceedToNext = () => {
+    return isStepComplete(currentStep);
+  };
+
   const nextStep = () => {
-    if (currentStep < steps.length) {
+    if (currentStep < steps.length && canProceedToNext()) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -171,50 +245,91 @@ const ProjectCreationWizard: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-center">Create New Project</CardTitle>
-          <div className="space-y-2">
+          <div className="space-y-4">
             <Progress value={progress} className="w-full" />
-            <div className="flex justify-between text-sm text-gray-600">
+            
+            {/* Enhanced Step Indicators */}
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs">
               {steps.map((step) => (
-                <div key={step.number} className="flex items-center">
-                  {currentStep > step.number ? (
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                  ) : (
-                    <span className={`w-4 h-4 rounded-full text-xs flex items-center justify-center mr-1 ${
-                      currentStep === step.number ? 'bg-blue-500 text-white' : 'bg-gray-300'
-                    }`}>
-                      {step.number}
-                    </span>
-                  )}
-                  <span className={currentStep === step.number ? 'font-medium' : ''}>
-                    {step.title}
-                  </span>
+                <div key={step.number} className="flex flex-col items-center space-y-1">
+                  <div className="flex items-center">
+                    {isStepComplete(step.number) ? (
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    ) : currentStep === step.number ? (
+                      <Circle className="h-5 w-5 text-blue-500 fill-current" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-gray-300" />
+                    )}
+                  </div>
+                  <div className={`text-center ${currentStep === step.number ? 'font-medium text-blue-600' : 'text-gray-500'}`}>
+                    <div className="font-medium">{step.title}</div>
+                    <div className="text-xs opacity-75 hidden md:block">{step.description}</div>
+                  </div>
                 </div>
               ))}
             </div>
+
+            {/* Current Step Info */}
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <div className="font-medium">Step {currentStep}: {steps[currentStep - 1].title}</div>
+                <div className="text-sm text-gray-600 mt-1">
+                  {steps[currentStep - 1].description}
+                </div>
+                <div className="mt-2">
+                  <span className="text-sm font-medium">Required fields:</span>
+                  <ul className="text-sm text-gray-600 mt-1">
+                    {getCurrentStepRequirements().map((req, index) => (
+                      <li key={index} className="flex items-center gap-1">
+                        <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
+                        {req}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </AlertDescription>
+            </Alert>
           </div>
         </CardHeader>
         <CardContent>
           {renderCurrentStep()}
           
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between items-center mt-8">
             <Button 
               variant="outline" 
               onClick={prevStep}
               disabled={currentStep === 1}
             >
-              Previous
+              ← Previous
             </Button>
             
+            <div className="text-sm text-gray-500">
+              Step {currentStep} of {steps.length}
+            </div>
+            
             {currentStep === steps.length ? (
-              <Button onClick={handleSubmit}>
-                Create Project
+              <Button onClick={handleSubmit} size="lg" className="px-8">
+                🚀 Publish Project
               </Button>
             ) : (
-              <Button onClick={nextStep}>
-                Next
+              <Button 
+                onClick={nextStep} 
+                disabled={!canProceedToNext()}
+                size="lg"
+                className="px-8"
+              >
+                Next →
               </Button>
             )}
           </div>
+
+          {!canProceedToNext() && currentStep !== steps.length && (
+            <div className="mt-4 flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-lg">
+              <AlertCircle className="h-4 w-4" />
+              <span className="text-sm">Please complete all required fields to continue</span>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

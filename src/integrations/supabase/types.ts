@@ -165,6 +165,7 @@ export type Database = {
           read: boolean | null
           title: string
           type: string
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -174,6 +175,7 @@ export type Database = {
           read?: boolean | null
           title: string
           type: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -183,6 +185,7 @@ export type Database = {
           read?: boolean | null
           title?: string
           type?: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -607,7 +610,7 @@ export type Database = {
       projects: {
         Row: {
           assigned_to: string | null
-          budget: string | null
+          budget: number | null
           category: string | null
           client_id: string | null
           created_at: string | null
@@ -629,7 +632,7 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
-          budget?: string | null
+          budget?: number | null
           category?: string | null
           client_id?: string | null
           created_at?: string | null
@@ -651,7 +654,7 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
-          budget?: string | null
+          budget?: number | null
           category?: string | null
           client_id?: string | null
           created_at?: string | null
