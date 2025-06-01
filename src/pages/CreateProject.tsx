@@ -23,33 +23,11 @@ const CreateProject: React.FC = () => {
     }
 
     try {
-      // Convert budget range to numeric value for storage
-      let budgetValue = 0;
-      switch (formData.budget) {
-        case 'under-1000':
-          budgetValue = 500;
-          break;
-        case '1000-5000':
-          budgetValue = 3000;
-          break;
-        case '5000-10000':
-          budgetValue = 7500;
-          break;
-        case '10000-25000':
-          budgetValue = 17500;
-          break;
-        case 'over-25000':
-          budgetValue = 30000;
-          break;
-        default:
-          budgetValue = 0;
-      }
-
       console.log('Creating project with data:', {
         title: formData.title,
         description: formData.description,
         category: formData.category,
-        budget: budgetValue,
+        budget: formData.budget,
         expected_timeline: formData.expected_timeline,
         location: formData.location,
         urgency: formData.urgency,
@@ -66,7 +44,7 @@ const CreateProject: React.FC = () => {
             title: formData.title,
             description: formData.description,
             category: formData.category,
-            budget: budgetValue,
+            budget: formData.budget,
             expected_timeline: formData.expected_timeline,
             location: formData.location,
             urgency: formData.urgency,

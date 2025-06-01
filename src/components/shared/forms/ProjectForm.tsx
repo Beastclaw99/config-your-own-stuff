@@ -144,10 +144,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     if (!formData.title.trim()) newErrors.title = 'Project title is required';
     if (!formData.description.trim()) newErrors.description = 'Project description is required';
     if (!formData.category) newErrors.category = 'Project category is required';
-    if (!formData.budget) newErrors.budget = 'Budget range is required';
+    if (!formData.budget.trim()) newErrors.budget = 'Budget is required';
     if (!formData.expected_timeline) newErrors.expected_timeline = 'Timeline is required';
     if (!formData.location.trim()) newErrors.location = 'Location is required';
-    if (formData.required_skills.length === 0) newErrors.required_skills = 'At least one skill is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -216,22 +215,14 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="budget">Budget Range *</Label>
-              <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
-                <SelectTrigger className={errors.budget ? 'border-red-500' : ''}>
-                  <SelectValue placeholder="Select budget" />
-                </SelectTrigger>
-                <SelectContent>
-                  {BUDGET_RANGES.map((range) => (
-                    <SelectItem key={range.value} value={range.value}>
-                      <div>
-                        <div>{range.label}</div>
-                        <div className="text-xs text-gray-500">{range.description}</div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="budget">Budget *</Label>
+              <Input
+                id="budget"
+                value={formData.budget}
+                onChange={(e) => handleInputChange('budget', e.target.value)}
+                placeholder="e.g., $5,000 or Negotiable"
+                className={errors.budget ? 'border-red-500' : ''}
+              />
               {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget}</p>}
             </div>
           </div>
@@ -271,44 +262,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
           {/* Required Skills */}
           <div>
-            <Label>Required Skills *</Label>
+            <Label>Required Skills (Optional)</Label>
             <div className="space-y-2">
               <div className="flex gap-2">
-                <Popover open={openSkillsPopover} onOpenChange={setOpenSkillsPopover}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={openSkillsPopover}
-                      className="w-full justify-between"
-                    >
-                      Select skills...
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-full p-0">
-                    <Command>
-                      <CommandInput placeholder="Search skills..." />
-                      <CommandEmpty>No skills found.</CommandEmpty>
-                      <CommandGroup>
-                        {COMMON_SKILLS.map((skill) => (
-                          <CommandItem
-                            key={skill}
-                            onSelect={() => {
-                              handleAddSkill(skill);
-                              setOpenSkillsPopover(false);
-                            }}
-                          >
-                            {skill}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
                 <Input
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="Add custom skill"
+                  placeholder="Add a skill"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -331,9 +291,6 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   </Badge>
                 ))}
               </div>
-              {errors.required_skills && (
-                <p className="text-red-500 text-sm mt-1">{errors.required_skills}</p>
-              )}
             </div>
           </div>
 
