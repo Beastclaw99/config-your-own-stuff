@@ -157,6 +157,44 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -214,88 +252,133 @@ export type Database = {
       }
       profiles: {
         Row: {
-          id: string;
-          first_name: string | null;
-          last_name: string | null;
-          account_type: 'client' | 'professional';
-          skills: string[] | null;
-          rating: number | null;
-          created_at: string;
-          updated_at: string | null;
-          bio: string | null;
-          location: string | null;
-          phone: string | null;
-          email: string | null;
-          hourly_rate: number | null;
-          availability: 'available' | 'busy' | 'unavailable' | null;
-          portfolio_images: string[] | null;
-          certifications: string[] | null;
-          completed_projects: number | null;
-          response_rate: number | null;
-          on_time_completion: number | null;
-          profile_visibility: boolean;
-          show_email: boolean;
-          show_phone: boolean;
-          allow_messages: boolean;
-          profile_image: string | null;
-          verification_status: 'unverified' | 'pending' | 'verified' | null;
-          years_experience: number | null;
+          account_type: Database["public"]["Enums"]["account_type_enum"]
+          address: string | null
+          allow_messages: boolean | null
+          availability: string | null
+          bio: string | null
+          business_description: string | null
+          business_name: string | null
+          certifications: string[] | null
+          city: string | null
+          completed_projects: number | null
+          country: string | null
+          created_at: string
+          email: string | null
+          first_name: string | null
+          hourly_rate: number | null
+          id: string
+          insurance_info: string | null
+          is_available: boolean | null
+          last_name: string | null
+          license_number: string | null
+          location: string | null
+          on_time_completion: number | null
+          phone: string | null
+          portfolio_images: string[] | null
+          portfolio_urls: string[] | null
+          profile_image: string | null
+          profile_image_url: string | null
+          profile_visibility: boolean | null
+          rating: number | null
+          response_rate: number | null
+          service_areas: string[] | null
+          show_email: boolean | null
+          show_phone: boolean | null
+          skills: string[] | null
+          specialties: string[] | null
+          state: string | null
+          updated_at: string | null
+          verification_status: string | null
+          years_experience: number | null
+          years_of_experience: number | null
+          zip_code: string | null
         }
         Insert: {
-          id: string;
-          first_name?: string | null;
-          last_name?: string | null;
-          account_type: 'client' | 'professional';
-          skills?: string[] | null;
-          rating?: number | null;
-          created_at?: string;
-          updated_at?: string | null;
-          bio?: string | null;
-          location?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          hourly_rate?: number | null;
-          availability?: 'available' | 'busy' | 'unavailable' | null;
-          portfolio_images?: string[] | null;
-          certifications?: string[] | null;
-          completed_projects?: number | null;
-          response_rate?: number | null;
-          on_time_completion?: number | null;
-          profile_visibility?: boolean;
-          show_email?: boolean;
-          show_phone?: boolean;
-          allow_messages?: boolean;
-          profile_image?: string | null;
-          verification_status?: 'unverified' | 'pending' | 'verified' | null;
-          years_experience?: number | null;
+          account_type: Database["public"]["Enums"]["account_type_enum"]
+          address?: string | null
+          allow_messages?: boolean | null
+          availability?: string | null
+          bio?: string | null
+          business_description?: string | null
+          business_name?: string | null
+          certifications?: string[] | null
+          city?: string | null
+          completed_projects?: number | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          hourly_rate?: number | null
+          id: string
+          insurance_info?: string | null
+          is_available?: boolean | null
+          last_name?: string | null
+          license_number?: string | null
+          location?: string | null
+          on_time_completion?: number | null
+          phone?: string | null
+          portfolio_images?: string[] | null
+          portfolio_urls?: string[] | null
+          profile_image?: string | null
+          profile_image_url?: string | null
+          profile_visibility?: boolean | null
+          rating?: number | null
+          response_rate?: number | null
+          service_areas?: string[] | null
+          show_email?: boolean | null
+          show_phone?: boolean | null
+          skills?: string[] | null
+          specialties?: string[] | null
+          state?: string | null
+          updated_at?: string | null
+          verification_status?: string | null
+          years_experience?: number | null
+          years_of_experience?: number | null
+          zip_code?: string | null
         }
         Update: {
-          id?: string;
-          first_name?: string | null;
-          last_name?: string | null;
-          account_type?: 'client' | 'professional';
-          skills?: string[] | null;
-          rating?: number | null;
-          created_at?: string;
-          updated_at?: string | null;
-          bio?: string | null;
-          location?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          hourly_rate?: number | null;
-          availability?: 'available' | 'busy' | 'unavailable' | null;
-          portfolio_images?: string[] | null;
-          certifications?: string[] | null;
-          completed_projects?: number | null;
-          response_rate?: number | null;
-          on_time_completion?: number | null;
-          profile_visibility?: boolean;
-          show_email?: boolean;
-          show_phone?: boolean;
-          allow_messages?: boolean;
-          profile_image?: string | null;
-          verification_status?: 'unverified' | 'pending' | 'verified' | null;
-          years_experience?: number | null;
+          account_type?: Database["public"]["Enums"]["account_type_enum"]
+          address?: string | null
+          allow_messages?: boolean | null
+          availability?: string | null
+          bio?: string | null
+          business_description?: string | null
+          business_name?: string | null
+          certifications?: string[] | null
+          city?: string | null
+          completed_projects?: number | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          hourly_rate?: number | null
+          id?: string
+          insurance_info?: string | null
+          is_available?: boolean | null
+          last_name?: string | null
+          license_number?: string | null
+          location?: string | null
+          on_time_completion?: number | null
+          phone?: string | null
+          portfolio_images?: string[] | null
+          portfolio_urls?: string[] | null
+          profile_image?: string | null
+          profile_image_url?: string | null
+          profile_visibility?: boolean | null
+          rating?: number | null
+          response_rate?: number | null
+          service_areas?: string[] | null
+          show_email?: boolean | null
+          show_phone?: boolean | null
+          skills?: string[] | null
+          specialties?: string[] | null
+          state?: string | null
+          updated_at?: string | null
+          verification_status?: string | null
+          years_experience?: number | null
+          years_of_experience?: number | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -538,6 +621,7 @@ export type Database = {
           required_skills: string | null
           requirements: string[] | null
           scope: string | null
+          service_contract: string | null
           status: string | null
           title: string
           "updated at": string | null
@@ -559,6 +643,7 @@ export type Database = {
           required_skills?: string | null
           requirements?: string[] | null
           scope?: string | null
+          service_contract?: string | null
           status?: string | null
           title: string
           "updated at"?: string | null
@@ -580,6 +665,7 @@ export type Database = {
           required_skills?: string | null
           requirements?: string[] | null
           scope?: string | null
+          service_contract?: string | null
           status?: string | null
           title?: string
           "updated at"?: string | null

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -71,7 +72,8 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
   };
 
   const handleLocationChange = (location: string) => {
-    onFiltersChange({ ...filters, location });
+    const actualLocation = location === 'all_locations' ? undefined : location;
+    onFiltersChange({ ...filters, location: actualLocation });
   };
 
   const handleHourlyRateChange = (type: 'min' | 'max', value: string) => {
@@ -85,12 +87,14 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
     });
   };
 
-  const handleAvailabilityChange = (availability: 'available' | 'busy' | 'unavailable') => {
-    onFiltersChange({ ...filters, availability });
+  const handleAvailabilityChange = (availability: string) => {
+    const actualAvailability = availability === 'any_availability' ? undefined : availability as 'available' | 'busy' | 'unavailable';
+    onFiltersChange({ ...filters, availability: actualAvailability });
   };
 
-  const handleVerificationStatusChange = (status: 'verified' | 'pending' | 'unverified') => {
-    onFiltersChange({ ...filters, verificationStatus: status });
+  const handleVerificationStatusChange = (status: string) => {
+    const actualStatus = status === 'any_status' ? undefined : status as 'verified' | 'pending' | 'unverified';
+    onFiltersChange({ ...filters, verificationStatus: actualStatus });
   };
 
   const clearFilters = () => {
@@ -104,14 +108,14 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
           <div>
             <Label className="text-lg font-semibold mb-4 block">Location</Label>
             <Select
-              value={filters.location}
+              value={filters.location || 'all_locations'}
               onValueChange={handleLocationChange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all_locations">All Locations</SelectItem>
                 {LOCATIONS.map((location) => (
                   <SelectItem key={location} value={location}>
                     {location}
@@ -182,14 +186,14 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
           <div>
             <Label className="text-lg font-semibold mb-4 block">Availability</Label>
             <Select
-              value={filters.availability}
+              value={filters.availability || 'any_availability'}
               onValueChange={handleAvailabilityChange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select availability" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="any_availability">Any</SelectItem>
                 <SelectItem value="available">Available</SelectItem>
                 <SelectItem value="busy">Busy</SelectItem>
                 <SelectItem value="unavailable">Unavailable</SelectItem>
@@ -200,14 +204,14 @@ const ProfessionalSearchFilters: React.FC<ProfessionalSearchFiltersProps> = ({
           <div>
             <Label className="text-lg font-semibold mb-4 block">Verification Status</Label>
             <Select
-              value={filters.verificationStatus}
+              value={filters.verificationStatus || 'any_status'}
               onValueChange={handleVerificationStatusChange}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="any_status">Any</SelectItem>
                 <SelectItem value="verified">Verified</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="unverified">Unverified</SelectItem>
