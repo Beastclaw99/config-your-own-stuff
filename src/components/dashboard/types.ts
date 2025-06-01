@@ -3,7 +3,7 @@ export interface Project {
   title: string;
   description?: string;
   category?: string;
-  budget?: number;
+  budget?: string;
   expected_timeline?: string;
   location?: string;
   urgency?: string;

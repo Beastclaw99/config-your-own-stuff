@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -94,7 +93,7 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
         .update({
           title: editedProject.title,
           description: editedProject.description,
-          budget: parseFloat(editedProject.budget),
+          budget: editedProject.budget,
         })
         .eq('id', project.id)
         .eq('client_id', userId);

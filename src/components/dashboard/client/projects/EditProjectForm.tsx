@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,29 +55,22 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="edit-budget">Budget ($)</Label>
+            <Label htmlFor="edit-budget">Budget</Label>
             <Input 
               id="edit-budget" 
-              type="number" 
               value={editedProject.budget}
               onChange={e => onChange({...editedProject, budget: e.target.value})}
+              placeholder="e.g., $5,000 or Negotiable"
             />
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={onCancel}
-        >
+      <CardFooter className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button 
-          className="bg-ttc-blue-700 hover:bg-ttc-blue-800"
-          onClick={() => onUpdate(editProject)}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Updating..." : "Update Project"}
+        <Button onClick={() => onUpdate(editProject)} disabled={isSubmitting}>
+          Save Changes
         </Button>
       </CardFooter>
     </Card>

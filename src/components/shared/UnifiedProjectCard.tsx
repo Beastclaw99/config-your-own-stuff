@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +44,15 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     });
   };
 
+  const formatCurrency = (amount: string) => {
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount)) return amount;
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(numAmount);
+  };
+
   if (variant === 'list') {
     return (
       <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -76,9 +84,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-              <div className="flex items-center text-ttc-neutral-700">
-                <DollarSign size={16} className="mr-1 text-ttc-blue-700" />
-                <span className="font-semibold">${project.budget}</span>
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-gray-500" />
+                <span className="font-semibold">{formatCurrency(project.budget)}</span>
               </div>
               
               <div className="flex items-center text-ttc-neutral-700">
@@ -127,9 +135,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         </p>
         
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex items-center text-ttc-neutral-700">
-            <DollarSign size={16} className="mr-1 text-ttc-blue-700" />
-            <span className="font-semibold">${project.budget}</span>
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-gray-500" />
+            <span className="font-semibold">{formatCurrency(project.budget)}</span>
           </div>
           
           <div className="flex items-center text-ttc-neutral-700">

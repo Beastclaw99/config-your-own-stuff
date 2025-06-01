@@ -236,7 +236,7 @@ const ProjectDetails: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">Budget:</span>
-                    <span>${project.budget}</span>
+                    <span>{project.budget}</span>
                   </div>
 
                   {project.location && (

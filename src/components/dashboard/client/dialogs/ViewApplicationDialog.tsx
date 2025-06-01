@@ -53,7 +53,7 @@ const ViewApplicationDialog: React.FC<ViewApplicationDialogProps> = ({
               <p className="text-sm text-gray-600 mt-1">{project?.description}</p>
               <div className="flex gap-2 mt-2">
                 <Badge variant="outline" className="bg-gray-100">
-                  Budget: ${project?.budget?.toLocaleString() || 'N/A'}
+                  Budget: {project?.budget || 'N/A'}
                 </Badge>
                 <Badge variant="outline" className="bg-gray-100">
                   Status: {project?.status}
