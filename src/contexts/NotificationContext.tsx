@@ -44,7 +44,19 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setNotifications(data || []);
+      
+      // Map the database response to match our Notification interface
+      const typedNotifications: Notification[] = (data || []).map(notification => ({
+        id: notification.id,
+        type: notification.type as 'info' | 'success' | 'warning' | 'error',
+        title: notification.title,
+        message: notification.message,
+        read: notification.read ?? false,
+        created_at: notification.created_at || new Date().toISOString(),
+        updated_at: notification.created_at || new Date().toISOString(), // Use created_at as fallback for updated_at
+      }));
+      
+      setNotifications(typedNotifications);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       toast({
@@ -140,7 +152,17 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             filter: `user_id=eq.${user.id}`
           },
           (payload) => {
-            const newNotification = payload.new as Notification;
+            const newNotificationData = payload.new as any;
+            const newNotification: Notification = {
+              id: newNotificationData.id,
+              type: newNotificationData.type as 'info' | 'success' | 'warning' | 'error',
+              title: newNotificationData.title,
+              message: newNotificationData.message,
+              read: newNotificationData.read ?? false,
+              created_at: newNotificationData.created_at || new Date().toISOString(),
+              updated_at: newNotificationData.created_at || new Date().toISOString(),
+            };
+            
             setNotifications(prev => [newNotification, ...prev]);
             
             // Show toast for new notification
@@ -184,4 +206,4 @@ export const useNotifications = () => {
     throw new Error('useNotifications must be used within a NotificationProvider');
   }
   return context;
-}; 
+};

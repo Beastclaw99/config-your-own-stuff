@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -77,7 +78,7 @@ const EditProfile: React.FC = () => {
         phone: data.phone || '',
         email: data.email || '',
         hourly_rate: data.hourly_rate?.toString() || '',
-        availability: data.availability || '',
+        availability: (data.availability as 'available' | 'busy' | 'unavailable') || '',
         skills: data.skills || [],
         profile_visibility: data.profile_visibility ?? true,
         show_email: data.show_email ?? true,
@@ -118,4 +119,4 @@ const EditProfile: React.FC = () => {
   );
 };
 
-export default EditProfile; 
+export default EditProfile;
