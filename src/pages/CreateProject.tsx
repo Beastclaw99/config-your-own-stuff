@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,8 +15,8 @@ const CreateProject: React.FC = () => {
   const handleSubmit = async (formData: any) => {
     if (!user) {
       toast({
-        title: "Authentication Required",
-        description: "Please log in to create a project.",
+        title: "Error",
+        description: "You must be logged in to create a project",
         variant: "destructive"
       });
       return;
@@ -86,19 +85,14 @@ const CreateProject: React.FC = () => {
       }
 
       console.log('Project created successfully:', data);
-
+      
       toast({
-        title: "Project Created",
-        description: "Your project has been created successfully and is now visible to professionals!"
+        title: "Success",
+        description: "Project created successfully!",
       });
 
-      // Redirect to project marketplace to see the new project
-      navigate('/project-marketplace', { 
-        state: { 
-          message: 'Project created successfully! Your project is now visible to professionals.' 
-        } 
-      });
-
+      // Navigate to the project details page
+      navigate(`/projects/${data.id}`);
     } catch (error: any) {
       console.error('Error creating project:', error);
       toast({
