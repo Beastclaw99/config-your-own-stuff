@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, DollarSign, Clock, AlertCircle, ListChecks, FileText, Link } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Clock, AlertCircle, ListChecks, FileText, Link, CheckCircle } from 'lucide-react';
 import { ProjectData } from '../types';
 
 interface ReviewStepProps {
@@ -166,6 +166,25 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ data }) => {
           </CardContent>
         </Card>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">Service Contract</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {data.service_contract ? (
+            <div className="flex items-center gap-2 text-green-600">
+              <CheckCircle className="h-5 w-5" />
+              <span>Service contract has been accepted</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-yellow-600">
+              <AlertCircle className="h-5 w-5" />
+              <span>Service contract has not been accepted</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start gap-2">

@@ -11,6 +11,7 @@ import BasicDetailsStep from './steps/BasicDetailsStep';
 import RequirementsStep from './steps/RequirementsStep';
 import BudgetTimelineStep from './steps/BudgetTimelineStep';
 import MilestonesDeliverablesStep from './steps/MilestonesDeliverablesStep';
+import ServiceContractStep from './steps/ServiceContractStep';
 import ReviewStep from './steps/ReviewStep';
 import { ProjectData } from './types';
 
@@ -30,7 +31,8 @@ const ProjectCreationWizard: React.FC = () => {
     timeline: '',
     urgency: '',
     milestones: [],
-    deliverables: []
+    deliverables: [],
+    service_contract: ''
   });
 
   const steps = [
@@ -38,7 +40,8 @@ const ProjectCreationWizard: React.FC = () => {
     { number: 2, title: 'Requirements', component: RequirementsStep },
     { number: 3, title: 'Budget & Timeline', component: BudgetTimelineStep },
     { number: 4, title: 'Milestones & Deliverables', component: MilestonesDeliverablesStep },
-    { number: 5, title: 'Review', component: ReviewStep }
+    { number: 5, title: 'Service Contract', component: ServiceContractStep },
+    { number: 6, title: 'Review', component: ReviewStep }
   ];
 
   const nextStep = () => {
@@ -83,7 +86,8 @@ const ProjectCreationWizard: React.FC = () => {
             expected_timeline: projectData.timeline,
             urgency: projectData.urgency,
             client_id: user.id,
-            status: 'open'
+            status: 'open',
+            service_contract: projectData.service_contract
           }
         ])
         .select()
@@ -154,6 +158,8 @@ const ProjectCreationWizard: React.FC = () => {
       case 4:
         return <MilestonesDeliverablesStep data={projectData} onUpdate={handleDataUpdate} />;
       case 5:
+        return <ServiceContractStep data={projectData} onUpdate={handleDataUpdate} />;
+      case 6:
         return <ReviewStep data={projectData} />;
       default:
         return <BasicDetailsStep data={projectData} onUpdate={handleDataUpdate} />;

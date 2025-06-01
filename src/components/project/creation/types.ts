@@ -23,4 +23,5 @@ export interface ProjectData {
   urgency: string;
   milestones: Milestone[];
   deliverables: Deliverable[];
+  service_contract?: string;
 } 
