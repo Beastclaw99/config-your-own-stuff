@@ -157,8 +157,14 @@ const ProjectCreationWizard: React.FC = () => {
             description: projectData.description,
             category: projectData.category,
             location: projectData.location,
+<<<<<<< HEAD
             required_skills: projectData.recommended_skills.join(','),
             budget: projectData.budget,
+=======
+            requirements: projectData.requirements,
+            required_skills: projectData.skills.join(','),
+            budget: projectData.budget.toString(),
+>>>>>>> parent of 749e21b (Fix type errors and import issues)
             expected_timeline: projectData.timeline,
             urgency: projectData.urgency,
             client_id: user.id,
