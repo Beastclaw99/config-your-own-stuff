@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useClientDashboard } from '@/hooks/useClientDashboard';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,9 +11,17 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-export const ClientDashboard = () => {
+interface ClientDashboardProps {
+  userId?: string;
+  initialTab?: string;
+}
+
+export const ClientDashboard = ({ userId: propUserId, initialTab = 'projects' }: ClientDashboardProps) => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('projects');
+  const [activeTab, setActiveTab] = useState(initialTab);
+  
+  // Use the userId prop if provided, otherwise fall back to the authenticated user's ID
+  const userId = propUserId || user?.id || '';
   
   const {
     projects,
@@ -45,7 +54,7 @@ export const ClientDashboard = () => {
     handleApplicationUpdate,
     // Data refresh
     fetchDashboardData
-  } = useClientDashboard(user?.id || '');
+  } = useClientDashboard(userId);
 
   if (isLoading) {
     return (
