@@ -24,6 +24,12 @@ export interface Project {
     first_name: string | null;
     last_name: string | null;
   };
+  professional?: {
+    first_name: string | null;
+    last_name: string | null;
+    rating?: number;
+    skills?: string[];
+  };
 }
 
 export interface Application {

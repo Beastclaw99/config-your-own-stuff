@@ -50,7 +50,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({
   };
 
   if (projects.length === 0) {
-    return <EmptyProjectState />;
+    return <EmptyProjectState message="No projects found. Create your first project to get started!" />;
   }
 
   return (
@@ -64,7 +64,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({
               <ProjectCard
                 key={project.id}
                 project={project}
-                isEditing={editProject?.id === project.id}
+                editProject={editProject}
                 editedProject={editedProject}
                 isSubmitting={isSubmitting}
                 onEdit={() => onEditInitiate(project)}

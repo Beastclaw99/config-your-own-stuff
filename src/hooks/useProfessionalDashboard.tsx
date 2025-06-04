@@ -144,8 +144,10 @@ export const useProfessionalDashboard = (userId: string) => {
         }
         console.log('Applications data:', appsData);
         
-        // Transform the data to match the Application type
+        // Transform the data to match the Application type with proper type casting
         const validApplicationStatuses = ['pending', 'accepted', 'rejected', 'withdrawn'] as const;
+        const validProjectStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
+        
         const transformedApps: Application[] = (appsData || []).map(app => ({
           id: app.id,
           project_id: app.project_id,
@@ -160,7 +162,7 @@ export const useProfessionalDashboard = (userId: string) => {
           project: app.project ? {
             id: app.project.id,
             title: app.project.title,
-            status: app.project.status,
+            status: validProjectStatuses.includes(app.project.status as any) ? app.project.status as Project['status'] : 'open',
             budget: app.project.budget,
             created_at: app.project.created_at
           } : undefined
@@ -215,7 +217,14 @@ export const useProfessionalDashboard = (userId: string) => {
       }
       
       console.log('Reviews data:', reviewsData);
-      setReviews(reviewsData || []);
+      
+      // Transform reviews to handle the database field naming issue
+      const transformedReviews = (reviewsData || []).map(review => ({
+        ...review,
+        updated_at: review['updated at'] || review.created_at || new Date().toISOString()
+      }));
+      
+      setReviews(transformedReviews);
       
     } catch (error: any) {
       console.error('Dashboard data fetch error:', error);

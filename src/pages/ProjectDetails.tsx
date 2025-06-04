@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -39,7 +40,20 @@ const ProjectDetails: React.FC = () => {
         .single();
 
       if (error) throw error;
-      setProject(data);
+      
+      // Transform the data to match our Project type with proper type casting
+      const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
+      const transformedProject: Project = {
+        ...data,
+        status: validStatuses.includes(data.status as any) ? data.status : 'open',
+        updated_at: data.updated_at || data.created_at,
+        professional: data.professional ? {
+          first_name: data.professional.first_name,
+          last_name: data.professional.last_name
+        } : undefined
+      };
+      
+      setProject(transformedProject);
     } catch (error) {
       console.error('Error fetching project details:', error);
       toast({
