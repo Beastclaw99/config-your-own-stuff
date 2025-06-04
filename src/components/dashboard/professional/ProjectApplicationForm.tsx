@@ -65,7 +65,7 @@ const ProjectApplicationForm: React.FC<ProjectApplicationFormProps> = ({
 
   const getBudgetGuidance = () => {
     const clientBudget = project?.budget;
-    if (!clientBudget) return null;
+    if (!clientBudget || typeof clientBudget !== 'number') return null;
     
     return {
       competitive: Math.round(clientBudget * 0.8),

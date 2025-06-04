@@ -1,9 +1,10 @@
+
 export interface Project {
   id: string;
   title: string;
   description?: string;
   category?: string;
-  budget?: string;
+  budget?: number; // Changed from string to number to match database
   expected_timeline?: string;
   location?: string;
   urgency?: string;

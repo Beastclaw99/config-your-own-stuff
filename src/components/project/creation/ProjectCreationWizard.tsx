@@ -156,7 +156,7 @@ const ProjectCreationWizard: React.FC = () => {
             location: projectData.location,
             requirements: projectData.requirements,
             required_skills: projectData.skills.join(','),
-            budget: projectData.budget.toString(),
+            budget: projectData.budget, // Now correctly a number
             expected_timeline: projectData.timeline,
             urgency: projectData.urgency,
             client_id: user.id,
