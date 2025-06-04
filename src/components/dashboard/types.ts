@@ -1,38 +1,47 @@
 export interface Project {
   id: string;
   title: string;
-  description: string;
-  budget: number;
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  description: string | null;
+  budget: number | null;
+  status: 'open' | 'applied' | 'assigned' | 'in-progress' | 'submitted' | 'revision' | 'completed' | 'paid' | 'archived' | 'disputed';
   client_id: string;
   created_at: string;
   updated_at: string;
-  deadline?: string;
-  category?: string;
-  skills_required?: string[];
+  assigned_to: string | null;
+  location: string | null;
+  deadline: string | null;
+  required_skills: string | null;
+  professional_id: string | null;
+  project_start_time: string | null;
+  category: string | null;
+  expected_timeline: string | null;
+  urgency: string | null;
+  requirements: string[] | null;
+  scope: string | null;
+  service_contract: string | null;
 }
 
 export interface Application {
   id: string;
   project_id: string;
   professional_id: string;
-  cover_letter: string;
-  proposal_message: string;
-  bid_amount: number;
-  availability: string;
+  cover_letter: string | null;
   status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
   updated_at: string;
+  bid_amount: number | null;
+  proposal_message: string | null;
+  availability: string | null;
   project?: {
     id: string;
     title: string;
-    status: string;
-    budget: number;
+    status: Project['status'];
+    budget: number | null;
     created_at: string;
   };
   professional?: {
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
   };
 }
 
@@ -59,10 +68,10 @@ export interface Client {
 export interface Review {
   id: string;
   project_id: string;
-  client_id: string;
   professional_id: string;
+  client_id: string;
   rating: number;
-  comment: string;
+  comment: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -74,13 +83,13 @@ export interface Payment {
   professional_id: string;
   amount: number;
   status: 'pending' | 'completed' | 'failed';
+  paid_at: string | null;
   created_at: string;
-  updated_at: string;
   project?: {
     title: string;
   };
   professional?: {
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
   };
 }

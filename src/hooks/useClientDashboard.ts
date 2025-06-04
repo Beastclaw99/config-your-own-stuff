@@ -27,6 +27,82 @@ interface ReviewOperations {
   isSubmitting: boolean;
 }
 
+interface RawProject {
+  id: string;
+  title: string;
+  description: string | null;
+  budget: number | null;
+  status: string;
+  client_id: string;
+  created_at: string;
+  'updated at': string;
+  assigned_to: string | null;
+  location: string | null;
+  deadline: string | null;
+  required_skills: string | null;
+  professional_id: string | null;
+  project_start_time: string | null;
+  category: string | null;
+  expected_timeline: string | null;
+  urgency: string | null;
+  requirements: string[] | null;
+  scope: string | null;
+  service_contract: string | null;
+}
+
+interface RawApplication {
+  id: string;
+  project_id: string;
+  professional_id: string;
+  cover_letter: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  bid_amount: number | null;
+  proposal_message: string | null;
+  availability: string | null;
+  project?: {
+    id: string;
+    title: string;
+    status: string;
+    budget: number | null;
+    created_at: string;
+  };
+  professional?: {
+    first_name: string | null;
+    last_name: string | null;
+  };
+}
+
+interface SupabasePayment {
+  id: string;
+  project_id: string;
+  client_id: string;
+  professional_id: string;
+  amount: number;
+  status: string;
+  paid_at: string | null;
+  created_at: string;
+  project?: {
+    title: string;
+  };
+  professional?: {
+    first_name: string | null;
+    last_name: string | null;
+  };
+}
+
+interface SupabaseReview {
+  id: string;
+  project_id: string;
+  professional_id: string;
+  client_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export const useClientDashboard = (userId: string) => {
   const { toast } = useToast();
   const [state, setState] = useState<DashboardState>({
@@ -76,19 +152,36 @@ export const useClientDashboard = (userId: string) => {
       if (projectsError) throw projectsError;
       
       // Transform projects to match Project type
-      const transformedProjects: Project[] = (projectsData || []).map(project => ({
-        id: project.id,
-        title: project.title,
-        description: project.description,
-        budget: project.budget,
-        status: project.status as Project['status'],
-        client_id: project.client_id,
-        created_at: project.created_at,
-        updated_at: project.updated_at || project.created_at,
-        deadline: project.deadline,
-        category: project.category,
-        skills_required: project.skills_required
-      }));
+      const transformedProjects: Project[] = (projectsData as RawProject[] || []).map(project => {
+        // Validate and cast the status to the correct type
+        const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
+        const status = validStatuses.includes(project.status as any) 
+          ? project.status as Project['status']
+          : 'open' as const;
+
+        return {
+          id: project.id,
+          title: project.title,
+          description: project.description,
+          budget: project.budget,
+          status,
+          client_id: project.client_id,
+          created_at: project.created_at,
+          updated_at: project['updated at'] || project.created_at,
+          assigned_to: project.assigned_to,
+          location: project.location,
+          deadline: project.deadline,
+          required_skills: project.required_skills,
+          professional_id: project.professional_id,
+          project_start_time: project.project_start_time,
+          category: project.category,
+          expected_timeline: project.expected_timeline,
+          urgency: project.urgency,
+          requirements: project.requirements,
+          scope: project.scope,
+          service_contract: project.service_contract
+        };
+      });
       
       // Fetch applications for client's projects
       const { data: appsData, error: appsError } = await supabase
@@ -103,26 +196,38 @@ export const useClientDashboard = (userId: string) => {
       if (appsError) throw appsError;
       
       // Transform applications to match Application type
-      const transformedApplications: Application[] = (appsData || []).map(app => ({
-        id: app.id,
-        project_id: app.project_id,
-        professional_id: app.professional_id,
-        cover_letter: app.cover_letter,
-        proposal_message: app.proposal_message,
-        bid_amount: app.bid_amount,
-        availability: app.availability,
-        status: app.status as Application['status'],
-        created_at: app.created_at,
-        updated_at: app.updated_at || app.created_at,
-        project: app.project ? {
-          id: app.project.id,
-          title: app.project.title,
-          status: app.project.status,
-          budget: app.project.budget,
-          created_at: app.project.created_at
-        } : undefined,
-        professional: app.professional
-      }));
+      const validStatuses = ['pending', 'accepted', 'rejected'] as const;
+      type ApplicationStatus = typeof validStatuses[number];
+      
+      const transformedApplications: Application[] = (appsData as RawApplication[] || []).map(app => {
+        // Validate and cast the status to the correct type
+        const status = validStatuses.includes(app.status as any)
+          ? (app.status as ApplicationStatus)
+          : 'pending';
+
+        const transformedApp: Application = {
+          id: app.id,
+          project_id: app.project_id,
+          professional_id: app.professional_id,
+          cover_letter: app.cover_letter,
+          status,
+          created_at: app.created_at,
+          updated_at: app.updated_at,
+          bid_amount: app.bid_amount,
+          proposal_message: app.proposal_message,
+          availability: app.availability,
+          project: app.project ? {
+            id: app.project.id,
+            title: app.project.title,
+            status: app.project.status as Project['status'],
+            budget: app.project.budget,
+            created_at: app.project.created_at
+          } : undefined,
+          professional: app.professional
+        };
+
+        return transformedApp;
+      });
       
       // Fetch payments for client's projects
       const { data: paymentsData, error: paymentsError } = await supabase
@@ -138,16 +243,8 @@ export const useClientDashboard = (userId: string) => {
       
       // Transform payments to match Payment type
       const transformedPayments: Payment[] = (paymentsData || []).map(payment => ({
-        id: payment.id,
-        project_id: payment.project_id,
-        client_id: payment.client_id,
-        professional_id: payment.professional_id,
-        amount: payment.amount,
-        status: payment.status as Payment['status'],
-        created_at: payment.created_at,
-        updated_at: payment.updated_at || payment.created_at,
-        project: payment.project,
-        professional: payment.professional
+        ...payment,
+        status: payment.status as Payment['status']
       }));
       
       // Fetch reviews submitted by the client
@@ -160,14 +257,8 @@ export const useClientDashboard = (userId: string) => {
 
       // Transform reviews to match Review type
       const transformedReviews: Review[] = (reviewsData || []).map(review => ({
-        id: review.id,
-        project_id: review.project_id,
-        client_id: review.client_id,
-        professional_id: review.professional_id,
-        rating: review.rating,
-        comment: review.comment,
-        created_at: review.created_at,
-        updated_at: review.updated_at || review.created_at
+        ...review,
+        updated_at: review['updated at'] || review.created_at
       }));
 
       setState({
@@ -359,7 +450,13 @@ export const useClientDashboard = (userId: string) => {
 
   return {
     // State
-    ...state,
+    projects: state.projects,
+    applications: state.applications,
+    payments: state.payments,
+    reviews: state.reviews,
+    profileData: state.profileData,
+    isLoading: state.isLoading,
+    error: state.error,
     
     // Project Operations
     editProject: projectOps.editProject,
