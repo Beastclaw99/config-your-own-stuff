@@ -75,6 +75,21 @@ export const useClientDashboard = (userId: string) => {
       
       if (projectsError) throw projectsError;
       
+      // Transform projects to match Project type
+      const transformedProjects: Project[] = (projectsData || []).map(project => ({
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        budget: project.budget,
+        status: project.status as Project['status'],
+        client_id: project.client_id,
+        created_at: project.created_at,
+        updated_at: project.updated_at || project.created_at,
+        deadline: project.deadline,
+        category: project.category,
+        skills_required: project.skills_required
+      }));
+      
       // Fetch applications for client's projects
       const { data: appsData, error: appsError } = await supabase
         .from('applications')
@@ -83,11 +98,11 @@ export const useClientDashboard = (userId: string) => {
           project:projects(id, title, status, budget, created_at),
           professional:profiles!applications_professional_id_fkey(first_name, last_name)
         `)
-        .in('project_id', projectsData.map(project => project.id) || []);
+        .in('project_id', transformedProjects.map(project => project.id));
       
       if (appsError) throw appsError;
       
-      // Transform applications to match the Application type
+      // Transform applications to match Application type
       const transformedApplications: Application[] = (appsData || []).map(app => ({
         id: app.id,
         project_id: app.project_id,
@@ -96,9 +111,9 @@ export const useClientDashboard = (userId: string) => {
         proposal_message: app.proposal_message,
         bid_amount: app.bid_amount,
         availability: app.availability,
-        status: app.status,
+        status: app.status as Application['status'],
         created_at: app.created_at,
-        updated_at: app.updated_at,
+        updated_at: app.updated_at || app.created_at,
         project: app.project ? {
           id: app.project.id,
           title: app.project.title,
@@ -121,6 +136,20 @@ export const useClientDashboard = (userId: string) => {
       
       if (paymentsError) throw paymentsError;
       
+      // Transform payments to match Payment type
+      const transformedPayments: Payment[] = (paymentsData || []).map(payment => ({
+        id: payment.id,
+        project_id: payment.project_id,
+        client_id: payment.client_id,
+        professional_id: payment.professional_id,
+        amount: payment.amount,
+        status: payment.status as Payment['status'],
+        created_at: payment.created_at,
+        updated_at: payment.updated_at || payment.created_at,
+        project: payment.project,
+        professional: payment.professional
+      }));
+      
       // Fetch reviews submitted by the client
       const { data: reviewsData, error: reviewsError } = await supabase
         .from('reviews')
@@ -129,11 +158,23 @@ export const useClientDashboard = (userId: string) => {
       
       if (reviewsError) throw reviewsError;
 
+      // Transform reviews to match Review type
+      const transformedReviews: Review[] = (reviewsData || []).map(review => ({
+        id: review.id,
+        project_id: review.project_id,
+        client_id: review.client_id,
+        professional_id: review.professional_id,
+        rating: review.rating,
+        comment: review.comment,
+        created_at: review.created_at,
+        updated_at: review.updated_at || review.created_at
+      }));
+
       setState({
-        projects: projectsData || [],
+        projects: transformedProjects,
         applications: transformedApplications,
-        payments: paymentsData || [],
-        reviews: reviewsData || [],
+        payments: transformedPayments,
+        reviews: transformedReviews,
         profileData,
         isLoading: false,
         error: null

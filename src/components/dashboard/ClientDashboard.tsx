@@ -1,139 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProjectsTab from './client/ProjectsTab';
-import ApplicationsTab from './client/ApplicationsTab';
-import CreateProjectTab from './client/CreateProjectTab';
-import PaymentsTab from './client/PaymentsTab';
+import { useState } from 'react';
 import { useClientDashboard } from '@/hooks/useClientDashboard';
-import { useProjectOperations } from '@/hooks/useProjectOperations';
-import { useReviewOperations } from '@/hooks/useReviewOperations';
-import { useApplicationOperations } from '@/hooks/useApplicationOperations';
+import { useAuth } from '@/hooks/useAuth';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProjectsTab } from './tabs/ProjectsTab';
+import { ApplicationsTab } from './tabs/ApplicationsTab';
+import { CreateProjectTab } from './tabs/CreateProjectTab';
+import { PaymentsTab } from './tabs/PaymentsTab';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
-interface ClientDashboardProps {
-  userId: string;
-  initialTab?: string;
-}
-
-const ClientDashboard: React.FC<ClientDashboardProps> = ({ userId, initialTab = 'projects' }) => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(initialTab);
-
-  // Use custom hooks for data fetching and operations
-  const { 
-    projects, 
-    applications, 
-    payments, 
-    reviews, 
-    profileData, 
-    isLoading, 
-    fetchDashboardData 
-  } = useClientDashboard(userId);
+export const ClientDashboard = () => {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('projects');
   
-  const { 
-    editProject, 
-    projectToDelete, 
-    editedProject, 
-    newProject, 
-    isSubmitting: isProjectSubmitting, 
-    setEditedProject, 
-    setNewProject, 
-    handleCreateProject, 
-    handleEditInitiate, 
-    handleEditCancel, 
-    handleUpdateProject, 
-    handleDeleteInitiate, 
-    handleDeleteCancel, 
-    handleDeleteProject 
-  } = useProjectOperations(userId, fetchDashboardData);
-  
-  const { 
-    projectToReview, 
-    reviewData, 
-    isSubmitting: isReviewSubmitting, 
-    setReviewData, 
-    handleReviewInitiate, 
-    handleReviewCancel, 
-    handleReviewSubmit 
-  } = useReviewOperations(userId, applications, fetchDashboardData);
-  
-  const { 
-    isProcessing, 
-    handleApplicationUpdate 
-  } = useApplicationOperations(userId, fetchDashboardData);
-  
-  // Set the active tab based on initialTab prop
-  useEffect(() => {
-    if (initialTab && ['projects', 'applications', 'create', 'payments'].includes(initialTab)) {
-      setActiveTab(initialTab);
-    }
-  }, [initialTab]);
-  
-  // Props to pass to tab components
-  const projectsTabProps = {
-    isLoading,
+  const {
     projects,
     applications,
+    payments,
+    reviews,
+    profileData,
+    isLoading,
+    error,
+    // Project operations
     editProject,
     projectToDelete,
     editedProject,
-    isSubmitting: isProjectSubmitting,
-    setEditedProject,
+    newProject,
+    isProjectSubmitting,
     handleEditInitiate,
     handleEditCancel,
     handleUpdateProject,
     handleDeleteInitiate,
     handleDeleteCancel,
-    handleDeleteProject
-  };
-  
-  const applicationsTabProps = {
-    isLoading,
-    projects,
-    applications,
-    handleApplicationUpdate
-  };
-  
-  const paymentsTabProps = {
-    isLoading,
-    projects,
-    reviews,
-    applications,
+    handleDeleteProject,
+    // Review operations
     projectToReview,
     reviewData,
-    isSubmitting: isReviewSubmitting,
+    isReviewSubmitting,
     handleReviewInitiate,
     handleReviewCancel,
     handleReviewSubmit,
-    setReviewData
-  };
-  
+    // Application operations
+    handleApplicationUpdate,
+    // Data refresh
+    fetchDashboardData
+  } = useClientDashboard(user?.id || '');
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList className="mb-6">
-        <TabsTrigger value="projects" data-value="projects">Your Projects</TabsTrigger>
-        <TabsTrigger value="applications" data-value="applications">Applications</TabsTrigger>
-        <TabsTrigger value="create" data-value="create">Post New Project</TabsTrigger>
-        <TabsTrigger value="payments" data-value="payments">Payments</TabsTrigger>
-      </TabsList>
-      
-      <TabsContent value="projects">
-        <ProjectsTab {...projectsTabProps} />
-      </TabsContent>
-      
-      <TabsContent value="applications">
-        <ApplicationsTab {...applicationsTabProps} />
-      </TabsContent>
-      
-      <TabsContent value="create">
-        <CreateProjectTab />
-      </TabsContent>
-      
-      <TabsContent value="payments">
-        <PaymentsTab {...paymentsTabProps} />
-      </TabsContent>
-    </Tabs>
+    <div className="container mx-auto p-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="applications">Applications</TabsTrigger>
+          <TabsTrigger value="create">Create Project</TabsTrigger>
+          <TabsTrigger value="payments">Payments</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="projects">
+          <ProjectsTab
+            projects={projects}
+            editProject={editProject}
+            projectToDelete={projectToDelete}
+            editedProject={editedProject}
+            isSubmitting={isProjectSubmitting}
+            onEditInitiate={handleEditInitiate}
+            onEditCancel={handleEditCancel}
+            onUpdateProject={handleUpdateProject}
+            onDeleteInitiate={handleDeleteInitiate}
+            onDeleteCancel={handleDeleteCancel}
+            onDeleteProject={handleDeleteProject}
+            onReviewInitiate={handleReviewInitiate}
+          />
+        </TabsContent>
+
+        <TabsContent value="applications">
+          <ApplicationsTab
+            applications={applications}
+            onApplicationUpdate={handleApplicationUpdate}
+          />
+        </TabsContent>
+
+        <TabsContent value="create">
+          <CreateProjectTab
+            onProjectCreated={fetchDashboardData}
+          />
+        </TabsContent>
+
+        <TabsContent value="payments">
+          <PaymentsTab
+            payments={payments}
+            profileData={profileData}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
-
-export default ClientDashboard;
