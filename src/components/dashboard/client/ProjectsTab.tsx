@@ -78,13 +78,9 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
               onEdit={() => handleEditInitiate(project)}
               onCancelEdit={handleEditCancel}
               onSave={async (updates: Partial<Project>) => {
-                // Convert budget string to number if present
                 const processedUpdates = { ...updates };
-                if ('budget' in updates && typeof updates.budget === 'string') {
-                  processedUpdates.budget = parseFloat(updates.budget as string);
-                }
                 const updatedProject = { ...project, ...processedUpdates };
-                handleUpdateProject(updatedProject);
+                handleUpdateProject(updatedProject.id, updatedProject);
               }}
               onDelete={() => handleDeleteInitiate(project.id)}
             />
@@ -121,16 +117,8 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
           editedProject={editedProject}
           isSubmitting={isSubmitting}
           onCancel={handleEditCancel}
-          onSave={async (updates) => {
-            // Convert the editedProject format to Partial<Project>
-            const projectUpdates: Partial<Project> = {
-              title: updates.title,
-              description: updates.description,
-              budget: parseFloat(updates.budget)
-            };
-            const updatedProject = { ...editProject, ...projectUpdates };
-            handleUpdateProject(updatedProject);
-          }}
+          onUpdate={handleUpdateProject}
+          onChange={setEditedProject}
         />
       )}
       

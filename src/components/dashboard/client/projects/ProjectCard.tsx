@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ export interface ProjectCardProps {
   editedProject: {
     title: string;
     description: string;
-    budget: string;
+    budget: number | null;
   } | null;
   isSubmitting: boolean;
   onEdit: () => void;
@@ -56,13 +55,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         isSubmitting={isSubmitting}
         onCancel={onCancelEdit}
         onSave={async (updates) => {
-          // Convert the editedProject format to Partial<Project>
-          const projectUpdates: Partial<Project> = {
-            title: updates.title,
-            description: updates.description,
-            budget: parseFloat(updates.budget)
-          };
-          await onSave(projectUpdates);
+          await onSave(updates);
         }}
       />
     );

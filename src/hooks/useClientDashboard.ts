@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useDataFetching } from './client-dashboard/useDataFetching';
 import { useProjectOperations } from './client-dashboard/useProjectOperations';
@@ -36,7 +35,8 @@ export const useClientDashboard = (userId: string) => {
     isReviewSubmitting,
     handleReviewInitiate,
     handleReviewCancel,
-    handleReviewSubmit
+    handleReviewSubmit,
+    setReviewData
   } = useReviewOperations(userId, projects, fetchDashboardData);
 
   const {
@@ -81,6 +81,7 @@ export const useClientDashboard = (userId: string) => {
     handleReviewInitiate,
     handleReviewCancel,
     handleReviewSubmit,
+    setReviewData,
     
     // Application operations
     handleApplicationUpdate,

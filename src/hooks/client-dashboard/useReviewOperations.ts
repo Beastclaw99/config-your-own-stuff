@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
@@ -69,6 +68,7 @@ export const useReviewOperations = (userId: string, projects: Project[], fetchDa
     isReviewSubmitting,
     handleReviewInitiate,
     handleReviewCancel,
-    handleReviewSubmit
+    handleReviewSubmit,
+    setReviewData
   };
 };

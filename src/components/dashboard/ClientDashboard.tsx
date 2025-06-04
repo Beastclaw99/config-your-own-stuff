@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useClientDashboard } from '@/hooks/useClientDashboard';
 import { useAuth } from '@/hooks/useAuth';
@@ -50,6 +49,7 @@ export const ClientDashboard = ({ userId: propUserId, initialTab = 'projects' }:
     handleReviewInitiate,
     handleReviewCancel,
     handleReviewSubmit,
+    setReviewData,
     // Application operations
     handleApplicationUpdate,
     // Data refresh
@@ -95,7 +95,7 @@ export const ClientDashboard = ({ userId: propUserId, initialTab = 'projects' }:
             editedProject={{
               title: editedProject?.title || '',
               description: editedProject?.description || '',
-              budget: editedProject?.budget || null
+              budget: typeof editedProject?.budget === 'number' ? editedProject.budget : (editedProject?.budget ? parseFloat(editedProject.budget as any) : null)
             }}
             isSubmitting={isProjectSubmitting}
             setEditedProject={(project) => {
@@ -104,7 +104,7 @@ export const ClientDashboard = ({ userId: propUserId, initialTab = 'projects' }:
                   ...editProject,
                   title: project.title,
                   description: project.description,
-                  budget: project.budget
+                  budget: typeof project.budget === 'number' ? project.budget : (project.budget ? parseFloat(project.budget as any) : null)
                 });
               }
             }}
@@ -145,17 +145,12 @@ export const ClientDashboard = ({ userId: propUserId, initialTab = 'projects' }:
             handleReviewInitiate={(project) => handleReviewInitiate(project.id)}
             handleReviewCancel={handleReviewCancel}
             handleReviewSubmit={async () => {
-              if (reviewData) {
-                await handleReviewSubmit(reviewData);
+              if (projectToReview && reviewData) {
+                await handleReviewSubmit(projectToReview, reviewData);
               }
             }}
             setReviewData={(data) => {
-              if (reviewData) {
-                handleReviewSubmit({
-                  ...reviewData,
-                  ...data
-                });
-              }
+              setReviewData(data);
             }}
           />
         </TabsContent>
