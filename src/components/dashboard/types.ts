@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string;
   title: string;
@@ -19,6 +20,16 @@ export interface Project {
   requirements: string[] | null;
   scope: string | null;
   service_contract: string | null;
+  client?: {
+    first_name: string | null;
+    last_name: string | null;
+  };
+  professional?: {
+    first_name: string | null;
+    last_name: string | null;
+    rating?: number;
+    skills?: string[];
+  };
 }
 
 export interface Application {
@@ -26,7 +37,7 @@ export interface Application {
   project_id: string;
   professional_id: string;
   cover_letter: string | null;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
   created_at: string;
   updated_at: string;
   bid_amount: number | null;
@@ -42,6 +53,8 @@ export interface Application {
   professional?: {
     first_name: string | null;
     last_name: string | null;
+    rating?: number;
+    skills?: string[];
   };
 }
 

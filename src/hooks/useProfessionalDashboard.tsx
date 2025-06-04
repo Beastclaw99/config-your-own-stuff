@@ -95,7 +95,7 @@ export const useProfessionalDashboard = (userId: string) => {
           client:profiles!projects_client_id_fkey(first_name, last_name)
         `)
         .eq('assigned_to', userId)
-        .in('status', ['assigned', 'in_progress', 'completed']);
+        .in('status', ['assigned', 'in-progress', 'completed']);
         
       if (assignedProjectsError) {
         console.error('Assigned projects fetch error:', assignedProjectsError);
@@ -104,8 +104,18 @@ export const useProfessionalDashboard = (userId: string) => {
       
       console.log('Assigned projects data:', assignedProjectsData);
       
-      // Combine open projects with assigned projects
-      const allProjects = [...filteredProjects, ...(assignedProjectsData || [])];
+      // Transform and combine open projects with assigned projects
+      const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
+      
+      const transformProjects = (projects: any[]): Project[] => {
+        return projects.map(project => ({
+          ...project,
+          status: validStatuses.includes(project.status) ? project.status : 'open',
+          updated_at: project.updated_at || project.created_at
+        }));
+      };
+      
+      const allProjects = [...transformProjects(filteredProjects), ...transformProjects(assignedProjectsData || [])];
       setProjects(allProjects);
       
       // Fetch applications made by the professional with better error handling and logging
@@ -140,7 +150,10 @@ export const useProfessionalDashboard = (userId: string) => {
         }
         console.log('Applications data:', appsData);
         
-        // Transform the data to match the Application type
+        // Transform the data to match the Application type with proper type casting
+        const validApplicationStatuses = ['pending', 'accepted', 'rejected', 'withdrawn'] as const;
+        const validProjectStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
+        
         const transformedApps: Application[] = (appsData || []).map(app => ({
           id: app.id,
           project_id: app.project_id,
@@ -149,13 +162,13 @@ export const useProfessionalDashboard = (userId: string) => {
           proposal_message: app.proposal_message || app.cover_letter || '',
           bid_amount: app.bid_amount,
           availability: app.availability,
-          status: app.status,
+          status: validApplicationStatuses.includes(app.status as any) ? app.status as Application['status'] : 'pending',
           created_at: app.created_at,
           updated_at: app.updated_at || app.created_at,
           project: app.project ? {
             id: app.project.id,
             title: app.project.title,
-            status: app.project.status,
+            status: validProjectStatuses.includes(app.project.status as any) ? app.project.status as Project['status'] : 'open',
             budget: app.project.budget,
             created_at: app.project.created_at
           } : undefined
@@ -188,10 +201,12 @@ export const useProfessionalDashboard = (userId: string) => {
       
       console.log('Payments data:', paymentsData);
       
-      // Ensure each payment has a created_at field
+      // Ensure each payment has a created_at field and proper status
+      const validPaymentStatuses = ['pending', 'completed', 'failed'] as const;
       const paymentsWithDates = (paymentsData || []).map(payment => ({
         ...payment,
-        created_at: payment.created_at || new Date().toISOString()
+        created_at: payment.created_at || new Date().toISOString(),
+        status: validPaymentStatuses.includes(payment.status as any) ? payment.status as Payment['status'] : 'pending'
       }));
       
       setPayments(paymentsWithDates);
@@ -208,7 +223,14 @@ export const useProfessionalDashboard = (userId: string) => {
       }
       
       console.log('Reviews data:', reviewsData);
-      setReviews(reviewsData || []);
+      
+      // Transform reviews to handle the database field naming issue
+      const transformedReviews = (reviewsData || []).map(review => ({
+        ...review,
+        updated_at: review['updated at'] || review.created_at || new Date().toISOString()
+      }));
+      
+      setReviews(transformedReviews);
       
     } catch (error: any) {
       console.error('Dashboard data fetch error:', error);

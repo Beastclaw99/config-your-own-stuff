@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -88,7 +89,16 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
           .eq('client_id', userId);
         
         if (projectsError) throw projectsError;
-        setProjects(projectsData || []);
+        
+        // Transform the projects to match the Project type
+        const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
+        const transformedProjects: Project[] = (projectsData || []).map(project => ({
+          ...project,
+          status: validStatuses.includes(project.status as any) ? project.status as Project['status'] : 'open',
+          updated_at: project.updated_at || project.created_at
+        }));
+        
+        setProjects(transformedProjects);
       }
       
     } catch (error) {

@@ -61,7 +61,7 @@ const ProjectMarketplace: React.FC = () => {
       
       console.log('Fetched projects:', data);
       
-      // Ensure the data is properly typed as Project[]
+      // Ensure the data is properly typed as Project[] with all required fields
       const typedProjects: Project[] = data?.map(project => ({
         id: project.id,
         title: project.title,
@@ -73,10 +73,16 @@ const ProjectMarketplace: React.FC = () => {
         urgency: project.urgency,
         requirements: project.requirements,
         required_skills: project.required_skills,
-        status: project.status,
+        status: project.status as Project['status'],
         created_at: project.created_at,
+        updated_at: project.updated_at || new Date().toISOString(),
         client_id: project.client_id,
         assigned_to: project.assigned_to,
+        deadline: project.deadline,
+        professional_id: project.professional_id,
+        project_start_time: project.project_start_time,
+        scope: project.scope,
+        service_contract: project.service_contract,
         client: project.client
       })) || [];
       

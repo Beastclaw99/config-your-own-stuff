@@ -53,6 +53,13 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     }).format(amount);
   };
 
+  const getClientName = () => {
+    if (project.client?.first_name && project.client?.last_name) {
+      return `${project.client.first_name} ${project.client.last_name}`;
+    }
+    return 'Unknown Client';
+  };
+
   if (variant === 'list') {
     return (
       <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -70,11 +77,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             <h3 className="text-lg font-semibold mb-1">{project.title}</h3>
             
             <div className="flex items-center text-sm text-gray-600 mb-2">
-              <MapPin size={14} className="mr-1" /> Location
+              <MapPin size={14} className="mr-1" /> {project.location || 'Location not specified'}
               <span className="mx-2">|</span>
-              <span>Posted by: <span className="font-medium">
-                {project.client?.first_name} {project.client?.last_name}
-              </span></span>
+              <span>Posted by: <span className="font-medium">{getClientName()}</span></span>
             </div>
             
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
@@ -125,7 +130,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         </div>
         <CardTitle className="text-lg">{project.title}</CardTitle>
         <CardDescription className="flex items-center gap-1">
-          <MapPin size={14} /> Location
+          <MapPin size={14} /> {project.location || 'Location not specified'}
         </CardDescription>
       </CardHeader>
       
@@ -157,9 +162,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
       {showActions && (
         <CardFooter className="pt-0 flex justify-between items-center">
           <div className="text-sm text-gray-600">
-            Posted by: <span className="font-medium">
-              {project.client?.first_name} {project.client?.last_name}
-            </span>
+            Posted by: <span className="font-medium">{getClientName()}</span>
           </div>
           <Button 
             variant="outline" 

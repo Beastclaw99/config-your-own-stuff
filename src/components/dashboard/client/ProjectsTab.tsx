@@ -71,9 +71,22 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
             <ProjectCard
               key={project.id}
               project={project}
+              editProject={editProject}
+              editedProject={editedProject}
+              isSubmitting={isSubmitting}
               applications={applications}
-              onEdit={handleEditInitiate}
-              onDelete={handleDeleteInitiate}
+              onEdit={() => handleEditInitiate(project)}
+              onCancelEdit={handleEditCancel}
+              onSave={async (updates: Partial<Project>) => {
+                // Convert budget string to number if present
+                const processedUpdates = { ...updates };
+                if ('budget' in updates && typeof updates.budget === 'string') {
+                  processedUpdates.budget = parseFloat(updates.budget as string);
+                }
+                const updatedProject = { ...project, ...processedUpdates };
+                handleUpdateProject(updatedProject);
+              }}
+              onDelete={() => handleDeleteInitiate(project.id)}
             />
           ))}
         </div>
@@ -104,12 +117,20 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
       {/* Edit Project Form */}
       {editProject && (
         <EditProjectForm
-          editProject={editProject}
+          project={editProject}
           editedProject={editedProject}
           isSubmitting={isSubmitting}
           onCancel={handleEditCancel}
-          onUpdate={handleUpdateProject}
-          onChange={setEditedProject}
+          onSave={async (updates) => {
+            // Convert the editedProject format to Partial<Project>
+            const projectUpdates: Partial<Project> = {
+              title: updates.title,
+              description: updates.description,
+              budget: parseFloat(updates.budget)
+            };
+            const updatedProject = { ...editProject, ...projectUpdates };
+            handleUpdateProject(updatedProject);
+          }}
         />
       )}
       

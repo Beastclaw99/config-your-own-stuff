@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Project } from '../../types';
 
 interface EditProjectFormProps {
-  editProject: Project;
+  project: Project;
   editedProject: {
     title: string;
     description: string;
@@ -20,7 +20,7 @@ interface EditProjectFormProps {
 }
 
 const EditProjectForm: React.FC<EditProjectFormProps> = ({ 
-  editProject,
+  project,
   editedProject, 
   isSubmitting,
   onCancel,
@@ -40,7 +40,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
             <Input 
               id="edit-title" 
               value={editedProject.title}
-              onChange={e => onChange({...editedProject, title: e.target.value})}
+              onChange={e => onChange({ ...editedProject, title: e.target.value })}
             />
           </div>
           
@@ -50,7 +50,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
               id="edit-description" 
               className="min-h-[120px]"
               value={editedProject.description}
-              onChange={e => onChange({...editedProject, description: e.target.value})}
+              onChange={e => onChange({ ...editedProject, description: e.target.value })}
             />
           </div>
           
@@ -59,7 +59,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
             <Input 
               id="edit-budget" 
               type="number"
-              value={editedProject.budget || ''}
+              value={editedProject.budget ?? ''}
               onChange={e => onChange({
                 ...editedProject, 
                 budget: e.target.value ? parseFloat(e.target.value) : null
@@ -73,7 +73,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
         <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button onClick={() => onUpdate(editProject.id, editedProject)} disabled={isSubmitting}>
+        <Button onClick={() => onUpdate(project.id, editedProject)} disabled={isSubmitting}>
           Save Changes
         </Button>
       </CardFooter>

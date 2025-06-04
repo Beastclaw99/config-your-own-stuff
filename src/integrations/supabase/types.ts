@@ -627,7 +627,7 @@ export type Database = {
           service_contract: string | null
           status: string | null
           title: string
-          "updated at": string | null
+          updated_at: string | null
           urgency: string | null
         }
         Insert: {
@@ -649,7 +649,7 @@ export type Database = {
           service_contract?: string | null
           status?: string | null
           title: string
-          "updated at"?: string | null
+          updated_at?: string | null
           urgency?: string | null
         }
         Update: {
@@ -671,7 +671,7 @@ export type Database = {
           service_contract?: string | null
           status?: string | null
           title?: string
-          "updated at"?: string | null
+          updated_at?: string | null
           urgency?: string | null
         }
         Relationships: [
