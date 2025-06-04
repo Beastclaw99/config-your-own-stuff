@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Project, Review } from '../types';
-import { ProjectCard } from '../client/projects/ProjectCard';
-import { AssignedProjectCard } from '../client/projects/AssignedProjectCard';
-import { EmptyProjectState } from '../client/projects/EmptyProjectState';
+import ProjectCard from '../client/projects/ProjectCard';
+import AssignedProjectCard from '../client/projects/AssignedProjectCard';
+import EmptyProjectState from '../client/projects/EmptyProjectState';
 
 interface ProjectsTabProps {
   projects: Project[];
@@ -86,6 +86,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({
               <AssignedProjectCard
                 key={project.id}
                 project={project}
+                acceptedApp={undefined}
               />
             ))}
           </div>
@@ -101,6 +102,7 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({
               <AssignedProjectCard
                 key={project.id}
                 project={project}
+                acceptedApp={undefined}
                 showReviewButton={project.status === 'completed'}
                 onReview={handleReviewSubmit}
               />
