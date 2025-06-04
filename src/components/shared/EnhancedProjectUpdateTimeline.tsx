@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Filter, Plus } from 'lucide-react';
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -28,8 +28,6 @@ import {
   BanknotesIcon,
   ListBulletIcon,
   PencilSquareIcon,
-  FilterIcon,
-  PlusIcon,
 } from '@heroicons/react/24/outline';
 import AddProjectUpdateModal from './AddProjectUpdateModal';
 
@@ -314,7 +312,7 @@ export default function EnhancedProjectUpdateTimeline({
             aria-expanded={showFilters}
             aria-controls="filter-panel"
           >
-            <FilterIcon className="h-4 w-4" />
+            <Filter className="h-4 w-4" />
             Filters
           </Button>
           
@@ -322,7 +320,7 @@ export default function EnhancedProjectUpdateTimeline({
             <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="flex items-center gap-2">
-                  <PlusIcon className="h-4 w-4" />
+                  <Plus className="h-4 w-4" />
                   Add Update
                 </Button>
               </DialogTrigger>

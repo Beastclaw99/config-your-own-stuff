@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Upload } from 'lucide-react';
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -28,7 +29,6 @@ import {
   ListBulletIcon,
   PencilSquareIcon,
   PhotoIcon,
-  UploadIcon,
 } from '@heroicons/react/24/outline';
 
 // Update type groups for better organization
@@ -263,7 +263,7 @@ export default function AddProjectUpdateModal({
             
             {!file ? (
               <div className="space-y-3">
-                <UploadIcon className="h-10 w-10 text-gray-400 mx-auto" />
+                <Upload className="h-10 w-10 text-gray-400 mx-auto" />
                 <div>
                   <Button
                     type="button"
