@@ -9,7 +9,11 @@ import EditProjectForm from './EditProjectForm';
 export interface ProjectCardProps {
   project: Project;
   editProject: Project | null;
-  editedProject: Partial<Project> | null;
+  editedProject: {
+    title: string;
+    description: string;
+    budget: string;
+  } | null;
   isSubmitting: boolean;
   onEdit: () => void;
   onCancelEdit: () => void;
@@ -51,7 +55,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         editedProject={editedProject}
         isSubmitting={isSubmitting}
         onCancel={onCancelEdit}
-        onSave={onSave}
+        onSave={async (updates) => {
+          // Convert the editedProject format to Partial<Project>
+          const projectUpdates: Partial<Project> = {
+            title: updates.title,
+            description: updates.description,
+            budget: parseFloat(updates.budget)
+          };
+          await onSave(projectUpdates);
+        }}
       />
     );
   }

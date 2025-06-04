@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Project } from '../../types';
 
 interface EditProjectFormProps {
-  editProject: Project;
+  project: Project;
   editedProject: {
     title: string;
     description: string;
@@ -15,18 +16,20 @@ interface EditProjectFormProps {
   };
   isSubmitting: boolean;
   onCancel: () => void;
-  onUpdate: (project: Project) => void;
-  onChange: (project: { title: string; description: string; budget: string }) => void;
+  onSave: (updates: { title: string; description: string; budget: string }) => Promise<void>;
 }
 
 const EditProjectForm: React.FC<EditProjectFormProps> = ({ 
-  editProject,
+  project,
   editedProject, 
   isSubmitting,
   onCancel,
-  onUpdate,
-  onChange
+  onSave
 }) => {
+  const handleSave = async () => {
+    await onSave(editedProject);
+  };
+
   return (
     <Card className="mt-6 border-blue-200">
       <CardHeader className="bg-blue-50">
@@ -40,7 +43,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
             <Input 
               id="edit-title" 
               value={editedProject.title}
-              onChange={e => onChange({...editedProject, title: e.target.value})}
+              readOnly
             />
           </div>
           
@@ -50,7 +53,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
               id="edit-description" 
               className="min-h-[120px]"
               value={editedProject.description}
-              onChange={e => onChange({...editedProject, description: e.target.value})}
+              readOnly
             />
           </div>
           
@@ -59,7 +62,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
             <Input 
               id="edit-budget" 
               value={editedProject.budget}
-              onChange={e => onChange({...editedProject, budget: e.target.value})}
+              readOnly
               placeholder="e.g., $5,000 or Negotiable"
             />
           </div>
@@ -69,7 +72,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
         <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button onClick={() => onUpdate(editProject)} disabled={isSubmitting}>
+        <Button onClick={handleSave} disabled={isSubmitting}>
           Save Changes
         </Button>
       </CardFooter>

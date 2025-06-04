@@ -78,8 +78,13 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
               applications={applications}
               onEdit={() => handleEditInitiate(project)}
               onCancelEdit={handleEditCancel}
-              onSave={async (updates) => {
-                const updatedProject = { ...project, ...updates };
+              onSave={async (updates: Partial<Project>) => {
+                // Convert budget string to number if present
+                const processedUpdates = { ...updates };
+                if ('budget' in updates && typeof updates.budget === 'string') {
+                  processedUpdates.budget = parseFloat(updates.budget as string);
+                }
+                const updatedProject = { ...project, ...processedUpdates };
                 handleUpdateProject(updatedProject);
               }}
               onDelete={() => handleDeleteInitiate(project.id)}
