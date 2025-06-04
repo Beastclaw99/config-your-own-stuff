@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +36,7 @@ interface RawProject {
   status: string;
   client_id: string;
   created_at: string;
-  'updated at': string;
+  updated_at: string;
   assigned_to: string | null;
   location: string | null;
   deadline: string | null;
@@ -152,7 +153,7 @@ export const useClientDashboard = (userId: string) => {
       if (projectsError) throw projectsError;
       
       // Transform projects to match Project type
-      const transformedProjects: Project[] = (projectsData as RawProject[] || []).map(project => {
+      const transformedProjects: Project[] = (projectsData || []).map(project => {
         // Validate and cast the status to the correct type
         const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
         const status = validStatuses.includes(project.status as any) 
@@ -167,7 +168,7 @@ export const useClientDashboard = (userId: string) => {
           status,
           client_id: project.client_id,
           created_at: project.created_at,
-          updated_at: project['updated at'] || project.created_at,
+          updated_at: project.updated_at || project.created_at,
           assigned_to: project.assigned_to,
           location: project.location,
           deadline: project.deadline,
@@ -189,20 +190,19 @@ export const useClientDashboard = (userId: string) => {
         .select(`
           *,
           project:projects(id, title, status, budget, created_at),
-          professional:profiles!applications_professional_id_fkey(first_name, last_name)
+          professional:profiles!applications_professional_id_fkey(first_name, last_name, rating, skills)
         `)
         .in('project_id', transformedProjects.map(project => project.id));
       
       if (appsError) throw appsError;
       
       // Transform applications to match Application type
-      const validStatuses = ['pending', 'accepted', 'rejected'] as const;
-      type ApplicationStatus = typeof validStatuses[number];
+      const validApplicationStatuses = ['pending', 'accepted', 'rejected', 'withdrawn'] as const;
       
       const transformedApplications: Application[] = (appsData as RawApplication[] || []).map(app => {
         // Validate and cast the status to the correct type
-        const status = validStatuses.includes(app.status as any)
-          ? (app.status as ApplicationStatus)
+        const status = validApplicationStatuses.includes(app.status as any)
+          ? (app.status as Application['status'])
           : 'pending';
 
         const transformedApp: Application = {
@@ -223,7 +223,12 @@ export const useClientDashboard = (userId: string) => {
             budget: app.project.budget,
             created_at: app.project.created_at
           } : undefined,
-          professional: app.professional
+          professional: app.professional ? {
+            first_name: app.professional.first_name,
+            last_name: app.professional.last_name,
+            rating: app.professional.rating,
+            skills: app.professional.skills
+          } : undefined
         };
 
         return transformedApp;
@@ -258,7 +263,7 @@ export const useClientDashboard = (userId: string) => {
       // Transform reviews to match Review type
       const transformedReviews: Review[] = (reviewsData || []).map(review => ({
         ...review,
-        updated_at: review['updated at'] || review.created_at
+        updated_at: review['updated at'] || review.updated_at || review.created_at
       }));
 
       setState({

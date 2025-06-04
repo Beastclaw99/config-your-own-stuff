@@ -1,12 +1,9 @@
-import { Project } from '../types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { EditProjectDialog } from '../dialogs/EditProjectDialog';
-import { DeleteProjectDialog } from '../dialogs/DeleteProjectDialog';
-import { ReviewDialog } from '../dialogs/ReviewDialog';
-import { formatDate } from '@/utils/dateUtils';
-import { formatCurrency } from '@/utils/currencyUtils';
+
+import React from 'react';
+import { Project, Review } from '../types';
+import { ProjectCard } from '../client/projects/ProjectCard';
+import { AssignedProjectCard } from '../client/projects/AssignedProjectCard';
+import { EmptyProjectState } from '../client/projects/EmptyProjectState';
 
 interface ProjectsTabProps {
   projects: Project[];
@@ -23,7 +20,7 @@ interface ProjectsTabProps {
   onReviewInitiate: (projectId: string) => void;
 }
 
-export const ProjectsTab = ({
+export const ProjectsTab: React.FC<ProjectsTabProps> = ({
   projects,
   editProject,
   projectToDelete,
@@ -35,119 +32,82 @@ export const ProjectsTab = ({
   onDeleteInitiate,
   onDeleteCancel,
   onDeleteProject,
-  onReviewInitiate
-}: ProjectsTabProps) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open':
-        return 'bg-green-500';
-      case 'in_progress':
-        return 'bg-blue-500';
-      case 'completed':
-        return 'bg-purple-500';
-      case 'cancelled':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
+  onReviewInitiate,
+}) => {
+  // Separate projects by status
+  const openProjects = projects.filter(p => p.status === 'open');
+  const assignedProjects = projects.filter(p => 
+    ['assigned', 'in-progress', 'submitted', 'revision'].includes(p.status)
+  );
+  const completedProjects = projects.filter(p => 
+    ['completed', 'paid'].includes(p.status)
+  );
+
+  const handleReviewSubmit = async (projectId: string, data: { rating?: number; comment?: string; }) => {
+    // For now, we'll just call the review initiate function
+    // In a full implementation, this would submit the actual review
+    onReviewInitiate(projectId);
   };
 
+  if (projects.length === 0) {
+    return <EmptyProjectState />;
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <Card key={project.id} className="flex flex-col">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-xl">{project.title}</CardTitle>
-                  <CardDescription>
-                    Posted on {formatDate(project.created_at)}
-                  </CardDescription>
-                </div>
-                <Badge className={getStatusColor(project.status)}>
-                  {project.status.replace('_', ' ')}
-                </Badge>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="flex-grow">
-              <p className="text-sm text-gray-600 mb-4">
-                {project.description}
-              </p>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Budget:</span>
-                  <span className="text-sm">{formatCurrency(project.budget)}</span>
-                </div>
-                {project.deadline && (
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Deadline:</span>
-                    <span className="text-sm">{formatDate(project.deadline)}</span>
-                  </div>
-                )}
-                {project.category && (
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Category:</span>
-                    <span className="text-sm">{project.category}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
+    <div className="space-y-8">
+      {/* Open Projects */}
+      {openProjects.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Open Projects ({openProjects.length})</h3>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {openProjects.map(project => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                isEditing={editProject?.id === project.id}
+                editedProject={editedProject}
+                isSubmitting={isSubmitting}
+                onEdit={() => onEditInitiate(project)}
+                onCancelEdit={onEditCancel}
+                onSave={(updates) => onUpdateProject(project.id, updates)}
+                onDelete={() => onDeleteInitiate(project.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
-            <CardFooter className="flex justify-between">
-              <div className="space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEditInitiate(project)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onDeleteInitiate(project.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-              {project.status === 'completed' && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => onReviewInitiate(project.id)}
-                >
-                  Review
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {/* Assigned/In Progress Projects */}
+      {assignedProjects.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Active Projects ({assignedProjects.length})</h3>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {assignedProjects.map(project => (
+              <AssignedProjectCard
+                key={project.id}
+                project={project}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Dialogs */}
-      <EditProjectDialog
-        project={editProject}
-        editedProject={editedProject}
-        isSubmitting={isSubmitting}
-        onCancel={onEditCancel}
-        onUpdate={onUpdateProject}
-      />
-
-      <DeleteProjectDialog
-        projectId={projectToDelete}
-        isSubmitting={isSubmitting}
-        onCancel={onDeleteCancel}
-        onDelete={onDeleteProject}
-      />
-
-      <ReviewDialog
-        projectId={projectToDelete}
-        isSubmitting={isSubmitting}
-        onCancel={onDeleteCancel}
-        onSubmit={onUpdateProject}
-      />
+      {/* Completed Projects */}
+      {completedProjects.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Completed Projects ({completedProjects.length})</h3>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {completedProjects.map(project => (
+              <AssignedProjectCard
+                key={project.id}
+                project={project}
+                showReviewButton={project.status === 'completed'}
+                onReview={handleReviewSubmit}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
-}; 
+};
