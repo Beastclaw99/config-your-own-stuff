@@ -22,11 +22,11 @@ const projectSchema = z.object({
 
 type ProjectFormData = z.infer<typeof projectSchema>;
 
-interface CreateProjectTabProps {
+interface CreateProjectFormProps {
   onProjectCreated: () => void;
 }
 
-export const CreateProjectTab = ({ onProjectCreated }: CreateProjectTabProps) => {
+export const CreateProjectForm = ({ onProjectCreated }: CreateProjectFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

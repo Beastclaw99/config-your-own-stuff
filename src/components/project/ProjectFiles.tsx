@@ -103,10 +103,10 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
         onSortChange={setSortBy}
       />
 
-      <div className="space-y-4">
+          <div className="space-y-4">
         {sortedFiles.map((file) => (
           <FileListItem
-            key={file.id}
+                key={file.id}
             file={file}
             isAdmin={user?.role === 'admin'}
             isProcessing={isProcessing}
@@ -117,10 +117,10 @@ const ProjectFiles: React.FC<ProjectFilesProps> = ({
         {sortedFiles.length === 0 && (
           <div className="text-center text-gray-500 py-8">
             No files found
-          </div>
-        )}
-      </div>
-    </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
   );
 };
 

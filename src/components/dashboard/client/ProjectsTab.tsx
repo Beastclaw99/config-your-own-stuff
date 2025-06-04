@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -17,13 +16,13 @@ interface ProjectsTabProps {
   editedProject: {
     title: string;
     description: string;
-    budget: string;
+    budget: number | null;
   };
   isSubmitting: boolean;
-  setEditedProject: (project: { title: string; description: string; budget: string }) => void;
+  setEditedProject: (project: { title: string; description: string; budget: number | null }) => void;
   handleEditInitiate: (project: Project) => void;
   handleEditCancel: () => void;
-  handleUpdateProject: (project: Project) => void;
+  handleUpdateProject: (projectId: string, updates: Partial<Project>) => void;
   handleDeleteInitiate: (projectId: string) => void;
   handleDeleteCancel: () => void;
   handleDeleteProject: (projectId: string) => void;

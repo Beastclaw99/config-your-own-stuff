@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useClientDashboard } from '@/hooks/useClientDashboard';
 import { useAuth } from '@/hooks/useAuth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProjectsTab } from './tabs/ProjectsTab';
-import { ApplicationsTab } from './tabs/ApplicationsTab';
-import { CreateProjectTab } from './tabs/CreateProjectTab';
-import { PaymentsTab } from './tabs/PaymentsTab';
+import ProjectsTab from './client/ProjectsTab';
+import ApplicationsTab from './client/ApplicationsTab';
+import CreateProjectTab from './client/CreateProjectTab';
+import PaymentsTab from './client/PaymentsTab';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -78,38 +78,76 @@ export const ClientDashboard = () => {
 
         <TabsContent value="projects">
           <ProjectsTab
+            isLoading={isLoading}
             projects={projects}
+            applications={applications}
             editProject={editProject}
             projectToDelete={projectToDelete}
-            editedProject={editedProject}
+            editedProject={{
+              title: editedProject?.title || '',
+              description: editedProject?.description || '',
+              budget: editedProject?.budget || null
+            }}
             isSubmitting={isProjectSubmitting}
-            onEditInitiate={handleEditInitiate}
-            onEditCancel={handleEditCancel}
-            onUpdateProject={handleUpdateProject}
-            onDeleteInitiate={handleDeleteInitiate}
-            onDeleteCancel={handleDeleteCancel}
-            onDeleteProject={handleDeleteProject}
-            onReviewInitiate={handleReviewInitiate}
+            setEditedProject={(project) => {
+              if (editProject) {
+                handleEditInitiate({
+                  ...editProject,
+                  title: project.title,
+                  description: project.description,
+                  budget: project.budget
+                });
+              }
+            }}
+            handleEditInitiate={handleEditInitiate}
+            handleEditCancel={handleEditCancel}
+            handleUpdateProject={handleUpdateProject}
+            handleDeleteInitiate={handleDeleteInitiate}
+            handleDeleteCancel={handleDeleteCancel}
+            handleDeleteProject={handleDeleteProject}
           />
         </TabsContent>
 
         <TabsContent value="applications">
           <ApplicationsTab
+            isLoading={isLoading}
+            projects={projects}
             applications={applications}
-            onApplicationUpdate={handleApplicationUpdate}
+            handleApplicationUpdate={handleApplicationUpdate}
           />
         </TabsContent>
 
         <TabsContent value="create">
-          <CreateProjectTab
-            onProjectCreated={fetchDashboardData}
-          />
+          <CreateProjectTab />
         </TabsContent>
 
         <TabsContent value="payments">
           <PaymentsTab
-            payments={payments}
-            profileData={profileData}
+            isLoading={isLoading}
+            projects={projects}
+            reviews={reviews}
+            applications={applications}
+            projectToReview={projectToReview ? projects.find(p => p.id === projectToReview) || null : null}
+            reviewData={{
+              rating: reviewData?.rating || 0,
+              comment: reviewData?.comment || ''
+            }}
+            isSubmitting={isReviewSubmitting}
+            handleReviewInitiate={(project) => handleReviewInitiate(project.id)}
+            handleReviewCancel={handleReviewCancel}
+            handleReviewSubmit={async () => {
+              if (reviewData) {
+                await handleReviewSubmit(reviewData);
+              }
+            }}
+            setReviewData={(data) => {
+              if (reviewData) {
+                handleReviewSubmit({
+                  ...reviewData,
+                  ...data
+                });
+              }
+            }}
           />
         </TabsContent>
       </Tabs>

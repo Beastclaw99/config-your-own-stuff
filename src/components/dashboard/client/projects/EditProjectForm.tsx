@@ -11,12 +11,12 @@ interface EditProjectFormProps {
   editedProject: {
     title: string;
     description: string;
-    budget: string;
+    budget: number | null;
   };
   isSubmitting: boolean;
   onCancel: () => void;
-  onUpdate: (project: Project) => void;
-  onChange: (project: { title: string; description: string; budget: string }) => void;
+  onUpdate: (projectId: string, updates: Partial<Project>) => void;
+  onChange: (project: { title: string; description: string; budget: number | null }) => void;
 }
 
 const EditProjectForm: React.FC<EditProjectFormProps> = ({ 
@@ -58,9 +58,13 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
             <Label htmlFor="edit-budget">Budget</Label>
             <Input 
               id="edit-budget" 
-              value={editedProject.budget}
-              onChange={e => onChange({...editedProject, budget: e.target.value})}
-              placeholder="e.g., $5,000 or Negotiable"
+              type="number"
+              value={editedProject.budget || ''}
+              onChange={e => onChange({
+                ...editedProject, 
+                budget: e.target.value ? parseFloat(e.target.value) : null
+              })}
+              placeholder="Enter budget amount"
             />
           </div>
         </div>
@@ -69,7 +73,7 @@ const EditProjectForm: React.FC<EditProjectFormProps> = ({
         <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
-        <Button onClick={() => onUpdate(editProject)} disabled={isSubmitting}>
+        <Button onClick={() => onUpdate(editProject.id, editedProject)} disabled={isSubmitting}>
           Save Changes
         </Button>
       </CardFooter>
