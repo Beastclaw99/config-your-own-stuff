@@ -9,7 +9,11 @@ interface ProjectsTabProps {
   projects: Project[];
   editProject: Project | null;
   projectToDelete: string | null;
-  editedProject: Partial<Project> | null;
+  editedProject: {
+    title: string;
+    description: string;
+    budget: string;
+  } | null;
   isSubmitting: boolean;
   onEditInitiate: (project: Project) => void;
   onEditCancel: () => void;

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -118,12 +117,20 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
       {/* Edit Project Form */}
       {editProject && (
         <EditProjectForm
-          editProject={editProject}
+          project={editProject}
           editedProject={editedProject}
           isSubmitting={isSubmitting}
           onCancel={handleEditCancel}
-          onUpdate={handleUpdateProject}
-          onChange={setEditedProject}
+          onSave={async (updates) => {
+            // Convert the editedProject format to Partial<Project>
+            const projectUpdates: Partial<Project> = {
+              title: updates.title,
+              description: updates.description,
+              budget: parseFloat(updates.budget)
+            };
+            const updatedProject = { ...editProject, ...projectUpdates };
+            handleUpdateProject(updatedProject);
+          }}
         />
       )}
       
