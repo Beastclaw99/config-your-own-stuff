@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { Project } from '@/components/dashboard/types';
 import ProjectUpdateTimeline from '@/components/shared/UnifiedProjectUpdateTimeline';
+import ProjectChat from '@/components/project/ProjectChat';
 import { MapPin, DollarSign, Calendar, User, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const ProjectDetails: React.FC = () => {
@@ -280,19 +281,30 @@ const ProjectDetails: React.FC = () => {
               )}
 
               {project.professional && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                      Assigned Professional
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="font-medium">
-                      {project.professional.first_name} {project.professional.last_name}
-                    </p>
-                  </CardContent>
-                </Card>
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        Assigned Professional
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="font-medium">
+                        {project.professional.first_name} {project.professional.last_name}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <ProjectChat
+                      projectId={project.id}
+                      projectStatus={project.status}
+                      clientId={project.client_id}
+                      professionalId={project.professional_id}
+                    />
+                  </Card>
+                </>
               )}
             </div>
           </div>
