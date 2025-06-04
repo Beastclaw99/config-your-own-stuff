@@ -34,14 +34,24 @@ export const useApplicationOperations = () => {
       // Update project status to in_progress
       const { error: projectError } = await supabase
         .from('projects')
-        .update({ status: 'in_progress' })
+        .update({ status: 'in-progress' })
         .eq('id', selectedApplication.project_id);
 
       if (projectError) throw projectError;
 
+      toast({
+        title: "Application Accepted",
+        description: "The application has been accepted and the project status has been updated.",
+      });
+
       handleCloseDialog();
     } catch (error) {
       console.error('Error accepting application:', error);
+      toast({
+        title: "Error",
+        description: "Failed to accept the application. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -58,9 +68,20 @@ export const useApplicationOperations = () => {
         .eq('id', selectedApplication.id);
 
       if (error) throw error;
+
+      toast({
+        title: "Application Rejected",
+        description: "The application has been rejected successfully.",
+      });
+
       handleCloseDialog();
     } catch (error) {
       console.error('Error rejecting application:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject the application. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }

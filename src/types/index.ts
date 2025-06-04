@@ -1,20 +1,48 @@
 export interface Project {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   budget: number | null;
-  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  status: 'open' | 'applied' | 'assigned' | 'in-progress' | 'submitted' | 'revision' | 'completed' | 'paid' | 'archived' | 'disputed';
+  client_id: string;
   created_at: string;
   updated_at: string;
-  client_id: string;
+  assigned_to: string | null;
+  location: string | null;
+  deadline: string | null;
+  required_skills: string | null;
+  professional_id: string | null;
+  project_start_time: string | null;
+  category: string | null;
+  expected_timeline: string | null;
+  urgency: string | null;
+  requirements: string[] | null;
+  scope: string | null;
+  service_contract: string | null;
 }
 
 export interface Application {
   id: string;
   project_id: string;
-  freelancer_id: string;
-  proposal: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  professional_id: string;
+  cover_letter: string | null;
+  proposal_message: string | null;
+  status: 'pending' | 'accepted' | 'rejected' | 'withdrawn';
   created_at: string;
   updated_at: string;
+  bid_amount: number | null;
+  availability: string | null;
+  project?: {
+    id: string;
+    title: string;
+    status: Project['status'];
+    budget: number | null;
+    created_at: string;
+  };
+  professional?: {
+    first_name: string | null;
+    last_name: string | null;
+    rating?: number;
+    skills?: string[];
+  };
 } 
