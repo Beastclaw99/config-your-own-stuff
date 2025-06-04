@@ -16,8 +16,7 @@ export interface ProjectData {
   description: string;
   category: string;
   location: string;
-  requirements: string[];
-  skills: string[];
+  recommended_skills: string[];
   budget: number;
   timeline: string;
   urgency: string;

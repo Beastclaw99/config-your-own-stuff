@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,8 +26,7 @@ const ProjectCreationWizard: React.FC = () => {
     description: '',
     category: '',
     location: '',
-    requirements: [],
-    skills: [],
+    recommended_skills: [],
     budget: 0,
     timeline: '',
     urgency: '',
@@ -81,7 +79,7 @@ const ProjectCreationWizard: React.FC = () => {
       case 1:
         return ['Project title', 'Description', 'Category', 'Location'];
       case 2:
-        return ['At least one requirement (optional)', 'Skills needed (optional)'];
+        return ['Recommended skills (optional)'];
       case 3:
         return ['Budget amount', 'Timeline', 'Urgency level'];
       case 4:
@@ -154,9 +152,8 @@ const ProjectCreationWizard: React.FC = () => {
             description: projectData.description,
             category: projectData.category,
             location: projectData.location,
-            requirements: projectData.requirements,
-            required_skills: projectData.skills.join(','),
-            budget: projectData.budget, // Now correctly a number
+            required_skills: projectData.recommended_skills.join(','),
+            budget: projectData.budget,
             expected_timeline: projectData.timeline,
             urgency: projectData.urgency,
             client_id: user.id,
