@@ -18,7 +18,11 @@ export const useClientDashboard = (userId: string) => {
   // Project management state
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
-  const [editedProject, setEditedProject] = useState<Partial<Project> | null>(null);
+  const [editedProject, setEditedProject] = useState<{
+    title: string;
+    description: string;
+    budget: string;
+  } | null>(null);
   const [newProject, setNewProject] = useState<Partial<Project>>({});
   const [isProjectSubmitting, setIsProjectSubmitting] = useState(false);
 
@@ -189,7 +193,11 @@ export const useClientDashboard = (userId: string) => {
   // Project operations
   const handleEditInitiate = (project: Project) => {
     setEditProject(project);
-    setEditedProject({ ...project });
+    setEditedProject({
+      title: project.title,
+      description: project.description || '',
+      budget: project.budget?.toString() || ''
+    });
   };
 
   const handleEditCancel = () => {
