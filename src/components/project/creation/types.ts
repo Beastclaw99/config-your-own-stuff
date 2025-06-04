@@ -20,7 +20,14 @@ export interface Milestone {
 export interface ProjectData {
   title: string;
   description: string;
+  category: string;
+  location: string;
+  required_skills: string[];
+  budget: number;
+  timeline: string;
+  urgency: string;
   milestones: Milestone[];
+  service_contract: string;
 }
 
 // Drag and Drop Types

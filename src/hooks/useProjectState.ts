@@ -13,7 +13,7 @@ const initialProjectState: ProjectData = {
   description: '',
   category: '',
   location: '',
-  recommended_skills: [],
+  required_skills: [],
   budget: 0,
   timeline: '',
   urgency: '',

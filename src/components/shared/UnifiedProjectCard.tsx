@@ -44,13 +44,12 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     });
   };
 
-  const formatCurrency = (amount: string) => {
-    const numAmount = parseFloat(amount);
-    if (isNaN(numAmount)) return amount;
+  const formatCurrency = (amount: number | null) => {
+    if (amount === null) return 'Not specified';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(numAmount);
+    }).format(amount);
   };
 
   const getClientName = () => {
