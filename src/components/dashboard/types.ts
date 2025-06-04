@@ -1,47 +1,38 @@
-
 export interface Project {
   id: string;
   title: string;
-  description?: string;
-  category?: string;
-  budget?: number; // Changed from string to number to match database
-  expected_timeline?: string;
-  location?: string;
-  urgency?: string;
-  requirements?: string[];
-  required_skills?: string;
-  status: string;
+  description: string;
+  budget: number;
+  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  client_id: string;
   created_at: string;
-  client_id?: string;
-  assigned_to?: string;
-  professional_id?: string;
-  client?: {
-    first_name?: string;
-    last_name?: string;
-  };
-  professional?: {
-    first_name?: string;
-    last_name?: string;
-  };
+  updated_at: string;
+  deadline?: string;
+  category?: string;
+  skills_required?: string[];
 }
 
 export interface Application {
   id: string;
   project_id: string;
   professional_id: string;
-  cover_letter?: string;
-  proposal_message?: string;
-  bid_amount?: number;
-  availability?: string;
-  status: string;
+  cover_letter: string;
+  proposal_message: string;
+  bid_amount: number;
+  availability: string;
+  status: 'pending' | 'accepted' | 'rejected';
   created_at: string;
   updated_at: string;
-  project?: Project;
+  project?: {
+    id: string;
+    title: string;
+    status: string;
+    budget: number;
+    created_at: string;
+  };
   professional?: {
-    first_name?: string;
-    last_name?: string;
-    skills?: string[];
-    rating?: number;
+    first_name: string;
+    last_name: string;
   };
 }
 
@@ -67,29 +58,29 @@ export interface Client {
 
 export interface Review {
   id: string;
-  rating?: number;
-  comment?: string;
-  client_id?: string;
-  professional_id?: string;
-  project_id?: string;
+  project_id: string;
+  client_id: string;
+  professional_id: string;
+  rating: number;
+  comment: string;
   created_at: string;
-  updated_at?: string;
+  updated_at: string;
 }
 
 export interface Payment {
   id: string;
+  project_id: string;
+  client_id: string;
+  professional_id: string;
   amount: number;
-  status: string;
+  status: 'pending' | 'completed' | 'failed';
   created_at: string;
-  paid_at?: string;
-  client_id?: string;
-  professional_id?: string;
-  project_id?: string;
+  updated_at: string;
   project?: {
-    title?: string;
+    title: string;
   };
   professional?: {
-    first_name?: string;
-    last_name?: string;
+    first_name: string;
+    last_name: string;
   };
 }
