@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
@@ -47,12 +46,33 @@ export const useClientDashboard = (userId: string) => {
 
       if (projectsError) throw projectsError;
 
-      // Transform projects with proper type casting
+      // Transform projects with proper type casting and required fields
       const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
       const transformedProjects: Project[] = (projectsData || []).map(project => ({
-        ...project,
-        status: validStatuses.includes(project.status as any) ? project.status : 'open',
-        updated_at: project.updated_at || project.created_at
+        id: project.id,
+        title: project.title || '',
+        description: project.description,
+        budget: project.budget,
+        status: validStatuses.includes(project.status as any) ? project.status as Project['status'] : 'open',
+        client_id: project.client_id || '',
+        created_at: project.created_at || new Date().toISOString(),
+        updated_at: project.updated_at || project.created_at || new Date().toISOString(),
+        assigned_to: project.assigned_to,
+        location: project.location,
+        deadline: project.deadline,
+        required_skills: project.required_skills,
+        professional_id: project.professional_id,
+        project_start_time: project.project_start_time,
+        category: project.category,
+        expected_timeline: project.expected_timeline,
+        urgency: project.urgency,
+        requirements: project.requirements,
+        scope: project.scope,
+        service_contract: project.service_contract,
+        client: project.client ? {
+          first_name: project.client.first_name,
+          last_name: project.client.last_name
+        } : undefined
       }));
 
       setProjects(transformedProjects);
@@ -86,7 +106,7 @@ export const useClientDashboard = (userId: string) => {
         project: app.project ? {
           id: app.project.id,
           title: app.project.title,
-          status: validStatuses.includes(app.project.status as any) ? app.project.status : 'open',
+          status: validStatuses.includes(app.project.status as any) ? app.project.status as Project['status'] : 'open',
           budget: app.project.budget,
           created_at: app.project.created_at
         } : undefined,

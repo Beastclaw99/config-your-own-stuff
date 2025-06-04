@@ -15,6 +15,7 @@ export interface ProjectCardProps {
   onCancelEdit: () => void;
   onSave: (updates: Partial<Project>) => Promise<void>;
   onDelete: () => void;
+  applications?: any[];
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -26,6 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onCancelEdit,
   onSave,
   onDelete,
+  applications = []
 }) => {
   const isEditing = editProject?.id === project.id;
 
@@ -42,7 +44,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     }
   };
 
-  if (isEditing) {
+  if (isEditing && editedProject) {
     return (
       <EditProjectForm
         project={project}

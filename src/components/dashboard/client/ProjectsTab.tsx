@@ -72,9 +72,17 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({
             <ProjectCard
               key={project.id}
               project={project}
+              editProject={editProject}
+              editedProject={editedProject}
+              isSubmitting={isSubmitting}
               applications={applications}
-              onEdit={handleEditInitiate}
-              onDelete={handleDeleteInitiate}
+              onEdit={() => handleEditInitiate(project)}
+              onCancelEdit={handleEditCancel}
+              onSave={async (updates) => {
+                const updatedProject = { ...project, ...updates };
+                handleUpdateProject(updatedProject);
+              }}
+              onDelete={() => handleDeleteInitiate(project.id)}
             />
           ))}
         </div>

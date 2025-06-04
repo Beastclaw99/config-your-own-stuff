@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -41,12 +40,33 @@ const ProjectDetails: React.FC = () => {
 
       if (error) throw error;
       
-      // Transform the data to match our Project type with proper type casting
+      // Transform the data to match our Project type with proper type casting and required fields
       const validStatuses = ['open', 'applied', 'assigned', 'in-progress', 'submitted', 'revision', 'completed', 'paid', 'archived', 'disputed'] as const;
       const transformedProject: Project = {
-        ...data,
-        status: validStatuses.includes(data.status as any) ? data.status : 'open',
-        updated_at: data.updated_at || data.created_at,
+        id: data.id,
+        title: data.title || '',
+        description: data.description,
+        budget: data.budget,
+        status: validStatuses.includes(data.status as any) ? data.status as Project['status'] : 'open',
+        client_id: data.client_id || '',
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || data.created_at || new Date().toISOString(),
+        assigned_to: data.assigned_to,
+        location: data.location,
+        deadline: data.deadline,
+        required_skills: data.required_skills,
+        professional_id: data.professional_id,
+        project_start_time: data.project_start_time,
+        category: data.category,
+        expected_timeline: data.expected_timeline,
+        urgency: data.urgency,
+        requirements: data.requirements,
+        scope: data.scope,
+        service_contract: data.service_contract,
+        client: data.client ? {
+          first_name: data.client.first_name,
+          last_name: data.client.last_name
+        } : undefined,
         professional: data.professional ? {
           first_name: data.professional.first_name,
           last_name: data.professional.last_name

@@ -7,12 +7,18 @@ import { Plus } from 'lucide-react';
 export interface EmptyProjectStateProps {
   message?: string;
   onCreateProject?: () => void;
+  showCreateButton?: boolean;
+  onCreateClick?: () => void;
 }
 
 const EmptyProjectState: React.FC<EmptyProjectStateProps> = ({ 
   message = "No projects found. Create your first project to get started!",
-  onCreateProject 
+  onCreateProject,
+  showCreateButton = false,
+  onCreateClick
 }) => {
+  const handleCreateClick = onCreateClick || onCreateProject;
+
   return (
     <Card className="text-center py-12">
       <CardContent>
@@ -22,8 +28,8 @@ const EmptyProjectState: React.FC<EmptyProjectStateProps> = ({
           </div>
           <h3 className="text-lg font-semibold mb-2">No Projects Yet</h3>
           <p className="text-gray-600 mb-6">{message}</p>
-          {onCreateProject && (
-            <Button onClick={onCreateProject} className="bg-ttc-blue-700 hover:bg-ttc-blue-800">
+          {(showCreateButton || onCreateProject) && handleCreateClick && (
+            <Button onClick={handleCreateClick} className="bg-ttc-blue-700 hover:bg-ttc-blue-800">
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Project
             </Button>
