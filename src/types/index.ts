@@ -45,4 +45,17 @@ export interface Application {
     rating?: number;
     skills?: string[];
   };
+}
+
+export interface Deliverable {
+  id: string;
+  title: string;
+  description: string;
+  deliverable_type: 'text' | 'file';
+  content: string;
+  milestone_id: string;
+  file_name?: string;
+  file_url?: string;
+  created_at?: string;
+  updated_at?: string;
 } 

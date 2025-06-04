@@ -14,26 +14,20 @@ import BudgetTimelineStep from './steps/BudgetTimelineStep';
 import MilestonesDeliverablesStep from './steps/MilestonesDeliverablesStep';
 import ServiceContractStep from './steps/ServiceContractStep';
 import ReviewStep from './steps/ReviewStep';
-import { ProjectData } from './types';
+import { useProjectState } from '@/hooks/useProjectState';
 
 const ProjectCreationWizard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [projectData, setProjectData] = useState<ProjectData>({
-    title: '',
-    description: '',
-    category: '',
-    location: '',
-    recommended_skills: [],
-    budget: 0,
-    timeline: '',
-    urgency: '',
-    milestones: [],
-    deliverables: [],
-    service_contract: ''
-  });
+  const {
+    projectData,
+    isDirty,
+    validationErrors,
+    updateProjectData,
+    validateProjectData
+  } = useProjectState();
 
   const steps = [
     { 
@@ -94,19 +88,24 @@ const ProjectCreationWizard: React.FC = () => {
   };
 
   const isStepComplete = (stepNumber: number) => {
+    const validation = validateProjectData();
     switch (stepNumber) {
       case 1:
-        return projectData.title && projectData.description && projectData.category && projectData.location;
+        return !validation.errors.some(error => 
+          ['title', 'description', 'category', 'location'].includes(error.field)
+        );
       case 2:
         return true; // Requirements are optional
       case 3:
-        return projectData.budget > 0 && projectData.timeline && projectData.urgency;
+        return !validation.errors.some(error => 
+          ['budget', 'timeline', 'urgency'].includes(error.field)
+        );
       case 4:
         return true; // Milestones are optional
       case 5:
         return !!projectData.service_contract;
       case 6:
-        return true;
+        return validation.isValid;
       default:
         return false;
     }
@@ -128,15 +127,21 @@ const ProjectCreationWizard: React.FC = () => {
     }
   };
 
-  const handleDataUpdate = (stepData: Partial<ProjectData>) => {
-    setProjectData(prev => ({ ...prev, ...stepData }));
-  };
-
   const handleSubmit = async () => {
     if (!user) {
       toast({
         title: "Authentication required",
         description: "Please log in to create a project",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const validation = validateProjectData();
+    if (!validation.isValid) {
+      toast({
+        title: "Validation Error",
+        description: "Please fix all validation errors before submitting",
         variant: "destructive"
       });
       return;
@@ -166,37 +171,30 @@ const ProjectCreationWizard: React.FC = () => {
 
       if (projectError) throw projectError;
 
-      // Create milestones
+      // Create milestones with their deliverables
       if (projectData.milestones.length > 0) {
         const { error: milestonesError } = await supabase
           .from('project_milestones')
           .insert(
             projectData.milestones.map(milestone => ({
-              ...milestone,
+              title: milestone.title,
+              description: milestone.description,
+              due_date: milestone.due_date,
               project_id: project.id,
               created_by: user.id,
-              status: 'not_started',
-              is_complete: false
+              status: milestone.status || 'not_started',
+              is_complete: milestone.is_complete,
+              deliverables: milestone.deliverables.map(deliverable => ({
+                description: deliverable.description,
+                deliverable_type: deliverable.deliverable_type,
+                content: deliverable.content,
+                uploaded_by: user.id,
+                file_url: deliverable.file_url || ''
+              }))
             }))
           );
 
         if (milestonesError) throw milestonesError;
-      }
-
-      // Create deliverables
-      if (projectData.deliverables.length > 0) {
-        const { error: deliverablesError } = await supabase
-          .from('project_deliverables')
-          .insert(
-            projectData.deliverables.map(deliverable => ({
-              ...deliverable,
-              project_id: project.id,
-              uploaded_by: user.id,
-              file_url: deliverable.deliverable_type === 'file' ? deliverable.content || '' : ''
-            }))
-          );
-
-        if (deliverablesError) throw deliverablesError;
       }
 
       toast({
@@ -219,22 +217,8 @@ const ProjectCreationWizard: React.FC = () => {
   const progress = (currentStep / steps.length) * 100;
 
   const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 1:
-        return <BasicDetailsStep data={projectData} onUpdate={handleDataUpdate} />;
-      case 2:
-        return <RequirementsStep data={projectData} onUpdate={handleDataUpdate} />;
-      case 3:
-        return <BudgetTimelineStep data={projectData} onUpdate={handleDataUpdate} />;
-      case 4:
-        return <MilestonesDeliverablesStep data={projectData} onUpdate={handleDataUpdate} />;
-      case 5:
-        return <ServiceContractStep data={projectData} onUpdate={handleDataUpdate} />;
-      case 6:
-        return <ReviewStep data={projectData} />;
-      default:
-        return <BasicDetailsStep data={projectData} onUpdate={handleDataUpdate} />;
-    }
+    const StepComponent = steps[currentStep - 1].component;
+    return <StepComponent data={projectData} onUpdate={updateProjectData} />;
   };
 
   return (
