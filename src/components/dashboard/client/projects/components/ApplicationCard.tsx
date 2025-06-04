@@ -33,7 +33,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground line-clamp-3">
-          {application.proposal}
+          {application.proposal_message || application.cover_letter || 'No proposal provided'}
         </p>
       </CardContent>
       <CardFooter>

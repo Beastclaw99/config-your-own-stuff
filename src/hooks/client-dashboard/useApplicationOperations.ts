@@ -3,7 +3,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Application, Project } from '@/types';
 import { useToast } from "@/components/ui/use-toast";
 
-export const useApplicationOperations = () => {
+interface UseApplicationOperationsProps {
+  onUpdate?: () => void;
+}
+
+export const useApplicationOperations = ({ onUpdate }: UseApplicationOperationsProps = {}) => {
   const { toast } = useToast();
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -31,7 +35,7 @@ export const useApplicationOperations = () => {
 
       if (error) throw error;
 
-      // Update project status to in_progress
+      // Update project status to in-progress
       const { error: projectError } = await supabase
         .from('projects')
         .update({ status: 'in-progress' })
@@ -45,6 +49,7 @@ export const useApplicationOperations = () => {
       });
 
       handleCloseDialog();
+      onUpdate?.();
     } catch (error) {
       console.error('Error accepting application:', error);
       toast({
@@ -75,6 +80,7 @@ export const useApplicationOperations = () => {
       });
 
       handleCloseDialog();
+      onUpdate?.();
     } catch (error) {
       console.error('Error rejecting application:', error);
       toast({
