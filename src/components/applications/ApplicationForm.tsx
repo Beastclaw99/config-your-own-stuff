@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   proposal: z.string().min(100, 'Proposal must be at least 100 characters'),
-  budget: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+  budget: z.string().refine((val: string) => !isNaN(Number(val)) && Number(val) > 0, {
     message: 'Please enter a valid budget amount',
   }),
   timeline: z.string().min(1, 'Please specify the timeline'),
@@ -100,7 +101,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <FormField
           control={form.control}
           name="proposal"
-          render={({ field }) => (
+          render={({ field }: { field: FieldValues }) => (
             <FormItem>
               <FormLabel>Proposal</FormLabel>
               <FormControl>
@@ -118,7 +119,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <FormField
           control={form.control}
           name="budget"
-          render={({ field }) => (
+          render={({ field }: { field: FieldValues }) => (
             <FormItem>
               <FormLabel>Budget (TTD)</FormLabel>
               <FormControl>
@@ -136,7 +137,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <FormField
           control={form.control}
           name="timeline"
-          render={({ field }) => (
+          render={({ field }: { field: FieldValues }) => (
             <FormItem>
               <FormLabel>Timeline</FormLabel>
               <FormControl>
@@ -162,4 +163,4 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   );
 };
 
-export default ApplicationForm; 
+export default ApplicationForm;

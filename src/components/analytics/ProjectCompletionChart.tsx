@@ -21,7 +21,7 @@ const ProjectCompletionChart: React.FC = () => {
           <XAxis dataKey="month" />
           <YAxis domain={[0, 100]} />
           <Tooltip 
-            formatter={(value, name) => [
+            formatter={(value: any, name: any) => [
               `${value}%`, 
               name === 'completed' ? 'Completion Rate' : 'Projects Started'
             ]}

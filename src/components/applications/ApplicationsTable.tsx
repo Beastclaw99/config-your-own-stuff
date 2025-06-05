@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Table,
@@ -76,6 +77,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
       // Map raw data to Application interface
       const mapped = (data || []).map((row: any) => {
         // If join failed, skip this row
@@ -97,7 +99,8 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
             rating: row.professional.rating,
           },
         };
-      }).filter(Boolean);
+      }).filter((item): item is Application => item !== null);
+      
       setApplications(mapped);
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -163,7 +166,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
 
     const { color, icon } = statusConfig[status];
     return (
-      <Badge variant="outline" className={color}>
+      <Badge className={color}>
         {icon}
         <span className="ml-1">
           {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -251,7 +254,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button size="icon">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -281,4 +284,4 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
   );
 };
 
-export default ApplicationsTable; 
+export default ApplicationsTable;
