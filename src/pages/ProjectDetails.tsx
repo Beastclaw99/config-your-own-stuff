@@ -13,7 +13,7 @@ import { MapPin, DollarSign, Calendar, User, Clock, CheckCircle, AlertTriangle }
 import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { getProject, applyToProject, sendMessage, getProjectMessages } from '@/services/api';
-import type { Project, Message } from '@/types';
+import type { Message } from '@/types';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -76,31 +76,21 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!content.trim() || !id) return;
+    if (!content.trim() || !id || !currentUser) return;
     
     try {
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        content,
-        senderId: currentUser?.id || '',
-        senderName: currentUser?.name || 'Unknown',
-        timestamp: new Date().toISOString(),
-        projectId: id,
-        read: false
-      };
-
-      // Optimistically update UI
-      setMessages((prev: Message[]) => [newMessage, ...prev]);
+      // Send to backend first to get the proper message structure
+      const sentMessage = await sendMessage(id, content);
       
-      // Send to backend
-      await sendMessage(id, content);
-      
-      // Refresh messages to get server state
-      await loadMessages();
+      // Update UI with the server response
+      setMessages((prev: Message[]) => [sentMessage, ...prev]);
     } catch (error) {
       console.error('Error sending message:', error);
-      // Revert optimistic update on error
-      setMessages((prev: Message[]) => prev.filter((m: Message) => m.id !== Date.now().toString()));
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 

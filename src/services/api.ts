@@ -1,6 +1,19 @@
 import { supabase } from '@/lib/supabase';
 import type { Project, Message } from '@/types';
 
+interface DatabaseMessage {
+  id: string;
+  project_id: string;
+  sender_id: string;
+  recipient_id: string | null;
+  content: string;
+  sent_at: string;
+  sender?: {
+    first_name: string;
+    last_name: string;
+  } | null;
+}
+
 export const getProject = async (projectId: string): Promise<Project> => {
   const { data, error } = await supabase
     .from('projects')
@@ -51,17 +64,18 @@ export const sendMessage = async (projectId: string, content: string): Promise<M
 
   if (error) throw error;
 
+  const messageData = data as DatabaseMessage;
   return {
-    id: data.id,
-    project_id: data.project_id,
-    sender_id: data.sender_id,
-    recipient_id: data.recipient_id,
-    content: data.content,
-    sent_at: data.sent_at,
-    sender_name: data.sender ? `${data.sender.first_name} ${data.sender.last_name}` : 'Unknown User',
+    id: messageData.id,
+    project_id: messageData.project_id,
+    sender_id: messageData.sender_id,
+    recipient_id: messageData.recipient_id || '',
+    content: messageData.content,
+    sent_at: messageData.sent_at,
+    sender_name: messageData.sender ? `${messageData.sender.first_name} ${messageData.sender.last_name}` : 'Unknown User',
     sender_role: 'professional', // This should be determined based on the user's role
     is_read: false,
-    sender: data.sender
+    sender: messageData.sender || undefined
   };
 };
 
@@ -80,16 +94,16 @@ export const getProjectMessages = async (projectId: string): Promise<Message[]> 
 
   if (error) throw error;
 
-  return data.map(msg => ({
+  return (data as DatabaseMessage[]).map(msg => ({
     id: msg.id,
     project_id: msg.project_id,
     sender_id: msg.sender_id,
-    recipient_id: msg.recipient_id,
+    recipient_id: msg.recipient_id || '',
     content: msg.content,
     sent_at: msg.sent_at,
     sender_name: msg.sender ? `${msg.sender.first_name} ${msg.sender.last_name}` : 'Unknown User',
     sender_role: 'professional', // This should be determined based on the user's role
     is_read: false,
-    sender: msg.sender
+    sender: msg.sender || undefined
   }));
 }; 
