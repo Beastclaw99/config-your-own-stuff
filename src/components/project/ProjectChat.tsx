@@ -115,9 +115,14 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
       if (error) throw error;
 
       const formattedMessages: ProjectMessage[] = (data || []).map(msg => {
-        const sender = msg.sender && typeof msg.sender === 'object' && 'first_name' in msg.sender && 'last_name' in msg.sender
-          ? msg.sender
-          : null;
+        // Properly type check the sender object
+        const senderData = msg.sender as any;
+        const hasSenderData = senderData && 
+          typeof senderData === 'object' && 
+          'first_name' in senderData && 
+          'last_name' in senderData &&
+          senderData.first_name && 
+          senderData.last_name;
         
         return {
           id: msg.id,
@@ -127,8 +132,8 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
           content: msg.content,
           sent_at: msg.sent_at,
           is_read: true, // Simplified for now
-          sender_name: sender
-            ? `${sender.first_name} ${sender.last_name}` 
+          sender_name: hasSenderData
+            ? `${senderData.first_name} ${senderData.last_name}` 
             : 'Unknown User',
           sender_role: msg.sender_id === clientId ? 'client' : 'professional' as const,
           reactions: []
