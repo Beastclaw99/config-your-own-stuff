@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { Project } from '@/components/dashboard/types';
 import ProjectUpdateTimeline from '@/components/shared/UnifiedProjectUpdateTimeline';
+import ProjectChat from '@/components/project/ProjectChat';
 import { MapPin, DollarSign, Calendar, User, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const ProjectDetails: React.FC = () => {
@@ -155,7 +156,7 @@ const ProjectDetails: React.FC = () => {
             ← Back to Projects
           </Button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <Card>
@@ -177,6 +178,7 @@ const ProjectDetails: React.FC = () => {
                     {getStatusBadge(project.status)}
                   </div>
                 </CardHeader>
+                
                 <CardContent>
                   <div className="space-y-4">
                     <div>
@@ -224,6 +226,16 @@ const ProjectDetails: React.FC = () => {
                   />
                 </CardContent>
               </Card>
+
+              {/* Project Chat */}
+              {project.professional_id && (
+                <ProjectChat
+                  projectId={project.id}
+                  projectStatus={project.status}
+                  clientId={project.client_id}
+                  professionalId={project.professional_id}
+                />
+              )}
             </div>
 
             {/* Sidebar */}

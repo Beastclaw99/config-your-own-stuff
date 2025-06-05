@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -45,12 +44,23 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     });
   };
 
-  const formatCurrency = (amount: number | undefined) => {
-    if (!amount || isNaN(amount)) return 'N/A';
+  const formatCurrency = (amount: string) => {
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount)) return amount;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
-    }).format(amount);
+    }).format(numAmount);
+<<<<<<< HEAD
+  };
+
+  const getClientName = () => {
+    if (project.client?.first_name && project.client?.last_name) {
+      return `${project.client.first_name} ${project.client.last_name}`;
+    }
+    return 'Unknown Client';
+=======
+>>>>>>> parent of 749e21b (Fix type errors and import issues)
   };
 
   if (variant === 'list') {
@@ -70,11 +80,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             <h3 className="text-lg font-semibold mb-1">{project.title}</h3>
             
             <div className="flex items-center text-sm text-gray-600 mb-2">
-              <MapPin size={14} className="mr-1" /> Location
+              <MapPin size={14} className="mr-1" /> {project.location || 'Location not specified'}
               <span className="mx-2">|</span>
-              <span>Posted by: <span className="font-medium">
-                {project.client?.first_name} {project.client?.last_name}
-              </span></span>
+              <span>Posted by: <span className="font-medium">{getClientName()}</span></span>
             </div>
             
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
@@ -125,7 +133,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         </div>
         <CardTitle className="text-lg">{project.title}</CardTitle>
         <CardDescription className="flex items-center gap-1">
-          <MapPin size={14} /> Location
+          <MapPin size={14} /> {project.location || 'Location not specified'}
         </CardDescription>
       </CardHeader>
       
@@ -157,9 +165,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
       {showActions && (
         <CardFooter className="pt-0 flex justify-between items-center">
           <div className="text-sm text-gray-600">
-            Posted by: <span className="font-medium">
-              {project.client?.first_name} {project.client?.last_name}
-            </span>
+            Posted by: <span className="font-medium">{getClientName()}</span>
           </div>
           <Button 
             variant="outline" 
