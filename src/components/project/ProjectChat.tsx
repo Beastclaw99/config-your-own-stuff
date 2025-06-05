@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -90,8 +91,10 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
   const userRole = user?.id === clientId ? 'client' : 'professional';
 
   useEffect(() => {
-    fetchMessages();
-    subscribeToMessages();
+    if (projectId) {
+      fetchMessages();
+      subscribeToMessages();
+    }
   }, [projectId]);
 
   useEffect(() => {
@@ -108,6 +111,7 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
 
   const fetchMessages = async () => {
     try {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from('project_messages')
         .select(`
@@ -117,19 +121,6 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
           recipient_id,
           content,
           sent_at,
-          is_read,
-          parent_id,
-          reactions:message_reactions(
-            id,
-            message_id,
-            user_id,
-            emoji,
-            created_at,
-            user:profiles(
-              first_name,
-              last_name
-            )
-          ),
           sender:profiles!project_messages_sender_id_fkey(
             first_name,
             last_name
@@ -140,43 +131,21 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
 
       if (error) throw error;
 
-      // Create a map of messages by ID for easy parent message lookup
-      const messageMap = new Map<string, ProjectMessage>();
-      const formattedMessages: ProjectMessage[] = (data as unknown as DatabaseMessage[]).map(msg => {
-        const formattedMsg: ProjectMessage = {
-          id: msg.id,
-          project_id: msg.project_id,
-          sender_id: msg.sender_id,
-          recipient_id: msg.recipient_id,
-          content: msg.content,
-          sent_at: msg.sent_at,
-          is_read: msg.is_read,
-          parent_id: msg.parent_id,
-          reactions: msg.reactions,
-          sender_name: msg.sender ? `${msg.sender.first_name} ${msg.sender.last_name}` : 'Unknown User',
-          sender_role: msg.sender_id === clientId ? 'client' : 'professional' as const
-        };
-        messageMap.set(msg.id, formattedMsg);
-        return formattedMsg;
-      });
-
-      // Add parent messages to each message
-      formattedMessages.forEach(msg => {
-        if (msg.parent_id) {
-          msg.parent_message = messageMap.get(msg.parent_id);
-        }
-      });
+      const formattedMessages: ProjectMessage[] = (data || []).map(msg => ({
+        id: msg.id,
+        project_id: msg.project_id,
+        sender_id: msg.sender_id,
+        recipient_id: msg.recipient_id,
+        content: msg.content,
+        sent_at: msg.sent_at,
+        is_read: true, // Simplified for now
+        sender_name: msg.sender ? `${msg.sender.first_name} ${msg.sender.last_name}` : 'Unknown User',
+        sender_role: msg.sender_id === clientId ? 'client' : 'professional' as const,
+        reactions: []
+      }));
 
       setMessages(formattedMessages);
-      
-      // Update unread count
-      const unreadMessages = formattedMessages.filter(msg => !msg.is_read && msg.recipient_id === user?.id);
-      setUnreadCount(unreadMessages.length);
-      
-      // Mark unread messages as read
-      if (unreadMessages.length > 0) {
-        await markMessagesAsRead(unreadMessages.map(msg => msg.id));
-      }
+      setFilteredMessages(formattedMessages);
     } catch (error: any) {
       console.error('Error fetching messages:', error);
       toast({
@@ -189,19 +158,6 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
     }
   };
 
-  const markMessagesAsRead = async (messageIds: string[]) => {
-    try {
-      const { error } = await supabase
-        .from('project_messages')
-        .update({ is_read: true })
-        .in('id', messageIds);
-
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Error marking messages as read:', error);
-    }
-  };
-
   const subscribeToMessages = () => {
     const subscription = supabase
       .channel(`project_messages:${projectId}`)
@@ -211,20 +167,8 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
         table: 'project_messages',
         filter: `project_id=eq.${projectId}`
       }, async (payload) => {
-        const newMessage = payload.new as ProjectMessage;
-        setMessages(prev => [...prev, newMessage]);
-        
-        // Update unread count and show notification
-        if (newMessage.recipient_id === user?.id) {
-          setUnreadCount(prev => prev + 1);
-          toast({
-            title: "New Message",
-            description: `${newMessage.sender_name}: ${newMessage.content}`,
-            action: <Bell className="h-4 w-4" />
-          });
-          await markMessagesAsRead([newMessage.id]);
-        }
-        
+        // Refetch messages to get complete data with sender info
+        await fetchMessages();
         scrollToBottom();
       })
       .subscribe();
@@ -245,8 +189,7 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
           sender_id: user.id,
           recipient_id: user.id === clientId ? professionalId : clientId,
           content: newMessage.trim(),
-          sent_at: new Date().toISOString(),
-          parent_id: replyingTo?.id
+          sent_at: new Date().toISOString()
         });
 
       if (error) throw error;
@@ -285,99 +228,6 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
 
   const cancelReply = () => {
     setReplyingTo(null);
-  };
-
-  const addReaction = async (messageId: string, emoji: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('message_reactions')
-        .insert({
-          message_id: messageId,
-          user_id: user.id,
-          emoji,
-          created_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      // Update local state
-      setMessages(prev => prev.map(msg => {
-        if (msg.id === messageId) {
-          return {
-            ...msg,
-            reactions: [
-              ...(msg.reactions || []),
-              {
-                id: Date.now().toString(), // Temporary ID
-                message_id: messageId,
-                user_id: user.id,
-                emoji,
-                created_at: new Date().toISOString(),
-                user: {
-                  first_name: user.first_name || '',
-                  last_name: user.last_name || ''
-                }
-              }
-            ]
-          };
-        }
-        return msg;
-      }));
-    } catch (error: any) {
-      console.error('Error adding reaction:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add reaction. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const removeReaction = async (messageId: string, emoji: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('message_reactions')
-        .delete()
-        .match({
-          message_id: messageId,
-          user_id: user.id,
-          emoji
-        });
-
-      if (error) throw error;
-
-      // Update local state
-      setMessages(prev => prev.map(msg => {
-        if (msg.id === messageId) {
-          return {
-            ...msg,
-            reactions: (msg.reactions || []).filter(
-              r => !(r.user_id === user.id && r.emoji === emoji)
-            )
-          };
-        }
-        return msg;
-      }));
-    } catch (error: any) {
-      console.error('Error removing reaction:', error);
-      toast({
-        title: "Error",
-        description: "Failed to remove reaction. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const getReactionCount = (message: ProjectMessage, emoji: string) => {
-    return (message.reactions || []).filter(r => r.emoji === emoji).length;
-  };
-
-  const hasUserReacted = (message: ProjectMessage, emoji: string) => {
-    return (message.reactions || []).some(r => r.user_id === user?.id && r.emoji === emoji);
   };
 
   if (isLoading) {
@@ -466,38 +316,6 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
                   {new Date(message.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
-                      >
-                        <Smile className="h-4 w-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48 p-2">
-                      <div className="grid grid-cols-4 gap-2">
-                        {EMOJI_OPTIONS.map(emoji => (
-                          <Button
-                            key={emoji}
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => {
-                              if (hasUserReacted(message, emoji)) {
-                                removeReaction(message.id, emoji);
-                              } else {
-                                addReaction(message.id, emoji);
-                              }
-                            }}
-                          >
-                            {emoji}
-                          </Button>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -508,31 +326,6 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
                   </Button>
                 </div>
               </div>
-              {message.reactions && message.reactions.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {Array.from(new Set(message.reactions.map(r => r.emoji))).map(emoji => {
-                    const count = getReactionCount(message, emoji);
-                    return (
-                      <Badge
-                        key={emoji}
-                        variant="secondary"
-                        className={`cursor-pointer ${
-                          hasUserReacted(message, emoji) ? 'bg-blue-100' : ''
-                        }`}
-                        onClick={() => {
-                          if (hasUserReacted(message, emoji)) {
-                            removeReaction(message.id, emoji);
-                          } else {
-                            addReaction(message.id, emoji);
-                          }
-                        }}
-                      >
-                        {emoji} {count}
-                      </Badge>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
         ))}
@@ -560,9 +353,13 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={replyingTo ? "Write a reply..." : "Type a message..."}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyPress={(e) => e.key === 'Enter' && !isChatDisabled && sendMessage()}
+            disabled={isChatDisabled}
           />
-          <Button onClick={sendMessage} disabled={!newMessage.trim()}>
+          <Button 
+            onClick={sendMessage} 
+            disabled={!newMessage.trim() || isChatDisabled}
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
@@ -571,4 +368,4 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
   );
 };
 
-export default ProjectChat; 
+export default ProjectChat;

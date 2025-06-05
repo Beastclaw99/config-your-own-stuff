@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -44,14 +45,13 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     });
   };
 
-  const formatCurrency = (amount: string) => {
-    const numAmount = parseFloat(amount);
+  const formatCurrency = (amount: string | number) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
     if (isNaN(numAmount)) return amount;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(numAmount);
-<<<<<<< HEAD
   };
 
   const getClientName = () => {
@@ -59,8 +59,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
       return `${project.client.first_name} ${project.client.last_name}`;
     }
     return 'Unknown Client';
-=======
->>>>>>> parent of 749e21b (Fix type errors and import issues)
   };
 
   if (variant === 'list') {
@@ -94,7 +92,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-gray-500" />
-                <span className="font-semibold">{formatCurrency(project.budget)}</span>
+                <span className="font-semibold">{formatCurrency(project.budget || 0)}</span>
               </div>
               
               <div className="flex items-center text-ttc-neutral-700">
@@ -145,7 +143,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-gray-500" />
-            <span className="font-semibold">{formatCurrency(project.budget)}</span>
+            <span className="font-semibold">{formatCurrency(project.budget || 0)}</span>
           </div>
           
           <div className="flex items-center text-ttc-neutral-700">
