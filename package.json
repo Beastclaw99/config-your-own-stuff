@@ -6,14 +6,15 @@
     "@heroicons/react": "^2.0.18",
     "@supabase/supabase-js": "^2.39.0",
     "@types/node": "^16.18.0",
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.3.23",
     "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react-swc": "^3.10.1",
     "lovable-tagger": "^1.1.8",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.8.3"
   },
   "scripts": {
     "dev": "vite",
