@@ -78,11 +78,10 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
 
       if (error) throw error;
       
-      // Map raw data to Application interface
-      const mapped = (data || []).map((row: any) => {
-        // If join failed, skip this row
-        if (!row.professional || row.professional.error) return null;
-        return {
+      // Map raw data to Application interface with proper type checking
+      const mapped = (data || [])
+        .filter((row: any) => row.professional && !row.professional.error)
+        .map((row: any): Application => ({
           id: row.id,
           project_id: row.project_id,
           professional_id: row.professional_id,
@@ -98,8 +97,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
             avatar_url: row.professional.avatar_url,
             rating: row.professional.rating,
           },
-        };
-      }).filter((item): item is Application => item !== null);
+        }));
       
       setApplications(mapped);
     } catch (error) {
@@ -254,7 +252,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon">
+                      <Button variant="ghost" size="icon">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
