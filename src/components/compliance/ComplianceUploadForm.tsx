@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -192,7 +191,6 @@ const ComplianceUploadForm: React.FC = () => {
                   {(doc.status === 'expired' || doc.status === 'rejected' || isExpiring) && (
                     <div className="mt-3 pt-3 border-t">
                       <Button 
-                        size="sm" 
                         variant="outline"
                         onClick={() => handleFileUpload(doc.type)}
                       >

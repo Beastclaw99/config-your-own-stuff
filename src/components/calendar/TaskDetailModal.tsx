@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -157,7 +156,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               <div className="flex gap-2">
                 {event.status === 'scheduled' && (
                   <Button 
-                    size="sm" 
                     variant="outline"
                     onClick={() => handleStatusUpdate('in-progress')}
                   >
@@ -166,7 +164,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 )}
                 {event.status === 'in-progress' && (
                   <Button 
-                    size="sm" 
                     variant="outline"
                     onClick={() => handleStatusUpdate('completed')}
                   >
@@ -174,7 +171,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   </Button>
                 )}
                 <Button 
-                  size="sm" 
                   variant="outline"
                   onClick={() => handleStatusUpdate('cancelled')}
                 >
@@ -187,11 +183,11 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           {/* Action Buttons */}
           <div className="flex justify-between pt-4 border-t">
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline">
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline">
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </Button>

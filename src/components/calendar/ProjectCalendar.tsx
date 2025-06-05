@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -121,7 +120,7 @@ const ProjectCalendar: React.FC = () => {
               <CalendarIcon className="h-6 w-6" />
               Project Calendar
             </CardTitle>
-            <Button size="sm">
+            <Button>
               <Plus className="h-4 w-4 mr-2" />
               Add Event
             </Button>
@@ -129,21 +128,21 @@ const ProjectCalendar: React.FC = () => {
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={previousMonth}>
+              <Button variant="outline" onClick={previousMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <h2 className="text-xl font-semibold">
                 {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </h2>
-              <Button variant="outline" size="sm" onClick={nextMonth}>
+              <Button variant="outline" onClick={nextMonth}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
             
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">Today</Button>
-              <Button variant="outline" size="sm">Week</Button>
-              <Button variant="outline" size="sm">Month</Button>
+              <Button variant="outline">Today</Button>
+              <Button variant="outline">Week</Button>
+              <Button variant="outline">Month</Button>
             </div>
           </div>
         </CardHeader>
