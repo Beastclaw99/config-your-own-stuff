@@ -5,25 +5,27 @@ import { Clock, CheckCircle, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ProjectStatsProps {
-  milestones: number;
-  completedMilestones: number;
-  tasks: number;
-  completedTasks: number;
-  budget: number;
+  milestones: {
+    total: number;
+    completed: number;
+  };
+  tasks: {
+    total: number;
+    completed: number;
+  };
+  budget: string;
   spent: number;
 }
 
 const ProjectStats: React.FC<ProjectStatsProps> = ({
   milestones,
-  completedMilestones,
   tasks,
-  completedTasks,
   budget,
   spent
 }) => {
-  const milestoneProgress = milestones > 0 ? (completedMilestones / milestones) * 100 : 0;
-  const taskProgress = tasks > 0 ? (completedTasks / tasks) * 100 : 0;
-  const budgetProgress = budget ? (spent / budget) * 100 : 0;
+  const milestoneProgress = milestones.total > 0 ? (milestones.completed / milestones.total) * 100 : 0;
+  const taskProgress = tasks.total > 0 ? (tasks.completed / tasks.total) * 100 : 0;
+  const budgetProgress = budget ? (spent / parseFloat(budget)) * 100 : 0;
 
   const getProgressColor = (progress: number, type: 'milestone' | 'task' | 'budget') => {
     if (type === 'budget' && progress > 100) return 'bg-red-500';
@@ -47,7 +49,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({
               <h4 className="font-medium">Progress</h4>
             </div>
             <span className="text-sm text-gray-500">
-              {completedMilestones}/{milestones}
+              {milestones.completed}/{milestones.total}
             </span>
           </div>
           <Progress 
@@ -72,7 +74,7 @@ const ProjectStats: React.FC<ProjectStatsProps> = ({
               <h4 className="font-medium">Progress</h4>
             </div>
             <span className="text-sm text-gray-500">
-              {completedTasks}/{tasks}
+              {tasks.completed}/{tasks.total}
             </span>
           </div>
           <Progress 

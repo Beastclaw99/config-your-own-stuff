@@ -8,95 +8,91 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { Project } from '@/components/dashboard/types';
 import ProjectUpdateTimeline from '@/components/shared/UnifiedProjectUpdateTimeline';
-import ProjectChat from '@/components/project/ProjectChat';
 import { MapPin, DollarSign, Calendar, User, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
-import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@/contexts/AuthContext';
-import { getProject, applyToProject, sendMessage, getProjectMessages } from '@/services/api';
-import type { Message } from '@/types';
 
 const ProjectDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user: currentUser } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    if (id) {
-      loadProject();
-      loadMessages();
+    if (projectId) {
+      fetchProjectDetails();
     }
-  }, [id]);
+  }, [projectId]);
 
-  const loadProject = async () => {
-    if (!id) return;
+  const fetchProjectDetails = async () => {
     try {
-      const projectData = await getProject(id);
-      setProject(projectData);
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          client:profiles!projects_client_id_fkey(first_name, last_name),
+          professional:profiles!projects_professional_id_fkey(first_name, last_name)
+        `)
+        .eq('id', projectId)
+        .single();
+
+      if (error) throw error;
+      setProject(data);
     } catch (error) {
-      console.error('Error loading project:', error);
+      console.error('Error fetching project details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load project details",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const loadMessages = async () => {
-    if (!id) return;
-    try {
-      const messagesData = await getProjectMessages(id);
-      setMessages(messagesData);
-    } catch (error) {
-      console.error('Error loading messages:', error);
-    }
-  };
-
   const handleApplyToProject = async () => {
-    if (!id || !currentUser) return;
     try {
       setIsApplying(true);
-      await applyToProject(id);
-      await loadProject();
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to apply to projects",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('applications')
+        .insert([
+          {
+            project_id: projectId,
+            professional_id: user.id,
+            status: 'pending'
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Application submitted",
+        description: "Your application has been submitted successfully!"
+      });
+
+      fetchProjectDetails();
     } catch (error) {
       console.error('Error applying to project:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit application",
+        variant: "destructive"
+      });
     } finally {
       setIsApplying(false);
     }
-  };
-
-  const handleMessageClick = (message: Message) => {
-    setSelectedMessage(message);
-    setShowMessageModal(true);
-  };
-
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim() || !id || !currentUser) return;
-    
-    try {
-      // Send to backend first to get the proper message structure
-      const sentMessage = await sendMessage(id, content);
-      
-      // Update UI with the server response
-      setMessages((prev: Message[]) => [sentMessage, ...prev]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleCloseMessageModal = () => {
-    setShowMessageModal(false);
-    setSelectedMessage(null);
   };
 
   if (loading) {
@@ -159,7 +155,7 @@ const ProjectDetails: React.FC = () => {
             ← Back to Projects
           </Button>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <Card>
@@ -181,7 +177,6 @@ const ProjectDetails: React.FC = () => {
                     {getStatusBadge(project.status)}
                   </div>
                 </CardHeader>
-                
                 <CardContent>
                   <div className="space-y-4">
                     <div>
@@ -229,16 +224,6 @@ const ProjectDetails: React.FC = () => {
                   />
                 </CardContent>
               </Card>
-
-              {/* Project Chat */}
-              {project.professional_id && (
-                <ProjectChat
-                  projectId={project.id}
-                  projectStatus={project.status}
-                  clientId={project.client_id}
-                  professionalId={project.professional_id}
-                />
-              )}
             </div>
 
             {/* Sidebar */}
@@ -308,137 +293,6 @@ const ProjectDetails: React.FC = () => {
                     </p>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Project Messages Section */}
-              <div className="bg-white rounded-lg shadow">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Project Messages</h3>
-                    <button
-                      onClick={() => setShowMessageModal(true)}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
-                      New Message
-                    </button>
-                  </div>
-
-                  {messages.length === 0 ? (
-                    <div className="text-center py-8">
-                      <ChatBubbleLeftIcon className="mx-auto h-12 w-12 text-gray-400" />
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No messages</h3>
-                      <p className="mt-1 text-sm text-gray-500">Get started by sending a message.</p>
-                      <div className="mt-6">
-                        <button
-                          onClick={() => setShowMessageModal(true)}
-                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          <ChatBubbleLeftIcon className="h-5 w-5 mr-2" />
-                          Send Message
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          onClick={() => handleMessageClick(message)}
-                          className="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2">
-                                <span className="font-medium text-gray-900">{message.senderName}</span>
-                                <span className="text-sm text-gray-500">
-                                  {new Date(message.timestamp).toLocaleString()}
-                                </span>
-                              </div>
-                              <p className="mt-1 text-gray-700">{message.content}</p>
-                            </div>
-                            {!message.read && message.senderId !== currentUser?.id && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                New
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Message Modal */}
-              {showMessageModal && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-                  <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {selectedMessage ? 'View Message' : 'New Message'}
-                        </h3>
-                        <button
-                          onClick={handleCloseMessageModal}
-                          className="text-gray-400 hover:text-gray-500"
-                        >
-                          <XMarkIcon className="h-6 w-6" />
-                        </button>
-                      </div>
-
-                      {selectedMessage ? (
-                        <div className="space-y-4">
-                          <div className="bg-gray-50 p-4 rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium text-gray-900">{selectedMessage.senderName}</span>
-                              <span className="text-sm text-gray-500">
-                                {new Date(selectedMessage.timestamp).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="mt-2 text-gray-700">{selectedMessage.content}</p>
-                          </div>
-                          <div className="flex justify-end">
-                            <button
-                              onClick={handleCloseMessageModal}
-                              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                              Close
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <textarea
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type your message..."
-                            className="w-full h-32 p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                          />
-                          <div className="flex justify-end space-x-3">
-                            <button
-                              onClick={handleCloseMessageModal}
-                              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => {
-                                handleSendMessage(newMessage);
-                                setNewMessage('');
-                                setShowMessageModal(false);
-                              }}
-                              disabled={!newMessage.trim()}
-                              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              Send Message
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
               )}
             </div>
           </div>

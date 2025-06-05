@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { useForm, FieldValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
@@ -15,10 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   proposal: z.string().min(100, 'Proposal must be at least 100 characters'),
-  budget: z.string().refine((val: string) => !isNaN(Number(val)) && Number(val) > 0, {
+  budget: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
     message: 'Please enter a valid budget amount',
   }),
   timeline: z.string().min(1, 'Please specify the timeline'),
@@ -35,6 +36,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,11 +48,30 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to submit an application.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
-      // Mock submission for now since Supabase integration is not available
-      console.log('Submitting application:', values);
+      const { error } = await supabase
+        .from('applications')
+        .insert({
+          project_id: projectId,
+          professional_id: user.id,
+          proposal: values.proposal,
+          budget: Number(values.budget),
+          timeline: values.timeline,
+          status: 'pending'
+        });
+
+      if (error) throw error;
 
       toast({
         title: "Success",
@@ -79,7 +100,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <FormField
           control={form.control}
           name="proposal"
-          render={({ field }: { field: FieldValues }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Proposal</FormLabel>
               <FormControl>
@@ -97,7 +118,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <FormField
           control={form.control}
           name="budget"
-          render={({ field }: { field: FieldValues }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Budget (TTD)</FormLabel>
               <FormControl>
@@ -115,7 +136,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
         <FormField
           control={form.control}
           name="timeline"
-          render={({ field }: { field: FieldValues }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Timeline</FormLabel>
               <FormControl>
@@ -141,4 +162,4 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({
   );
 };
 
-export default ApplicationForm;
+export default ApplicationForm; 

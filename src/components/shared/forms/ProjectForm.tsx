@@ -16,7 +16,7 @@ interface ProjectFormData {
   title: string;
   description: string;
   category: string;
-  budget: number;
+  budget: string;
   expected_timeline: string;
   location: string;
   urgency: string;
@@ -92,7 +92,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     title: '',
     description: '',
     category: '',
-    budget: 0,
+    budget: '',
     expected_timeline: '',
     location: '',
     urgency: '',
@@ -144,7 +144,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     if (!formData.title.trim()) newErrors.title = 'Project title is required';
     if (!formData.description.trim()) newErrors.description = 'Project description is required';
     if (!formData.category) newErrors.category = 'Project category is required';
-    if (formData.budget <= 0) newErrors.budget = 'Budget must be greater than 0';
+    if (!formData.budget.trim()) newErrors.budget = 'Budget is required';
     if (!formData.expected_timeline) newErrors.expected_timeline = 'Timeline is required';
     if (!formData.location.trim()) newErrors.location = 'Location is required';
 
@@ -218,12 +218,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               <Label htmlFor="budget">Budget *</Label>
               <Input
                 id="budget"
-                type="number"
-                min="0"
-                step="0.01"
                 value={formData.budget}
-                onChange={(e) => handleInputChange('budget', parseFloat(e.target.value) || 0)}
-                placeholder="Enter project budget"
+                onChange={(e) => handleInputChange('budget', e.target.value)}
+                placeholder="e.g., $5,000 or Negotiable"
                 className={errors.budget ? 'border-red-500' : ''}
               />
               {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget}</p>}

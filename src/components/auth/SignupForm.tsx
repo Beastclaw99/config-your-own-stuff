@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -103,7 +104,7 @@ const SignupForm: React.FC = () => {
       <RadioGroup 
         defaultValue={accountType} 
         className="grid grid-cols-2 gap-4 mb-4"
-        onValueChange={(value: string) => setAccountType(value as 'client' | 'professional')}
+        onValueChange={(value) => setAccountType(value as 'client' | 'professional')}
       >
         <div>
           <RadioGroupItem

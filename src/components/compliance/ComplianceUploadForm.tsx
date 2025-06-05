@@ -192,6 +192,7 @@ const ComplianceUploadForm: React.FC = () => {
                   {(doc.status === 'expired' || doc.status === 'rejected' || isExpiring) && (
                     <div className="mt-3 pt-3 border-t">
                       <Button 
+                        size="sm" 
                         variant="outline"
                         onClick={() => handleFileUpload(doc.type)}
                       >

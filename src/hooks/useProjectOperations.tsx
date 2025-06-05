@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,24 +11,12 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
   const [editedProject, setEditedProject] = useState({
     title: '',
     description: '',
-    category: '',
-    budget: 0,
-    expected_timeline: '',
-    location: '',
-    urgency: '',
-    requirements: [],
-    required_skills: []
+    budget: ''
   });
   const [newProject, setNewProject] = useState({
     title: '',
     description: '',
-    category: '',
-    budget: 0,
-    expected_timeline: '',
-    location: '',
-    urgency: '',
-    requirements: [],
-    required_skills: []
+    budget: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,13 +29,14 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
         .from('projects')
         .insert([
           {
-            ...newProject,
-            budget: newProject.budget,
+            title: newProject.title,
+            description: newProject.description,
+            budget: parseFloat(newProject.budget),
+            client_id: userId,
             status: 'open'
           }
         ])
-        .select()
-        .single();
+        .select();
       
       if (error) throw error;
       
@@ -59,13 +49,7 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
       setNewProject({
         title: '',
         description: '',
-        category: '',
-        budget: 0,
-        expected_timeline: '',
-        location: '',
-        urgency: '',
-        requirements: [],
-        required_skills: []
+        budget: ''
       });
       
       // Refresh projects data
@@ -88,13 +72,7 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
     setEditedProject({
       title: project.title,
       description: project.description || '',
-      category: project.category || '',
-      budget: project.budget || 0,
-      expected_timeline: project.expected_timeline || '',
-      location: project.location || '',
-      urgency: project.urgency || '',
-      requirements: project.requirements || [],
-      required_skills: project.required_skills || []
+      budget: project.budget?.toString() || ''
     });
   };
   
@@ -103,13 +81,7 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
     setEditedProject({
       title: '',
       description: '',
-      category: '',
-      budget: 0,
-      expected_timeline: '',
-      location: '',
-      urgency: '',
-      requirements: [],
-      required_skills: []
+      budget: ''
     });
   };
   
@@ -117,16 +89,15 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
     try {
       setIsSubmitting(true);
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('projects')
         .update({
-          ...editedProject,
-          budget: editedProject.budget
+          title: editedProject.title,
+          description: editedProject.description,
+          budget: parseFloat(editedProject.budget),
         })
         .eq('id', project.id)
-        .eq('client_id', userId)
-        .select()
-        .single();
+        .eq('client_id', userId);
       
       if (error) throw error;
       
@@ -143,13 +114,7 @@ export const useProjectOperations = (userId: string, onUpdate: () => void) => {
       setEditedProject({
         title: '',
         description: '',
-        category: '',
-        budget: 0,
-        expected_timeline: '',
-        location: '',
-        urgency: '',
-        requirements: [],
-        required_skills: []
+        budget: ''
       });
       
     } catch (error: any) {

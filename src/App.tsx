@@ -1,19 +1,26 @@
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from "@/components/ui/toaster"
+import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
+import AppRoutes from '@/routes';
 
-import './App.css'
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to Your Project
-        </h1>
-        <p className="text-lg text-gray-600">
-          Your development environment is now ready!
-        </p>
-      </div>
-    </div>
-  )
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <AuthProvider>
+          <NotificationProvider>
+            <AppRoutes />
+            <Toaster />
+          </NotificationProvider>
+        </AuthProvider>
+      </Router>
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
