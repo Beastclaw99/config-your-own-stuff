@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +11,7 @@ interface ProjectSummaryCardProps {
     title: string;
     description: string;
     category: string;
-    budget: string;
+    budget: number;
     location: string;
     status: string;
     timeline: string;
