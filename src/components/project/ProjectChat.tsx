@@ -45,22 +45,6 @@ interface ProjectMessage {
   };
 }
 
-type DatabaseMessage = {
-  id: string;
-  project_id: string;
-  sender_id: string;
-  recipient_id: string;
-  content: string;
-  sent_at: string;
-  is_read: boolean;
-  parent_id?: string;
-  reactions?: Reaction[];
-  sender: {
-    first_name: string;
-    last_name: string;
-  } | null;
-};
-
 interface ProjectChatProps {
   projectId: string;
   projectStatus: string;
@@ -121,7 +105,7 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
           recipient_id,
           content,
           sent_at,
-          sender:profiles!project_messages_sender_id_fkey(
+          sender:sender_id(
             first_name,
             last_name
           )
@@ -139,7 +123,9 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
         content: msg.content,
         sent_at: msg.sent_at,
         is_read: true, // Simplified for now
-        sender_name: msg.sender ? `${msg.sender.first_name} ${msg.sender.last_name}` : 'Unknown User',
+        sender_name: msg.sender && typeof msg.sender === 'object' && 'first_name' in msg.sender && 'last_name' in msg.sender
+          ? `${msg.sender.first_name} ${msg.sender.last_name}` 
+          : 'Unknown User',
         sender_role: msg.sender_id === clientId ? 'client' : 'professional' as const,
         reactions: []
       }));
