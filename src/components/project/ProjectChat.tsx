@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -115,20 +114,26 @@ const ProjectChat: React.FC<ProjectChatProps> = ({
 
       if (error) throw error;
 
-      const formattedMessages: ProjectMessage[] = (data || []).map(msg => ({
-        id: msg.id,
-        project_id: msg.project_id,
-        sender_id: msg.sender_id,
-        recipient_id: msg.recipient_id,
-        content: msg.content,
-        sent_at: msg.sent_at,
-        is_read: true, // Simplified for now
-        sender_name: msg.sender && typeof msg.sender === 'object' && 'first_name' in msg.sender && 'last_name' in msg.sender
-          ? `${msg.sender.first_name} ${msg.sender.last_name}` 
-          : 'Unknown User',
-        sender_role: msg.sender_id === clientId ? 'client' : 'professional' as const,
-        reactions: []
-      }));
+      const formattedMessages: ProjectMessage[] = (data || []).map(msg => {
+        const sender = msg.sender && typeof msg.sender === 'object' && 'first_name' in msg.sender && 'last_name' in msg.sender
+          ? msg.sender
+          : null;
+        
+        return {
+          id: msg.id,
+          project_id: msg.project_id,
+          sender_id: msg.sender_id,
+          recipient_id: msg.recipient_id,
+          content: msg.content,
+          sent_at: msg.sent_at,
+          is_read: true, // Simplified for now
+          sender_name: sender
+            ? `${sender.first_name} ${sender.last_name}` 
+            : 'Unknown User',
+          sender_role: msg.sender_id === clientId ? 'client' : 'professional' as const,
+          reactions: []
+        };
+      });
 
       setMessages(formattedMessages);
       setFilteredMessages(formattedMessages);
